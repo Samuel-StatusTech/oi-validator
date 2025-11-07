@@ -1,0 +1,70 @@
+import { EventData } from "@utils/@types/data/event"
+import { Setter } from "../../utils/@types/store"
+import { deleteData, setData } from "./persistorReducer"
+
+const CommonReducer = (set: Setter) => {
+  return {
+    registerEvent: (eventInfo: EventData) =>
+      set((state) => {
+        return {
+          ...state,
+          currentEvent: eventInfo,
+        }
+      }),
+    clearEvent: () =>
+      set((state) => {
+        deleteData("currentEvent")
+
+        return {
+          ...state,
+          currentEvent: null,
+        }
+      }),
+    setHeaderColor: (color: "neutral" | "green" | "red") => {
+      let newColor = "#0097FE"
+      switch (color) {
+        case "green":
+          newColor = "#22c55e"
+          break
+        case "red":
+          newColor = "#dc2626"
+          break
+        case "neutral":
+          newColor = "#0097FE"
+          break
+        default:
+          newColor = "#0097FE"
+          break
+      }
+
+      return set((state) => ({
+        ...state,
+        headerColor: newColor,
+      }))
+    },
+    setSyncObligation: (should: boolean) =>
+      set((state) => {
+        return {
+          ...state,
+          mustSync: should,
+        }
+      }),
+    setLastSync: (stored?: string | number) =>
+      set((state) => {
+        const time = new Date().getTime()
+
+        setData("lastSync", `${stored ?? time}`)
+
+        return {
+          ...state,
+          lastSync: stored
+            ? typeof stored === "string"
+              ? +stored
+              : stored
+            : time,
+        }
+      }),
+  }
+}
+
+export default CommonReducer

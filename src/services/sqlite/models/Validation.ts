@@ -1,5 +1,6 @@
 import { IValidation } from "@utils/@types/sqlite/validation"
 import db from "../Database"
+import { insertValidation as insertValidationQuery, updateValidation as updateValidationQuery, selectValidationByUid, selectAllValidations, selectValidationsNoSync } from "../queries/validations"
 
 const insertValidation = async (
   uid: string,
@@ -8,109 +9,49 @@ const insertValidation = async (
   created_at: number,
   updated_at: number
 ) => {
-  return new Promise((resolve, reject) => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        `INSERT INTO validations (
-          uid,
-          user_id,
-          synced,
-          created_at,
-          updated_at
-        ) values (?, ?, ?, ?, ?);`,
-        [uid, user_id, 0, created_at, updated_at],
-        //-----------------------
-        (_, { rowsAffected, insertId }) => {
-          if (rowsAffected > 0) resolve(insertId)
-          else reject("Erro ao registrar validação")
-        },
-        (_, error) => {
-          reject(error)
-          return false
-        }
-      )
-    })
-  })
+  try {
+    const result = await db.runAsync(insertValidationQuery, [uid, user_id, 0, created_at, updated_at]);
+    if (result.changes > 0) return result.lastInsertRowId;
+    else throw new Error("Erro ao registrar validação");
+  } catch (error) {
+    throw error;
+  }
 }
 
 const updateValidation = async (ticketUid: string, synced: boolean): Promise<IValidation[]> => {
-  return new Promise((resolve, reject) => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        "UPDATE validations SET synced = ? WHERE uid = ?;",
-        [synced ? 1 : 0, ticketUid],
-        //-----------------------
-        async (_, { rows }) => {
-          const list = rows._array
-          resolve(list)
-        },
-        (_, error) => {
-          reject(error)
-          return false
-        }
-      )
-    })
-  })
+  try {
+    await db.runAsync(updateValidationQuery, [synced ? 1 : 0, ticketUid]);
+    return [];
+  } catch (error) {
+    throw error;
+  }
 }
 
 const searchByTicket = async (ticketUid: string): Promise<IValidation[]> => {
-  return new Promise((resolve, reject) => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        "SELECT * FROM validations WHERE uid = ?;",
-        [ticketUid],
-        //-----------------------
-        async (_, { rows }) => {
-          const list = rows._array
-          resolve(list)
-        },
-        (_, error) => {
-          reject(error)
-          return false
-        }
-      )
-    })
-  })
+  try {
+    const result = await db.getAllAsync<IValidation>(selectValidationByUid, [ticketUid]);
+    return result;
+  } catch (error) {
+    throw error;
+  }
 }
 
 const getAll = async (): Promise<IValidation[]> => {
-  return new Promise((resolve, reject) => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        "SELECT * FROM validations;",
-        [],
-        //-----------------------
-        async (_, { rows }) => {
-          const list = rows._array
-          resolve(list)
-        },
-        (_, error) => {
-          reject(error)
-          return false
-        }
-      )
-    })
-  })
+  try {
+    const result = await db.getAllAsync<IValidation>(selectAllValidations);
+    return result;
+  } catch (error) {
+    throw error;
+  }
 }
 
 const getValidationsNoSync = async (): Promise<IValidation[]> => {
-  return new Promise((resolve, reject) => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        "SELECT * FROM validations WHERE synced = 0;",
-        [],
-        //-----------------------
-        async (_, { rows }) => {
-          const list = rows._array
-          resolve(list)
-        },
-        (_, error) => {
-          reject(error)
-          return false
-        }
-      )
-    })
-  })
+  try {
+    const result = await db.getAllAsync<IValidation>(selectValidationsNoSync);
+    return result;
+  } catch (error) {
+    throw error;
+  }
 }
 
 const Validation = {

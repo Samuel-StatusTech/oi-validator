@@ -71,6 +71,7 @@ const styles = StyleSheet.create({
     color: THEME.colors.blue[500],
     fontFamily: THEME.fonts.body,
     fontSize: THEME.fontSizes.lg,
+    marginLeft: 8
   },
   activeText: {
     color: THEME.colors.blue[10],

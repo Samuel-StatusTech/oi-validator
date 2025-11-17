@@ -83,40 +83,44 @@ export function Home() {
   }
 
   async function validateCode(code: string) {
-    if (!isValidating) {
-      setCheckComplete(false)
-      setIsValidating(true)
-      setFeedback(true)
-      if (user) {
-        const connection = (await Netinfo.refresh()).isConnected as boolean
+    try {
+      if (!isValidating) {
+        setCheckComplete(false)
+        setIsValidating(true)
+        setFeedback(true)
+        if (user) {
+          const connection = (await Netinfo.refresh()).isConnected as boolean
 
-        await tb
-          .validateQR(
-            code,
-            user?.db as string,
-            currentEvent as EventData,
-            user,
-            connection,
-            token
-          )
-          .then((isValid) => {
-            setTicketState(isValid)
-            Common.setHeaderColor("green")
-            if (!connection && isValid) {
-              Common.setSyncObligation(true)
-              setData("mustSync", "true")
-            }
-          })
-          .catch((error) => {
-            setTicketState(false)
-            Common.setHeaderColor("red")
-            setMsg(error)
-          })
+          await tb
+            .validateQR(
+              code,
+              user?.db as string,
+              currentEvent as EventData,
+              user,
+              connection,
+              token
+            )
+            .then((isValid) => {
+              setTicketState(isValid)
+              Common.setHeaderColor("green")
+              if (!connection && isValid) {
+                Common.setSyncObligation(true)
+                setData("mustSync", "true")
+              }
+            })
+            .catch((error) => {
+              setTicketState(false)
+              Common.setHeaderColor("red")
+              setMsg(error)
+            })
 
-        setScanned(true)
-        setCheckComplete(true)
-        setIsValidating(false)
+          setScanned(true)
+          setCheckComplete(true)
+          setIsValidating(false)
+        }
       }
+    } catch (error) {
+      console.log(`[DEBUG] Validating Error: `, error)
     }
   }
 

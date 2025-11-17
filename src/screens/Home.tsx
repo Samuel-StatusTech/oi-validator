@@ -20,7 +20,7 @@ export function Home() {
   const { user, currentEvent, token, Common } = store
 
   const [mode, setMode] = useState<"camera" | "typing" | "saveEnergy">("camera")
-  const [flashMode, setFlashMode] = useState(FlashMode.off)
+  const [flashMode, setFlashMode] = useState<FlashMode>("off")
   const [showFeedback, setFeedback] = useState(false)
   const [showProds, setShowProds] = useState(false)
   const [scanned, setScanned] = useState(false)
@@ -228,9 +228,7 @@ export function Home() {
             handleTyping={handleModeChange}
             mode={mode}
             updateFlash={() => {
-              setFlashMode(
-                flashMode == FlashMode.off ? FlashMode.torch : FlashMode.off
-              )
+              setFlashMode(flashMode == "off" ? "on" : "off")
             }}
           />
         </>

@@ -1,4 +1,4 @@
-import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner';
+import { scanFromURLAsync, BarcodeScanningResult, useCameraPermissions, CameraView } from 'expo-camera';
 import { Camera, FlashMode } from 'expo-camera'
 import { Text } from 'native-base';
 import { useEffect, useState } from 'react';
@@ -11,32 +11,31 @@ type Props = {
 };
 
 export function Scanner({ flashMode, scanned, onCodeScanned }: Props) {
-  const [hasPermission, setHasPermission] = useState<null|boolean>(null);
+  const [hasPermission, requestPermission] = useCameraPermissions();
   const { width, height } = Dimensions.get('window');
 
   useEffect(() => {
     (async () => {
-      const { status } = await BarCodeScanner.requestPermissionsAsync();
-      setHasPermission(status === 'granted');
+      if (!hasPermission) await requestPermission();
     })();
   }, []);
 
-  const handleBarCodeScanned = ({ type, data }: BarCodeScannerResult) => {
+  const handleBarCodeScanned = ({ type, data }: BarcodeScanningResult) => {
     onCodeScanned(data);
   };
 
   if (hasPermission === null) {
     return <Text>Vc precisa permitir a utilização da sua camera</Text>;
   }
-  if (hasPermission === false) {
+
+  if (!hasPermission.granted) {
     return <Text>Não temos acesso a sua camera</Text>;
   }
   
   return (
     <>
-      <Camera
-        flashMode={flashMode}
-        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+      <CameraView
+        onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
         style={{
           width: width,
           flex: 1

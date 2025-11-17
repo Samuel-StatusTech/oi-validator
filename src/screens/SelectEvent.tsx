@@ -1,3 +1,4 @@
+import { FlatList } from "react-native"
 import LogoWhite from "@assets/logoWhite.svg"
 import { Button } from "@components/Button"
 import { EventItem } from "@components/EventItem"
@@ -6,7 +7,7 @@ import { useNavigation } from "@react-navigation/native"
 import { AuthNavigatiorRoutesProps } from "@routes/auth.routes"
 import { EventData } from "@utils/@types/data/event"
 import { Center, HStack, Heading, Spacer, Text, VStack } from "native-base"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import useStore from "../store"
 import { useNetInfo } from "@react-native-community/netinfo"
 import { PopUp } from "@components/PopUp"
@@ -22,6 +23,8 @@ export function SelectEvent() {
 
   const navigation = useNavigation<AppNavigatiorRoutesProps>()
   const authNavigation = useNavigation<AuthNavigatiorRoutesProps>()
+
+  const flatListRef = useRef(null)
 
   function handleDesconect() {
     User.cleanInfo()
@@ -43,7 +46,8 @@ export function SelectEvent() {
   }
 
   useEffect(() => {
-    if (user?.kInfo) setEvents(user?.kInfo?.eventsData)
+    console.log(`[DEBUG] Events: `, user?.kInfo?.eventsData)
+    if (user?.kInfo) setEvents(user?.kInfo?.eventsData.filter(event => Boolean(event.status)))
   }, [])
 
   return (
@@ -69,12 +73,21 @@ export function SelectEvent() {
             Selecione o evento que você irá atender hoje
             {user?.kInfo?.orgName ? `pela ${user?.kInfo?.orgName}` : ""}.
           </Text>
-
-          {events &&
-            events.map((e, k) => (
-              <EventItem key={k} onSelect={() => handleSelect(e)} info={e} />
-            ))}
         </Center>
+
+        <Spacer />
+
+        <FlatList
+          ref={flatListRef}
+          data={events}
+          renderItem={({ item, index }) => (
+            <EventItem key={index} onSelect={() => handleSelect(item)} info={item} />
+          )}
+          overScrollMode="never"
+          style={{ paddingRight: 0 }}
+          contentContainerStyle={{ rowGap: 16 }}
+        />
+
         <Spacer />
 
         <Button

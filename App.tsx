@@ -1,8 +1,4 @@
-import {
-  Roboto_400Regular,
-  Roboto_700Bold,
-  useFonts,
-} from "@expo-google-fonts/roboto"
+import { Roboto_400Regular, Roboto_700Bold, useFonts } from "@expo-google-fonts/roboto"
 import { Routes } from "@routes/index"
 import { StatusBar } from "expo-status-bar"
 import { Center, NativeBaseProvider, Spinner } from "native-base"
@@ -15,31 +11,27 @@ export default function App() {
   const [isTablesCreated, setTablesOk] = useState(false)
 
   useEffect(() => {
-    ;(async () => {
-      createTables()
-        .then(() => {
-          setTablesOk(true)
-        })
-        .catch(() => {
-          console.error("Falha ao criar tabelas")
-        })
+    (async () => {
+      try {
+        await createTables()
+        setTablesOk(true)
+      } catch (error) {
+        console.error("Falha ao criar tabelas")
+      }
     })()
   }, [])
 
   return (
     <NativeBaseProvider theme={THEME}>
       <StatusBar backgroundColor="transparent" />
-
       {isTablesCreated ? (
-        <>
-          {fontLoaded ? (
-            <Routes />
-          ) : (
-            <Center flex={1}>
-              <Spinner />
-            </Center>
-          )}
-        </>
+        fontLoaded ? (
+          <Routes />
+        ) : (
+          <Center flex={1}>
+            <Spinner />
+          </Center>
+        )
       ) : (
         <Center flex={1}>
           <Spinner />

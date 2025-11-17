@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
-import { Header } from "@components/Header"
-import { Text, VStack, FlatList } from "native-base"
+import { FlatList } from "react-native"
+import { Text, VStack } from "native-base"
 import { QrHistoryItem } from "@components/QrHistoryItem"
 
 import { TQrHistoryItem } from "@utils/@types/components/QrHistoryItem"
@@ -69,8 +69,6 @@ export function QrHistory() {
           data={data}
           renderItem={({ item }) => <QrHistoryItem info={item} />}
           ListEmptyComponent={() => <QrHistoryEmpty />}
-          height={"50%"}
-          width={"100%"}
           overScrollMode="never"
           style={{ paddingRight: 16 }}
           contentContainerStyle={{ rowGap: 16 }}

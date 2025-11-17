@@ -1,194 +1,62 @@
 import * as SQLite from "expo-sqlite"
+import { DBQueryCreateAllTables } from "./queries/tables/createAll"
 
-const db = SQLite.openDatabase("oiTicket-data.db")
+const db = SQLite.openDatabaseSync("oiTicket-data.db")
 
 // TODO: create others TABLES
 export const createTables = async () => {
   return new Promise(async (resolve, reject) => {
-    const queries = [
-      `CREATE TABLE IF NOT EXISTS events (
-        id TEXT,
-        org_id TEXT,
-        name VARCHAR(128),
-        description varchar(512) DEFAULT NULL,
-        logo varchar(512) DEFAULT NULL,
-        logo_print varchar(512) DEFAULT NULL,
-        date_ini date,
-        time_ini time,
-        date_end date,
-        local varchar(255),
-        city varchar(255),
-        state varchar(255),
-        days int(11) DEFAULT 0,
-        status INTEGER DEFAULT 0,
-        print_valid INTEGER DEFAULT 0,
-        print_logo INTEGER DEFAULT 0,
-        has_cashless INTEGER DEFAULT 0,
-        has_tax_active INTEGER DEFAULT 0,
-        allow_cashback INTEGER DEFAULT 0,
-        has_tax_cashback INTEGER DEFAULT 0,
-        tax_active int(10) DEFAULT 0,
-        tax_payback_cash int(10) DEFAULT 0,
-        tax_payback_percent int(10) DEFAULT 0,
-        created_at datetime DEFAULT NULL,
-        updated_at datetime DEFAULT NULL
-      );`,
-      `CREATE TABLE IF NOT EXISTS users (
-        id TEXT ,
-        org_id TEXT DEFAULT NULL,
-        username varchar(64) ,
-        name varchar(128),
-        email varchar(255) DEFAULT NULL,
-        password varchar(255) ,
-        role varchar(64) DEFAULT 'validador',
-        status INTEGER DEFAULT 0,
-        created_at datetime DEFAULT NULL,
-        updated_at datetime DEFAULT NULL,
-        phone varchar(255) DEFAULT NULL
-      );`,
-      `CREATE TABLE IF NOT EXISTS waiters (
-        id TEXT ,
-        name VARCHAR(128),
-        status INTEGER DEFAULT 0,
-        has_commission INTEGER DEFAULT 0,
-        commission int(11) DEFAULT 0,
-        has_code INTEGER DEFAULT 0,
-        code int(11) DEFAULT NULL,
-        created_at datetime DEFAULT NULL,
-        updated_at datetime DEFAULT NULL
-      );`,
-      `CREATE TABLE IF NOT EXISTS products (
-        id TEXT ,
-        o_id TEXT,
-        org_id TEXT,
-        name VARCHAR(128),
-        image VARCHAR,
-        status INTEGER DEFAULT 0,
-        type VARCHAR(128),
-        group_id VARCHAR(128),
-        warehouse_type VARCHAR,
-        description1 VARCHAR(128),
-        description2 VARCHAR(128),
-        has_commission INTEGER DEFAULT 0,
-        has_variable INTEGER DEFAULT 0,
-        has_courtesy INTEGER DEFAULT 0,
-        has_control INTEGER DEFAULT 0,
-        has_cut INTEGER DEFAULT 0,
-        has_tolerance INTEGER DEFAULT 0,
-        print_qrcode INTEGER DEFAULT 0,
-        print_ticket INTEGER DEFAULT 0,
-        print_local INTEGER DEFAULT 0,
-        print_date INTEGER DEFAULT 0,
-        print_value INTEGER DEFAULT 0,
-        print_group INTEGER DEFAULT 0,
-        print_plate INTEGER DEFAULT 0,
-        print_tolerance INTEGER DEFAULT 0,
-        painel_control INTEGER DEFAULT 0,
-        start_at int DEFAULT 0,
-        number_copy int DEFAULT 0,
-        time_tolerance int DEFAULT 0,
-        value_tolerance int DEFAULT 0,
-        price_cost int DEFAULT 0 ,
-        price_sell int DEFAULT 0 ,
-        quantity int DEFAULT 0 ,
-        created_at datetime DEFAULT NULL,
-        updated_at datetime DEFAULT NULL,
-        synced INTEGER DEFAULT 0,
-        archived INTEGER DEFAULT 0
-      );`,
-      `CREATE TABLE IF NOT EXISTS combos (
-        id VARCHAR(64),
-        oid TEXT,
-        favorite TEXT,
-        org_id TEXT,
-        name TEXT,
-        image TEXT,
-        description1 TEXT,
-        description2 TEXT,
-        ticket_type TEXT,
-        price_sell REAL,
-        status INTEGER,
-        direction TEXT,
-        print_qrcode INTEGER,
-        print_ticket INTEGER,
-        print_local INTEGER,
-        print_date INTEGER,
-        print_value INTEGER,
-        created_at TEXT,
-        updated_at TEXT,
-        group_id TEXT,
-        archived INTEGER DEFAULT 0
-      );`,
-      `CREATE TABLE IF NOT EXISTS product_lists (
-        id VARCHAR(64) DEFAULT NULL,
-        list_id VARCHAR(64),
-        pdv_id VARCHAR(64),
-        user_id VARCHAR(64),
-        reservation_id VARCHAR(64),
-        combo_id VARCHAR(64),
-        quantity INTEGER DEFAULT 0
-      );`,
-      `CREATE TABLE IF NOT EXISTS validations (
-        uid VARCHAR(64),
-        user_id VARCHAR(64),
-        synced INTEGER DEFAULT 0,
-        created_at datetime DEFAULT NULL,
-        updated_at datetime DEFAULT NULL
-      );`,
-    ]
+    try {
+      const creationProms: Promise<boolean>[] = DBQueryCreateAllTables.map(
+        (q) => {
+          const prom = new Promise<boolean>(async (promResolve, promReject) => {
+            try {
+              await db.execAsync(q)
+              promResolve(true)
+            } catch (error) {
+              promReject(false)
+            }
+          })
 
-    queries.forEach(async (q, k) => {
-      db.transaction((sql) => {
-        sql.executeSql(
-          q,
-          [],
-          () => null,
-          (_, error) => {
-            reject(error)
-            return false
-          }
-        )
-      })
+          return prom
+        }
+      )
 
-      if (k === queries.length - 1) {
-        console.log("Tables created successfully")
-        resolve(true)
-      }
-    })
+      await Promise.all(creationProms)
+
+      console.log("Tables created successfully")
+
+      resolve(true)
+    } catch (error) {
+      reject(error)
+    }
   })
 }
 
 export const dropTables = async () => {
   return new Promise(async (resolve, reject) => {
-    const queries = [
-      `DROP TABLE events;`,
-      `DROP TABLE users;`,
-      `DROP TABLE waiters;`,
-      `DROP TABLE products;`,
-      `DROP TABLE combos;`,
-      `DROP TABLE product_lists;`,
-      `DROP TABLE validations;`,
-    ]
-
-    queries.forEach(async (q, k) => {
-      db.transaction((sql) => {
-        sql.executeSql(
-          q,
-          [],
-          async (_, {}) => {
-            console.log("Table deleted successfully")
-          },
-          (_, error) => {
-            reject(error)
-            return false
+    try {
+      const dropProms: Promise<boolean>[] = DBQueryCreateAllTables.map((q) => {
+        const prom = new Promise<boolean>(async (promResolve, promReject) => {
+          try {
+            await db.execAsync(q)
+            promResolve(true)
+          } catch (error) {
+            promReject(false)
           }
-        )
+        })
+
+        return prom
       })
 
-      if (k === queries.length - 1) {
-        resolve(true)
-      }
-    })
+      await Promise.all(dropProms)
+
+      console.log("Table deleted successfully")
+
+      resolve(true)
+    } catch (error) {
+      reject(error)
+    }
   })
 }
 

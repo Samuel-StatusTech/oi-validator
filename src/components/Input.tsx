@@ -38,6 +38,7 @@ export function Input({ errorMessage = null, isInvalid, ...rest }: Props) {
 const styles = StyleSheet.create({
   container: {
     marginBottom: 8,
+    width: '100%'
   },
   input: {
     backgroundColor: THEME.colors.blue[50],

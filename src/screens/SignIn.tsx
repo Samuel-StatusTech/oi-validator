@@ -400,4 +400,7 @@ const styles = StyleSheet.create({
     fontFamily: THEME.fonts.body,
     color: THEME.colors.blue[200],
   },
+  textInput: {
+    flex: 1
+  }
 })

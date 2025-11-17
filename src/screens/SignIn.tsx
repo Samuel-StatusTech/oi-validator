@@ -1,3 +1,5 @@
+import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native"
+import { THEME } from "../theme"
 import Logo from "@assets/logo.svg"
 import { Button } from "@components/Button"
 import { Input } from "@components/Input"
@@ -5,7 +7,6 @@ import { MaterialIcons } from "@expo/vector-icons"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useNavigation } from "@react-navigation/native"
 import { AuthNavigatiorRoutesProps } from "@routes/auth.routes"
-import { Center, Icon, Pressable, ScrollView, Text, VStack } from "native-base"
 import { useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import * as yup from "yup"
@@ -261,8 +262,8 @@ export function SignIn() {
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
       >
-        <VStack flex={1} px={10}>
-          <Center my={24}>
+        <View style={styles.container}>
+          <View style={styles.center}>
             <Logo />
 
             <Controller
@@ -290,7 +291,7 @@ export function SignIn() {
               render={({ field: { onChange, value } }) => (
                 <Input
                   placeholder="Senha"
-                  type={showPassword ? "text" : "password"}
+                  secureTextEntry={!showPassword}
                   onChangeText={(v) => {
                     onChange(v)
                     if (authError.pass) removeError("pass")
@@ -302,17 +303,12 @@ export function SignIn() {
                   returnKeyType="send"
                   InputRightElement={
                     <Pressable onPress={() => setShowPassowrd(!showPassword)}>
-                      <Icon
-                        as={
-                          <MaterialIcons
-                            name={
-                              showPassword ? "visibility" : "visibility-off"
-                            }
-                          />
+                      <MaterialIcons
+                        name={
+                          showPassword ? "visibility" : "visibility-off"
                         }
-                        size={5}
-                        mr="2"
-                        color="blue.500"
+                        size={20}
+                        color={THEME.colors.blue[500]}
                       />
                     </Pressable>
                   }
@@ -320,14 +316,7 @@ export function SignIn() {
               )}
             />
 
-            <Text
-              fontFamily={"body"}
-              color={"red.500"}
-              fontSize={"14px"}
-              w={"100%"}
-              paddingRight={"16px"}
-              textAlign={"right"}
-            >
+            <Text style={styles.errorText}>
               {authError.name || authError.pass
                 ? "Verifique seu login ou senha"
                 : ""}
@@ -335,7 +324,6 @@ export function SignIn() {
 
             <Button
               title="Entrar"
-              mt={6}
               onPress={handleSubmit(handleSignIn)}
               isLoading={isLoading}
               isDisabled={
@@ -347,37 +335,69 @@ export function SignIn() {
                 !connection.isConnected
               }
             />
-            <VStack marginTop={"24px"}>
-              <Text
-                textAlign={"center"}
-                fontSize={"18px"}
-                fontFamily={"heading"}
-                color={connection.isConnected ? "green.500" : "red.500"}
-              >
+            <View style={styles.statusContainer}>
+              <Text style={[
+                styles.statusText,
+                { color: connection.isConnected ? THEME.colors.green[500] : THEME.colors.red[500] }
+              ]}>
                 {`Você está ${connection.isConnected ? "ONLINE" : "OFFLINE"}`}
               </Text>
-              <Text
-                textAlign={"center"}
-                fontSize={"18px"}
-                fontFamily={"body"}
-                color={"blue.200"}
-              >
+              <Text style={styles.syncText}>
                 {isAuthenticating ? "Sincronizando..." : syncText ?? ""}
               </Text>
-            </VStack>
-          </Center>
-          <VStack flex={1} paddingBottom={"32px"} justifyContent={"flex-end"}>
-            <Text
-              textAlign={"center"}
-              fontSize={"18px"}
-              fontFamily={"body"}
-              color={"blue.200"}
-            >
+            </View>
+          </View>
+          <View style={styles.footer}>
+            <Text style={styles.imeiText}>
               {imei ? `IMEI: ${imei}` : ""}
             </Text>
-          </VStack>
-        </VStack>
+          </View>
+        </View>
       </ScrollView>
     </>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingHorizontal: 40,
+  },
+  center: {
+    marginVertical: 96,
+    alignItems: 'center',
+  },
+  errorText: {
+    fontFamily: THEME.fonts.body,
+    color: THEME.colors.red[500],
+    fontSize: 14,
+    width: '100%',
+    paddingRight: 16,
+    textAlign: 'right',
+  },
+  statusContainer: {
+    marginTop: 24,
+  },
+  statusText: {
+    textAlign: 'center',
+    fontSize: 18,
+    fontFamily: THEME.fonts.heading,
+  },
+  syncText: {
+    textAlign: 'center',
+    fontSize: 18,
+    fontFamily: THEME.fonts.body,
+    color: THEME.colors.blue[200],
+  },
+  footer: {
+    flex: 1,
+    paddingBottom: 32,
+    justifyContent: 'flex-end',
+  },
+  imeiText: {
+    textAlign: 'center',
+    fontSize: 18,
+    fontFamily: THEME.fonts.body,
+    color: THEME.colors.blue[200],
+  },
+})

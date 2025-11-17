@@ -1,6 +1,5 @@
 import React from 'react';
-import { TouchableOpacity } from 'react-native';
-import { Input, Text, VStack } from 'native-base';
+import { TouchableOpacity, View, Text, TextInput, StyleSheet } from 'react-native';
 import { THEME } from '../theme'
 
 type Props = {
@@ -14,51 +13,60 @@ export function QrCodeTypingArea({
   onChange,
   onConfirm,
 }: Props) {
-  
+
   return (
-    <VStack
-      flex={1}
-      backgroundColor={'blue.300'}
-      justifyContent={'center'}
-      paddingX={'32px'}
-      style={{ rowGap: 24 }}
-    >
-      <Text
-        textAlign={'center'}
-        color={'lightBlue.100'}
-        fontSize={'lg'}
-        fontFamily={'heading'}
-      >Digite manualmente o código:</Text>
-      <Input
+    <View style={styles.container}>
+      <Text style={styles.label}>Digite manualmente o código:</Text>
+      <TextInput
         value={qrCode}
         autoCapitalize='characters'
         onChangeText={onChange}
-        backgroundColor={'lightBlue.50'}
-        borderRadius={16}
-        paddingY={'20px'}
+        style={styles.input}
         textAlign={'center'}
-        fontFamily={'heading'}
-        fontSize={'24px'}
-        color={'blue.600'}
-        />
+      />
       <TouchableOpacity
         onPress={onConfirm}
-        style={{
-          paddingVertical: 21,
-          backgroundColor: THEME.colors.blue[300],
-          alignItems: 'center',
-          borderRadius: 50,
-        }}
+        style={styles.button}
       >
-        <Text
-          textAlign={'center'}
-          color={'lightBlue.100'}
-          style={{
-            fontSize: 24,
-            lineHeight: 24
-          }}
-        >Confirmar</Text>
+        <Text style={styles.buttonText}>Confirmar</Text>
       </TouchableOpacity>
-    </VStack>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: THEME.colors.blue[300],
+    justifyContent: 'center',
+    paddingHorizontal: 32,
+    rowGap: 24,
+  },
+  label: {
+    textAlign: 'center',
+    color: THEME.colors.blue[10],
+    fontSize: THEME.fontSizes.lg,
+    fontFamily: THEME.fonts.heading,
+  },
+  input: {
+    backgroundColor: THEME.colors.blue[50],
+    borderRadius: 16,
+    paddingVertical: 20,
+    textAlign: 'center',
+    fontFamily: THEME.fonts.heading,
+    fontSize: 24,
+    color: THEME.colors.blue[600],
+  },
+  button: {
+    paddingVertical: 21,
+    backgroundColor: THEME.colors.blue[300],
+    alignItems: 'center',
+    borderRadius: 50,
+  },
+  buttonText: {
+    textAlign: 'center',
+    color: THEME.colors.blue[10],
+    fontSize: 24,
+    lineHeight: 24,
+  },
+});

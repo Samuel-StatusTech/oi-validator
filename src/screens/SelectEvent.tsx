@@ -1,4 +1,5 @@
-import { FlatList } from "react-native"
+import { FlatList, View, Text, StyleSheet } from "react-native"
+import { THEME } from "../theme"
 import LogoWhite from "@assets/logoWhite.svg"
 import { Button } from "@components/Button"
 import { EventItem } from "@components/EventItem"
@@ -6,7 +7,6 @@ import { Onlinetag } from "@components/OnlineTag"
 import { useNavigation } from "@react-navigation/native"
 import { AuthNavigatiorRoutesProps } from "@routes/auth.routes"
 import { EventData } from "@utils/@types/data/event"
-import { Center, HStack, Heading, Spacer, Text, VStack } from "native-base"
 import { useEffect, useRef, useState } from "react"
 import useStore from "../store"
 import { useNetInfo } from "@react-native-community/netinfo"
@@ -60,22 +60,22 @@ export function SelectEvent() {
         close={() => setShowingPopUp(false)}
         action={handleDesconect}
       />
-      <VStack h={"full"} bg={"blue.300"} safeAreaTop={16} safeAreaX={8}>
-        <HStack justifyContent={"space-between"} alignItems={"center"}>
+      <View style={styles.container}>
+        <View style={styles.header}>
           <LogoWhite />
           <Onlinetag isOnline={connection.isConnected ?? false} />
-        </HStack>
-        <Center mt={16}>
-          <Heading color={"white"} fontFamily={"heading"}>
+        </View>
+        <View style={styles.center}>
+          <Text style={styles.greeting}>
             Olá, {user?.name}
-          </Heading>
-          <Text color={"white"} fontSize={"lg"} textAlign={"center"}>
+          </Text>
+          <Text style={styles.description}>
             Selecione o evento que você irá atender hoje
             {user?.kInfo?.orgName ? `pela ${user?.kInfo?.orgName}` : ""}.
           </Text>
-        </Center>
+        </View>
 
-        <Spacer />
+        <View style={styles.spacer} />
 
         <FlatList
           ref={flatListRef}
@@ -84,19 +84,54 @@ export function SelectEvent() {
             <EventItem key={index} onSelect={() => handleSelect(item)} info={item} />
           )}
           overScrollMode="never"
-          style={{ paddingRight: 0 }}
-          contentContainerStyle={{ rowGap: 16 }}
+          style={styles.flatList}
+          contentContainerStyle={styles.flatListContent}
         />
 
-        <Spacer />
+        <View style={styles.spacer} />
 
         <Button
           title="Desconectar"
-          mt={8}
           onPress={() => setShowingPopUp(true)}
-          mb={16}
         />
-      </VStack>
+      </View>
     </>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: THEME.colors.blue[300],
+    paddingTop: 16,
+    paddingHorizontal: 8,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  center: {
+    marginTop: 16,
+    alignItems: 'center',
+  },
+  greeting: {
+    color: 'white',
+    fontFamily: THEME.fonts.heading,
+    fontSize: THEME.fontSizes.xl,
+  },
+  description: {
+    color: 'white',
+    fontSize: THEME.fontSizes.lg,
+    textAlign: 'center',
+  },
+  spacer: {
+    flex: 1,
+  },
+  flatList: {
+    paddingRight: 0,
+  },
+  flatListContent: {
+    rowGap: 16,
+  },
+})

@@ -1,6 +1,7 @@
+import React from 'react';
 import { EventData } from "@utils/@types/data/event"
-import { HStack, Image, Text, VStack } from "native-base"
-import { TouchableOpacity, TouchableOpacityProps } from "react-native"
+import { TouchableOpacity, View, Image, Text, StyleSheet } from "react-native"
+import { THEME } from '../theme';
 
 type Props = {
   onSelect: () => void
@@ -18,41 +19,66 @@ export function EventItem({ onSelect, info }: Props) {
   }
 
   return (
-    <TouchableOpacity onPress={onSelect} style={{width:'100%'}}>
-      <HStack
-        w={"full"}
-        bg={"white"}
-        height={24}
-        mt={4}
-        borderRadius={16}
-        alignItems={"center"}
-      >
-        {info.logo_print ?
+    <TouchableOpacity onPress={onSelect} style={styles.container}>
+      <View style={styles.content}>
+        {info.logo_print ? (
           <Image
             source={{
               uri: info.logo_print,
             }}
-            w={100}
-            height={24}
-            roundedLeft={"xl"}
-            alt="Foto do evento"
+            style={styles.image}
           />
-          :
-          <VStack
-            w={100}
-            height={24}
-          />
-        }
+        ) : (
+          <View style={styles.placeholder} />
+        )}
 
-        <VStack ml={4} mr={4}>
-          <Text color={"blue.600"} fontSize={"lg"} fontFamily={"heading"}>
+        <View style={styles.textContainer}>
+          <Text style={styles.title}>
             {info.name}
           </Text>
-          <Text color={"blue.200"} fontSize={"md"}>
+          <Text style={styles.subtitle}>
             {`${info.local} - ${getDateStr(info.date)}`}
           </Text>
-        </VStack>
-      </HStack>
+        </View>
+      </View>
     </TouchableOpacity>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+  },
+  content: {
+    width: '100%',
+    backgroundColor: THEME.colors.white,
+    height: 96,
+    marginTop: 16,
+    borderRadius: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  image: {
+    width: 100,
+    height: 96,
+    borderTopLeftRadius: 16,
+    borderBottomLeftRadius: 16,
+  },
+  placeholder: {
+    width: 100,
+    height: 96,
+  },
+  textContainer: {
+    marginLeft: 16,
+    marginRight: 16,
+  },
+  title: {
+    color: THEME.colors.blue[600],
+    fontSize: THEME.fontSizes.lg,
+    fontFamily: THEME.fonts.heading,
+  },
+  subtitle: {
+    color: THEME.colors.blue[200],
+    fontSize: THEME.fontSizes.md,
+  },
+});

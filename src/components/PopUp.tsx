@@ -1,6 +1,5 @@
-import { Text, VStack, Image, View, Spinner } from "native-base"
 import React, { useEffect, useState } from "react"
-import { Dimensions, Touchable, TouchableOpacity } from "react-native"
+import { Dimensions, TouchableOpacity, View, Text, ActivityIndicator, StyleSheet } from "react-native"
 import { THEME } from "../theme"
 
 import RefreshIcon from "../assets/atualizar.svg"
@@ -39,81 +38,101 @@ export function PopUp({
     })
   }, [])
 
-  return showing ? (
+  if (!showing) return null;
+
+  return (
     <>
       <TouchableOpacity
         activeOpacity={1}
         onPress={isSyncing ? () => null : close}
-        style={{
-          position: "absolute",
-          zIndex: 10,
-          width: "100%",
-          height: "100%",
-          backgroundColor: "rgba(0, 0, 0, .7)",
-        }}
+        style={styles.overlay}
       />
-      <VStack
-        backgroundColor={"blue.10"}
-        borderRadius={"16px"}
-        paddingY={"32px"}
-        paddingX={"16px"}
-        style={{
-          position: "absolute",
-          zIndex: 12,
-          width: Dimensions.get("screen").width * 0.8,
-          marginHorizontal: Dimensions.get("screen").width * 0.1,
-          marginVertical: Dimensions.get("screen").height / 2,
-          transform: [{ translateY: -Dimensions.get("screen").height / 6 }],
-          alignSelf: "center",
-        }}
-      >
-        <View alignItems={"center"}>
-          {icon && icon === "refresh" ? <RefreshIcon /> : null}
-          {icon && icon === "logout" ? <LogoutIcon /> : null}
+      <View style={styles.container}>
+        <View style={styles.iconContainer}>
+          {icon && icon === "refresh" && <RefreshIcon />}
+          {icon && icon === "logout" && <LogoutIcon />}
         </View>
-        <Text
-          textAlign={"center"}
-          fontFamily={"heading"}
-          fontSize={"28px"}
-          color={"blue.600"}
-          marginTop={"12px"}
-        >
+        <Text style={styles.title}>
           {isSyncing ? "Sincronizando... " : title}
         </Text>
-        <Text
-          fontFamily={"body"}
-          fontSize={"lg"}
-          margin={"16px"}
-          textAlign={"center"}
-          color={"#283046"}
-        >
+        <Text style={styles.description}>
           {isSyncing ? "Por favor aguarde" : description}
         </Text>
         {isSyncing ? (
-          <View alignItems={"center"} marginTop={"12px"}>
-            <Spinner w={"24px"} />
+          <View style={styles.spinnerContainer}>
+            <ActivityIndicator size="large" color={THEME.colors.blue[400]} />
           </View>
         ) : (
           <TouchableOpacity
-            style={{
-              backgroundColor: THEME.colors.blue[50],
-              borderRadius: 50,
-              alignItems: "center",
-              paddingTop: 21,
-              paddingBottom: 21,
-            }}
+            style={styles.button}
             activeOpacity={0.7}
             onPress={action}
           >
-            <Text fontFamily={"heading"} fontSize={"lg"} color={"blue.400"}>
+            <Text style={styles.buttonText}>
               {btnText}
               {`${isSync ? (!hasConnection ? "Você está OFFLINE" : "") : ""}`}
             </Text>
           </TouchableOpacity>
         )}
-      </VStack>
+      </View>
     </>
-  ) : (
-    <></>
   )
 }
+
+const styles = StyleSheet.create({
+  overlay: {
+    position: "absolute",
+    zIndex: 10,
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0, 0, 0, .7)",
+  },
+  container: {
+    position: "absolute",
+    zIndex: 12,
+    width: Dimensions.get("screen").width * 0.8,
+    marginHorizontal: Dimensions.get("screen").width * 0.1,
+    marginVertical: Dimensions.get("screen").height / 2,
+    transform: [{ translateY: -Dimensions.get("screen").height / 6 }],
+    alignSelf: "center",
+    backgroundColor: THEME.colors.blue[10],
+    borderRadius: 16,
+    paddingVertical: 32,
+    paddingHorizontal: 16,
+    alignItems: "center",
+  },
+  iconContainer: {
+    alignItems: "center",
+  },
+  title: {
+    textAlign: "center",
+    fontFamily: THEME.fonts.heading,
+    fontSize: 28,
+    color: THEME.colors.blue[600],
+    marginTop: 12,
+  },
+  description: {
+    fontFamily: THEME.fonts.body,
+    fontSize: THEME.fontSizes.lg,
+    margin: 16,
+    textAlign: "center",
+    color: "#283046",
+  },
+  spinnerContainer: {
+    alignItems: "center",
+    marginTop: 12,
+  },
+  button: {
+    backgroundColor: THEME.colors.blue[50],
+    borderRadius: 50,
+    alignItems: "center",
+    paddingTop: 21,
+    paddingBottom: 21,
+    width: "100%",
+  },
+  buttonText: {
+    fontFamily: THEME.fonts.heading,
+    fontSize: THEME.fontSizes.lg,
+    color: THEME.colors.blue[400],
+  },
+});

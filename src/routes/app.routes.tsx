@@ -14,8 +14,10 @@ import {
   SafeAreaView,
   TouchableOpacity,
   StyleSheet,
+  View,
+  Text,
 } from "react-native"
-import { HStack, Spacer, Text, View, VStack } from "native-base"
+import { THEME } from "../theme"
 import useStore from "../store"
 import { useNavigation } from "@react-navigation/native"
 
@@ -196,26 +198,19 @@ export function AppRoutes() {
 
   const renderHeader = () => {
     return (
-      <HStack
-        flex={1}
-        flexDirection={"row"}
-        alignItems={"center"}
-        justifyContent={"space-between"}
-        style={{ gap: 4 }}
-      >
-        <VStack>
-          <Text fontFamily={"heading"} fontSize={"lg"} color={"gray.50"}>
+      <View style={styles.headerContainer}>
+        <View style={styles.headerTextContainer}>
+          <Text style={styles.headerTitle}>
             {event?.name}
           </Text>
-          <Text fontFamily={"body"} fontSize={"md"} color={"gray.50"}>
+          <Text style={styles.headerSubtitle}>
             {`${event?.local} ${
               event?.date ? `- ${getDateStr(event?.date as number)}` : ""
             }`}
           </Text>
-        </VStack>
-        <Spacer />
+        </View>
         <Onlinetag mr={4} isOnline={connection.isConnected ?? false} />
-      </HStack>
+      </View>
     )
   }
 
@@ -290,10 +285,10 @@ export function AppRoutes() {
                   paddingHorizontal: 12,
                 }}
               >
-                <Text fontFamily={"heading"} fontSize={"24px"}>
+                <Text style={styles.drawerTitle}>
                   {event?.name}
                 </Text>
-                <Text fontFamily={"body"} fontSize={"16px"} color={"gray.400"}>
+                <Text style={styles.drawerSubtitle}>
                   {user?.name}
                 </Text>
               </View>
@@ -364,6 +359,35 @@ export function AppRoutes() {
 }
 
 const styles = StyleSheet.create({
+  headerContainer: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 4,
+  },
+  headerTextContainer: {
+    flex: 1,
+  },
+  headerTitle: {
+    fontFamily: THEME.fonts.heading,
+    fontSize: THEME.fontSizes.lg,
+    color: THEME.colors.gray[50],
+  },
+  headerSubtitle: {
+    fontFamily: THEME.fonts.body,
+    fontSize: THEME.fontSizes.md,
+    color: THEME.colors.gray[50],
+  },
+  drawerTitle: {
+    fontFamily: THEME.fonts.heading,
+    fontSize: 24,
+  },
+  drawerSubtitle: {
+    fontFamily: THEME.fonts.body,
+    fontSize: 16,
+    color: THEME.colors.gray[400],
+  },
   badge: {
     position: "absolute",
     width: 8,

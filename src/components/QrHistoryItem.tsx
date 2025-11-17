@@ -1,7 +1,7 @@
 import React from "react"
-import { Text, VStack } from "native-base"
-import { TouchableOpacity } from "react-native"
+import { TouchableOpacity, View, Text, StyleSheet } from "react-native"
 import { TQrHistoryItem } from "@utils/@types/components/QrHistoryItem"
+import { THEME } from "../theme"
 
 type Props = {
   info: TQrHistoryItem
@@ -43,19 +43,33 @@ export function QrHistoryItem({ info }: Props) {
 
   return (
     <TouchableOpacity activeOpacity={0.55}>
-      <VStack
-        paddingBottom={"8px"}
-        borderBottomWidth={1}
-        borderBottomColor={"rgba(198, 207, 220, 1)"}
-        style={{ rowGap: 5 }}
-      >
-        <Text fontFamily={"heading"} fontSize={"lg"} color={"blue.600"}>
+      <View style={styles.container}>
+        <Text style={styles.name}>
           {name}
         </Text>
-        <Text fontFamily={"body"} fontSize={"sm"} color={"blue.500"}>
+        <Text style={styles.details}>
           {`${code} - ${getTime()}`}
         </Text>
-      </VStack>
+      </View>
     </TouchableOpacity>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(198, 207, 220, 1)",
+    rowGap: 5,
+  },
+  name: {
+    fontFamily: THEME.fonts.heading,
+    fontSize: THEME.fontSizes.lg,
+    color: THEME.colors.blue[600],
+  },
+  details: {
+    fontFamily: THEME.fonts.body,
+    fontSize: THEME.fontSizes.sm,
+    color: THEME.colors.blue[500],
+  },
+});

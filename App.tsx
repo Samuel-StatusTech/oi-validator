@@ -1,7 +1,7 @@
 import { Roboto_400Regular, Roboto_700Bold, useFonts } from "@expo-google-fonts/roboto"
 import { Routes } from "@routes/index"
 import { StatusBar } from "expo-status-bar"
-import { Center, NativeBaseProvider, Spinner } from "native-base"
+import { View, ActivityIndicator, StyleSheet } from "react-native"
 import { THEME } from "./src/theme"
 import { useEffect, useState } from "react"
 import { createTables } from "@services/sqlite/Database"
@@ -22,21 +22,29 @@ export default function App() {
   }, [])
 
   return (
-    <NativeBaseProvider theme={THEME}>
+    <>
       <StatusBar backgroundColor="transparent" />
       {isTablesCreated ? (
         fontLoaded ? (
           <Routes />
         ) : (
-          <Center flex={1}>
-            <Spinner />
-          </Center>
+          <View style={styles.center}>
+            <ActivityIndicator size="large" color={THEME.colors.blue[500]} />
+          </View>
         )
       ) : (
-        <Center flex={1}>
-          <Spinner />
-        </Center>
+        <View style={styles.center}>
+          <ActivityIndicator size="large" color={THEME.colors.blue[500]} />
+        </View>
       )}
-    </NativeBaseProvider>
+    </>
   )
 }
+
+const styles = StyleSheet.create({
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+})

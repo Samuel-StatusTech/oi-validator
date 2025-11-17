@@ -1,19 +1,17 @@
 import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
-import { Box, useTheme } from 'native-base';
+import { View } from 'react-native';
 import { AuthRoutes } from './auth.routes';
+import { THEME } from '../theme';
 
 export function Routes() {
-  const { colors } = useTheme();
-  // const { user, isLoadingUserData } = useAuth();
-  // console.log('USER ON', user);
   const theme = DefaultTheme;
-  theme.colors.background = colors.white;
+  theme.colors.background = THEME.colors.white;
 
   return (
-    <Box flex={1} bg={'white'}>
+    <View style={{ flex: 1, backgroundColor: THEME.colors.white }}>
       <NavigationContainer theme={theme}>
         <AuthRoutes />
       </NavigationContainer>
-    </Box>
+    </View>
   );
 }

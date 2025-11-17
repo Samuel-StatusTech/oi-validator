@@ -1,5 +1,6 @@
-import { AlertDialog, Button as ButtonNative, Text } from 'native-base';
-import { useRef } from 'react';
+import React, { useRef } from 'react';
+import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { THEME } from '../theme';
 
 type Props = {
   title: string;
@@ -8,33 +9,68 @@ type Props = {
 };
 
 export function Alert({ title, message, onClose }: Props) {
-  // const [isOpen, setIsOpen] = useState(true);
-
-  // const onClose = () => setIsOpen(false);
   const cancelRef = useRef(null);
 
   return (
-    <AlertDialog leastDestructiveRef={cancelRef} isOpen onClose={onClose}>
-      <AlertDialog.Content>
-        <AlertDialog.Header>
-          <Text fontSize={'md'} fontFamily={'heading'}>
-            {title}
-          </Text>
-        </AlertDialog.Header>
-        <AlertDialog.Body>
-          <Text fontSize={'md'}>{message}</Text>
-        </AlertDialog.Body>
-        <ButtonNative
-          mt={2}
-          mb={2}
-          variant="unstyled"
-          color={'blue.400'}
-          onPress={onClose}
-          ref={cancelRef}
-        >
-          OK
-        </ButtonNative>
-      </AlertDialog.Content>
-    </AlertDialog>
+    <Modal transparent visible onRequestClose={onClose}>
+      <View style={styles.overlay}>
+        <View style={styles.content}>
+          <View style={styles.header}>
+            <Text style={styles.title}>{title}</Text>
+          </View>
+          <View style={styles.body}>
+            <Text style={styles.message}>{message}</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={onClose}
+            ref={cancelRef}
+          >
+            <Text style={styles.buttonText}>OK</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
   );
 }
+
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  content: {
+    backgroundColor: THEME.colors.white,
+    borderRadius: 8,
+    padding: 16,
+    width: '80%',
+    maxWidth: 400,
+  },
+  header: {
+    marginBottom: 16,
+  },
+  title: {
+    fontSize: THEME.fontSizes.md,
+    fontFamily: THEME.fonts.heading,
+    color: THEME.colors.blue[600],
+  },
+  body: {
+    marginBottom: 16,
+  },
+  message: {
+    fontSize: THEME.fontSizes.md,
+    color: THEME.colors.gray[700],
+  },
+  button: {
+    backgroundColor: 'transparent',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    alignSelf: 'flex-end',
+  },
+  buttonText: {
+    color: THEME.colors.blue[400],
+    fontSize: THEME.fontSizes.md,
+  },
+});

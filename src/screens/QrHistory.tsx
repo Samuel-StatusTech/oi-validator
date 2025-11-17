@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
-import { FlatList } from "react-native"
-import { Text, VStack } from "native-base"
+import { FlatList, Text, View, StyleSheet } from "react-native"
+import { THEME } from "../theme"
 import { QrHistoryItem } from "@components/QrHistoryItem"
 
 import { TQrHistoryItem } from "@utils/@types/components/QrHistoryItem"
@@ -52,16 +52,9 @@ export function QrHistory() {
   }, [])
 
   return (
-    <VStack h={"full"}>
-      <VStack flex={1} margin={"32px"}>
-        <Text
-          fontFamily={"heading"}
-          textAlign={"center"}
-          fontSize={"lg"}
-          color={"blue.600"}
-          marginX={18}
-          marginBottom={"32px"}
-        >
+    <View style={styles.container}>
+      <View style={styles.content}>
+        <Text style={styles.title}>
           Este é o seu histórico de códigos escaneados neste evento.
         </Text>
 
@@ -70,10 +63,34 @@ export function QrHistory() {
           renderItem={({ item }) => <QrHistoryItem info={item} />}
           ListEmptyComponent={() => <QrHistoryEmpty />}
           overScrollMode="never"
-          style={{ paddingRight: 16 }}
-          contentContainerStyle={{ rowGap: 16 }}
+          style={styles.flatList}
+          contentContainerStyle={styles.flatListContent}
         />
-      </VStack>
-    </VStack>
+      </View>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+    margin: 32,
+  },
+  title: {
+    fontFamily: THEME.fonts.heading,
+    textAlign: 'center',
+    fontSize: THEME.fontSizes.lg,
+    color: THEME.colors.blue[600],
+    marginHorizontal: 18,
+    marginBottom: 32,
+  },
+  flatList: {
+    paddingRight: 16,
+  },
+  flatListContent: {
+    rowGap: 16,
+  },
+})

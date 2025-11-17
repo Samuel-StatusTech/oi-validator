@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
-import { Text, VStack, FlatList } from "native-base"
+import { Text, View, FlatList, StyleSheet } from "react-native"
+import { THEME } from "../theme"
 import Api from "@utils/api"
 import { IProduct } from "@utils/@types/sqlite/product"
 import { ProductListItem } from "@components/ProductListItem"
@@ -62,16 +63,9 @@ function AvailableProductsScreen() {
   }, [])
 
   return (
-    <VStack h={"full"}>
-      <VStack flex={1} margin={"32px"}>
-        <Text
-          fontFamily={"heading"}
-          textAlign={"center"}
-          fontSize={"lg"}
-          color={"blue.600"}
-          marginX={18}
-          marginBottom={"32px"}
-        >
+    <View style={styles.container}>
+      <View style={styles.content}>
+        <Text style={styles.title}>
           Estes são os tipos de código que você pode escanear neste evento:
         </Text>
 
@@ -87,15 +81,37 @@ function AvailableProductsScreen() {
               }}
             />
           )}
-          height={"50%"}
-          width={"100%"}
           overScrollMode="never"
-          style={{ paddingRight: 16 }}
-          contentContainerStyle={{ rowGap: 16 }}
+          style={styles.flatList}
+          contentContainerStyle={styles.flatListContent}
         />
-      </VStack>
-    </VStack>
+      </View>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+    margin: 32,
+  },
+  title: {
+    fontFamily: THEME.fonts.heading,
+    textAlign: 'center',
+    fontSize: THEME.fontSizes.lg,
+    color: THEME.colors.blue[600],
+    marginHorizontal: 18,
+    marginBottom: 32,
+  },
+  flatList: {
+    paddingRight: 16,
+  },
+  flatListContent: {
+    rowGap: 16,
+  },
+})
 
 export default AvailableProductsScreen

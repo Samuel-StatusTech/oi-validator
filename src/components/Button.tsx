@@ -1,51 +1,68 @@
-import {
-  Button as ButtonNative,
-  IButtonProps,
-  Spinner,
-  Text,
-} from 'native-base';
+import React from 'react';
+import { TouchableOpacity, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { THEME } from '../theme';
 
-type Props = IButtonProps & {
+type Props = {
   title: string;
   isLoading?: boolean;
   isDisabled?: boolean;
+  onPress?: () => void;
 };
 
 export function Button({
   title,
   isLoading = false,
   isDisabled = false,
+  onPress,
   ...rest
 }: Props) {
   const disable = isDisabled || isLoading;
 
   return (
-    <ButtonNative
-      bg={'blue.400'}
-      w={'full'}
-      h={16}
-      isDisabled={disable}
+    <TouchableOpacity
+      style={[
+        styles.button,
+        disable && styles.disabled,
+      ]}
+      disabled={disable}
+      onPress={onPress}
       {...rest}
-      rounded={'full'}
-      _pressed={{
-        bg: 'blue.300',
-      }}
-      _disabled={{
-        bg: 'blue.50',
-        opacity: 100,
-      }}
     >
       {isLoading ? (
-        <Spinner color={'blue.200'} />
+        <ActivityIndicator color={THEME.colors.blue[200]} />
       ) : (
         <Text
-          color={isDisabled ? 'blue.200' : 'white'}
-          fontFamily={'heading'}
-          fontSize={'sm'}
+          style={[
+            styles.text,
+            isDisabled && styles.disabledText,
+          ]}
         >
           {title}
         </Text>
       )}
-    </ButtonNative>
+    </TouchableOpacity>
   );
 }
+
+const styles = StyleSheet.create({
+  button: {
+    backgroundColor: THEME.colors.blue[400],
+    width: '100%',
+    height: 64,
+    borderRadius: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  disabled: {
+    backgroundColor: THEME.colors.blue[50],
+    opacity: 1,
+  },
+  text: {
+    color: THEME.colors.white,
+    fontFamily: THEME.fonts.heading,
+    fontSize: THEME.fontSizes.sm,
+  },
+  disabledText: {
+    color: THEME.colors.blue[200],
+  },
+});

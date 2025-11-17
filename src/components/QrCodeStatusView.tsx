@@ -1,8 +1,8 @@
 import ErrorSVG from "@assets/erro.svg"
 import SuccessSVG from "@assets/sucesso.svg"
-import { Actionsheet, Button, Text, VStack, View } from "native-base"
-import { useEffect, useRef, useState } from "react"
-import { Animated, Dimensions, TouchableOpacity } from "react-native"
+import React, { useEffect, useRef } from "react"
+import { Animated, Dimensions, TouchableOpacity, View, Text, StyleSheet } from "react-native"
+import { THEME } from "../theme"
 
 type Props = {
   qrCode: string
@@ -53,83 +53,104 @@ export function QrCodeStatusView({
     }).start()
   }
 
+  if (!isOpen) return null;
+
   return (
-    <VStack
-      display={isOpen ? "flex" : "none"}
-      position={"absolute"}
-      zIndex={100}
-      w="100%"
-      h={"full"}
-      px={4}
-      justifyContent={"center"}
-      alignItems={"center"}
-      bgColor={!isChecked ? "#FFF" : isSuccess ? "#22c55e" : "red.600"}
-    >
+    <View style={styles.overlay}>
       {isValidating ? (
-        <Text color={"blue.600"} fontFamily={"heading"} fontSize={"32px"}>
-          Validando...
-        </Text>
+        <Text style={styles.validatingText}>Validando...</Text>
       ) : (
         <>
-          <VStack
-            bgColor={"#FFF"}
-            w={Dimensions.get("screen").width * 0.8}
-            h={Dimensions.get("screen").width * 0.8}
-            borderRadius={16}
-            padding={"16px"}
-            alignItems={"center"}
-            justifyContent={"center"}
-            style={{
-              rowGap: 12,
-            }}
-          >
+          <View style={styles.content}>
             {isSuccess ? (
               <SuccessSVG width={92} height={92} />
             ) : (
               <ErrorSVG width={92} height={92} />
             )}
-            <Text color={"blue.600"} fontFamily={"heading"} fontSize={"32px"}>
+            <Text style={styles.title}>
               {isSuccess && isChecked ? "Sucesso" : "Erro!"}
             </Text>
-            <Text color={"blue.600"} fontSize={"xl"} textAlign={"center"}>
+            <Text style={styles.message}>
               {isSuccess
                 ? `${qrCode}`
                 : message ?? "Código não aceito nessa portaria."}
             </Text>
-          </VStack>
+          </View>
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={handleClose}
-            style={{
-              marginTop: 64,
-              backgroundColor: "rgb(255, 255, 255)",
-              paddingHorizontal: 42,
-              paddingVertical: 22,
-              elevation: 12,
-              borderRadius: 64,
-            }}
+            style={styles.closeButton}
           >
-            <Text color={"#232323"} fontSize={"24px"} fontFamily={"heading"}>
-              Fechar
-            </Text>
+            <Text style={styles.closeButtonText}>Fechar</Text>
           </TouchableOpacity>
-          <View
-            w={Dimensions.get("screen").width * 0.8}
-            h={"7px"}
-            marginTop={"88px"}
-            borderRadius={7}
-            overflow={"hidden"}
-          >
-            <Animated.View
-              style={{
-                width: width,
-                backgroundColor: "#375367",
-                height: 7,
-              }}
-            />
+          <View style={styles.progressBar}>
+            <Animated.View style={[styles.progressFill, { width }]} />
           </View>
         </>
       )}
-    </VStack>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  overlay: {
+    position: "absolute",
+    zIndex: 100,
+    width: "100%",
+    height: "100%",
+    paddingHorizontal: 16,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FFF",
+  },
+  validatingText: {
+    color: THEME.colors.blue[600],
+    fontFamily: THEME.fonts.heading,
+    fontSize: 32,
+  },
+  content: {
+    backgroundColor: "#FFF",
+    width: Dimensions.get("screen").width * 0.8,
+    height: Dimensions.get("screen").width * 0.8,
+    borderRadius: 16,
+    padding: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    rowGap: 12,
+  },
+  title: {
+    color: THEME.colors.blue[600],
+    fontFamily: THEME.fonts.heading,
+    fontSize: 32,
+  },
+  message: {
+    color: THEME.colors.blue[600],
+    fontSize: THEME.fontSizes.xl,
+    textAlign: "center",
+  },
+  closeButton: {
+    marginTop: 64,
+    backgroundColor: "rgb(255, 255, 255)",
+    paddingHorizontal: 42,
+    paddingVertical: 22,
+    elevation: 12,
+    borderRadius: 64,
+  },
+  closeButtonText: {
+    color: "#232323",
+    fontSize: 24,
+    fontFamily: THEME.fonts.heading,
+  },
+  progressBar: {
+    width: Dimensions.get("screen").width * 0.8,
+    height: 7,
+    marginTop: 88,
+    borderRadius: 7,
+    overflow: "hidden",
+    backgroundColor: "transparent",
+  },
+  progressFill: {
+    backgroundColor: "#375367",
+    height: 7,
+  },
+});

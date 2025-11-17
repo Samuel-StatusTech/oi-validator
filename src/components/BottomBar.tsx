@@ -2,9 +2,9 @@ import FlashOffSVG from "@assets/flashlight.svg"
 import FlashOnSVG from "@assets/flashlight10.svg"
 import ToTypeOffSVG from "@assets/toType.svg"
 import ToTypeOnSVG from "@assets/toType10.svg"
-import { HStack, Text } from "native-base"
-import { useState } from "react"
-import { TouchableOpacity } from "react-native"
+import React, { useState } from "react"
+import { TouchableOpacity, View, Text, StyleSheet } from "react-native"
+import { THEME } from "../theme"
 
 type Propos = {
   mode: "camera" | "typing" | "saveEnergy"
@@ -21,55 +21,58 @@ export function BottomBar({ mode, handleTyping, updateFlash }: Propos) {
   }
 
   return (
-    <HStack
-      h={"24"}
-      alignItems={"center"}
-      zIndex={10}
-      backgroundColor={"white"}
-    >
-      <TouchableOpacity style={{ flex: 1 }} onPress={handleTyping}>
-        <HStack
-          ml={4}
-          mr={2}
-          h={"16"}
-          bg={mode === "typing" ? "blue.400" : "blue.50"}
-          rounded={"full"}
-          alignItems={"center"}
-          justifyContent={"center"}
-        >
+    <View style={styles.container}>
+      <TouchableOpacity style={styles.button} onPress={handleTyping}>
+        <View style={[styles.buttonInner, mode === "typing" && styles.activeButton]}>
           {mode === "typing" ? <ToTypeOnSVG /> : <ToTypeOffSVG />}
-          <Text
-            color={mode === "typing" ? "blue.10" : "blue.500"}
-            fontFamily={"body"}
-            fontSize={"lg"}
-          >
+          <Text style={[styles.text, mode === "typing" && styles.activeText]}>
             Digitar
           </Text>
-        </HStack>
+        </View>
       </TouchableOpacity>
 
-      <TouchableOpacity style={{ flex: 1 }} onPress={handleiFlashlight}>
-        <HStack
-          ml={2}
-          mr={4}
-          h={"16"}
-          bg={isFlashlight ? "blue.400" : "blue.50"}
-          rounded={"full"}
-          alignItems={"center"}
-          justifyContent={"center"}
-        >
+      <TouchableOpacity style={styles.button} onPress={handleiFlashlight}>
+        <View style={[styles.buttonInner, isFlashlight && styles.activeButton]}>
           {isFlashlight ? <FlashOnSVG /> : <FlashOffSVG />}
-
-          <Text
-            pl={4}
-            color={isFlashlight ? "blue.10" : "blue.500"}
-            fontFamily={"body"}
-            fontSize={"lg"}
-          >
+          <Text style={[styles.text, isFlashlight && styles.activeText]}>
             Lanterna
           </Text>
-        </HStack>
+        </View>
       </TouchableOpacity>
-    </HStack>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    height: 96,
+    flexDirection: "row",
+    alignItems: "center",
+    zIndex: 10,
+    backgroundColor: THEME.colors.white,
+  },
+  button: {
+    flex: 1,
+  },
+  buttonInner: {
+    marginLeft: 16,
+    marginRight: 8,
+    height: 64,
+    backgroundColor: THEME.colors.blue[50],
+    borderRadius: 32,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  activeButton: {
+    backgroundColor: THEME.colors.blue[400],
+  },
+  text: {
+    color: THEME.colors.blue[500],
+    fontFamily: THEME.fonts.body,
+    fontSize: THEME.fontSizes.lg,
+  },
+  activeText: {
+    color: THEME.colors.blue[10],
+  },
+});

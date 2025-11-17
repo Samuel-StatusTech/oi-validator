@@ -2,17 +2,19 @@ import AjudaSvg from "@assets/ajuda.svg"
 import UpdateSvg from "@assets/atualizar.svg"
 import HistoricoSvg from "@assets/historico.svg"
 import SairSvg from "@assets/sair.svg"
+import React from "react"
 import { useNavigation } from "@react-navigation/native"
 import { AuthNavigatiorRoutesProps, Routes } from "@routes/auth.routes"
-import { Box, HStack, Text } from "native-base"
-import { TouchableOpacity } from "react-native"
+import { TouchableOpacity, View, Text, StyleSheet } from "react-native"
 import * as Animatable from "react-native-animatable"
+import { THEME } from "../theme"
 
 type MenuTopProps = {
   isShowMenu: boolean
   prodsPress: () => void
   popupToggle: () => void
 }
+
 export function MenuTop({ isShowMenu = false, prodsPress, popupToggle }: MenuTopProps) {
   const navigation = useNavigation<AuthNavigatiorRoutesProps>()
 
@@ -26,51 +28,68 @@ export function MenuTop({ isShowMenu = false, prodsPress, popupToggle }: MenuTop
 
   return (
     <Animatable.View animation={isShowMenu ? "fadeInDownBig" : "fadeOutUpBig"}>
-      <Box bg={"blue.50"} roundedBottom={"xl"} h={isShowMenu ? "full" : 0}>
-        <TouchableOpacity onPress={syncInfo}>
-          <HStack alignItems={"center"} justifyContent={"flex-start"} p={4}>
+      <View style={[styles.container, { height: isShowMenu ? '100%' : 0 }]}>
+        <TouchableOpacity style={styles.menuItem} onPress={syncInfo}>
+          <View style={styles.menuItemContent}>
             <UpdateSvg />
-            <Text fontFamily={"body"} color={"blue.600"} fontSize={"lg"} pl={4}>
+            <Text style={styles.menuText}>
               Sincronizar informações
             </Text>
-          </HStack>
+          </View>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={prodsPress}>
-          <HStack alignItems={"center"} justifyContent={"flex-start"} p={4}>
+        <TouchableOpacity style={styles.menuItem} onPress={prodsPress}>
+          <View style={styles.menuItemContent}>
             <AjudaSvg />
-
-            <Text fontFamily={"body"} color={"blue.600"} fontSize={"lg"} pl={4}>
+            <Text style={styles.menuText}>
               Produtos disponíveis
             </Text>
-          </HStack>
+          </View>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => nav("qrhistory")}>
-          <HStack alignItems={"center"} justifyContent={"flex-start"} p={4}>
+        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate("qrhistory" as any)}>
+          <View style={styles.menuItemContent}>
             <HistoricoSvg />
-
-            <Text fontFamily={"body"} color={"blue.600"} fontSize={"lg"} pl={4}>
+            <Text style={styles.menuText}>
               Histórico de leitura
             </Text>
-          </HStack>
+          </View>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={popupToggle}>
-          <HStack
-            alignItems={"center"}
-            justifyContent={"flex-start"}
-            p={4}
-            mb={4}
-          >
+        <TouchableOpacity style={[styles.menuItem, styles.lastMenuItem]} onPress={popupToggle}>
+          <View style={styles.menuItemContent}>
             <SairSvg />
-
-            <Text fontFamily={"body"} color={"blue.600"} fontSize={"lg"} pl={4}>
+            <Text style={styles.menuText}>
               Sair do evento
             </Text>
-          </HStack>
+          </View>
         </TouchableOpacity>
-      </Box>
+      </View>
     </Animatable.View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: THEME.colors.blue[50],
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
+  },
+  menuItem: {
+    padding: 16,
+  },
+  menuItemContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  menuText: {
+    fontFamily: THEME.fonts.body,
+    color: THEME.colors.blue[600],
+    fontSize: THEME.fontSizes.lg,
+    paddingLeft: 16,
+  },
+  lastMenuItem: {
+    marginBottom: 16,
+  },
+});

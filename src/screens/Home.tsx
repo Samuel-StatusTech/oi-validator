@@ -4,7 +4,7 @@ import { QrCodeTypingArea } from "@components/QrCodeTypingArea"
 import { SaveEnergyArea } from "@components/SaveEnergyArea"
 import { Scanner } from "@components/Scanner"
 import { FlashMode } from "expo-camera"
-import { VStack, View } from "native-base"
+import { View, StyleSheet } from "react-native"
 import { useCallback, useEffect, useState } from "react"
 import { THEME } from "../theme"
 import tb from "@utils/toolbox"
@@ -143,72 +143,65 @@ export function Home() {
   )
 
   return (
-    <VStack h={"full"}>
+    <View style={styles.container}>
       {mode === "saveEnergy" ? (
         <SaveEnergyArea handleReturn={handleReturn} />
       ) : (
         <>
-          <View h={"100%"} w={"100%"} position={"absolute"} zIndex={1}>
+          <View style={styles.overlay}>
             <View
-              alignItems={"center"}
-              borderColor={
-                isValidating
-                  ? "rgba(55, 83, 103, .5)"
-                  : showFeedback
-                  ? renderBgColor()
-                  : "rgba(55, 83, 103, .5)"
-              }
-              borderTopWidth={Dimensions.get("screen").width * 0.2}
-              borderBottomWidth={Dimensions.get("screen").width * 0.2}
-              flexDirection={"row"}
+              style={[
+                styles.scannerFrame,
+                {
+                  borderColor: isValidating
+                    ? "rgba(55, 83, 103, .5)"
+                    : showFeedback
+                    ? renderBgColor()
+                    : "rgba(55, 83, 103, .5)",
+                },
+              ]}
             >
               <View
-                w={Dimensions.get("screen").width * 0.1}
-                h={Dimensions.get("screen").width * 0.8}
-                backgroundColor={
-                  isValidating
-                    ? "rgba(55, 83, 103, .5)"
-                    : showFeedback
-                    ? renderBgColor()
-                    : "rgba(55, 83, 103, .5)"
-                }
+                style={[
+                  styles.sideBar,
+                  {
+                    backgroundColor: isValidating
+                      ? "rgba(55, 83, 103, .5)"
+                      : showFeedback
+                      ? renderBgColor()
+                      : "rgba(55, 83, 103, .5)",
+                  },
+                ]}
               />
+              <View style={styles.centerFrame} />
               <View
-                w={Dimensions.get("screen").width * 0.8}
-                h={Dimensions.get("screen").width * 0.8}
-                borderWidth={2}
-                borderColor={"white"}
-              />
-              <View
-                w={Dimensions.get("screen").width * 0.1}
-                h={Dimensions.get("screen").width * 0.8}
-                backgroundColor={
-                  isValidating
-                    ? "rgba(55, 83, 103, .5)"
-                    : showFeedback
-                    ? renderBgColor()
-                    : "rgba(55, 83, 103, .5)"
-                }
+                style={[
+                  styles.sideBar,
+                  {
+                    backgroundColor: isValidating
+                      ? "rgba(55, 83, 103, .5)"
+                      : showFeedback
+                      ? renderBgColor()
+                      : "rgba(55, 83, 103, .5)",
+                  },
+                ]}
               />
             </View>
             <View
-              flex={1}
-              backgroundColor={
-                isValidating
-                  ? "rgba(55, 83, 103, .5)"
-                  : showFeedback
-                  ? renderBgColor()
-                  : "rgba(55, 83, 103, .5)"
-              }
+              style={[
+                styles.overlayBackground,
+                {
+                  backgroundColor: isValidating
+                    ? "rgba(55, 83, 103, .5)"
+                    : showFeedback
+                    ? renderBgColor()
+                    : "rgba(55, 83, 103, .5)",
+                },
+              ]}
             />
           </View>
 
-          <VStack
-            style={{
-              flex: 1,
-              backgroundColor: THEME.colors.blue[300],
-            }}
-          >
+          <View style={styles.cameraContainer}>
             {mode === "camera" && (
               <Scanner
                 flashMode={flashMode}
@@ -223,7 +216,7 @@ export function Home() {
                 onConfirm={handleConfirm}
               />
             )}
-          </VStack>
+          </View>
           <BottomBar
             handleTyping={handleModeChange}
             mode={mode}
@@ -242,6 +235,43 @@ export function Home() {
         message={msg}
         onClose={handleOnClose}
       />
-    </VStack>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 1,
+  },
+  scannerFrame: {
+    alignItems: "center",
+    borderTopWidth: Dimensions.get("screen").width * 0.2,
+    borderBottomWidth: Dimensions.get("screen").width * 0.2,
+    flexDirection: "row",
+  },
+  sideBar: {
+    width: Dimensions.get("screen").width * 0.1,
+    height: Dimensions.get("screen").width * 0.8,
+  },
+  centerFrame: {
+    width: Dimensions.get("screen").width * 0.8,
+    height: Dimensions.get("screen").width * 0.8,
+    borderWidth: 2,
+    borderColor: "white",
+  },
+  overlayBackground: {
+    flex: 1,
+  },
+  cameraContainer: {
+    flex: 1,
+    backgroundColor: THEME.colors.blue[300],
+  },
+})

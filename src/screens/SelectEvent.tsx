@@ -14,8 +14,11 @@ import { PopUp } from "@components/PopUp"
 import { setData } from "../store/reducers/persistorReducer"
 import { AppNavigatiorRoutesProps } from "@routes/app.routes"
 import { dropTables } from "@services/sqlite/Database"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 export function SelectEvent() {
+  const insets = useSafeAreaInsets();
+
   const connection = useNetInfo()
   const { user, User, Common, Token } = useStore((state) => state)
   const [events, setEvents] = useState<EventData[]>([])
@@ -46,7 +49,6 @@ export function SelectEvent() {
   }
 
   useEffect(() => {
-    console.log(`[DEBUG] Events: `, user?.kInfo?.eventsData)
     if (user?.kInfo) setEvents(user?.kInfo?.eventsData.filter(event => Boolean(event.status)))
   }, [])
 
@@ -60,7 +62,13 @@ export function SelectEvent() {
         close={() => setShowingPopUp(false)}
         action={handleDesconect}
       />
-      <View style={styles.container}>
+      <View style={{
+        ...styles.container,
+        paddingTop: styles.container.paddingTop + insets.top,
+        paddingRight: styles.container.paddingHorizontal + insets.right,
+        paddingBottom: styles.container.paddingTop + insets.bottom,
+        paddingLeft: styles.container.paddingHorizontal + insets.left,
+      }}>
         <View style={styles.header}>
           <LogoWhite />
           <Onlinetag isOnline={connection.isConnected ?? false} />
@@ -104,7 +112,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: THEME.colors.blue[300],
     paddingTop: 16,
-    paddingHorizontal: 8,
+    paddingHorizontal: 24,
   },
   header: {
     flexDirection: 'row',

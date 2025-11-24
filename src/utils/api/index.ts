@@ -19,6 +19,15 @@ import Validation from "../../services/sqlite/models/Validation"
 import { GetValidationsRes } from "@utils/@types/api/responses/getValidations"
 import { UploadSyncRes } from "@utils/@types/api/responses/uploadSync"
 import { IValidation } from "@utils/@types/sqlite/validation"
+import WebstoreTicket from "@services/sqlite/models/WebstoreTicket"
+import { AllWebstoreTicketsRes } from "@utils/@types/api/responses/getAllWebstoreTickets"
+
+const na = axios.create({
+  baseURL: "https://api.oitickets.com.br/api/v1",
+  headers: {
+    "Content-Type": "application/x-www-form-urlencoded",
+  },
+})
 
 const a = axios.create({
   baseURL: "https://apiadmin.oitickets.com.br/api/v1",
@@ -123,6 +132,7 @@ const getMachData = async (
 const syncUser = async (
   orgId: string,
   userId: string,
+  eventId: null | string,
   lastSync: number,
   token: string
 ): Promise<SyncUserRes> => {
@@ -145,6 +155,20 @@ const syncUser = async (
       res = {
         ok: true,
         data: sync,
+      }
+    }
+
+    if (eventId) {
+      const req2 = await na
+        .get(`/ecommerce/product/getList?eventId=${eventId}`)
+        .catch((err) => err)
+
+      if (req2.status === 200) {
+        const sync = req2.data
+
+        if (sync && res.ok) {
+          res.data.productsData.webstore_tickets = sync
+        }
       }
     }
   } catch (error) {
@@ -170,6 +194,15 @@ const getAllProducts = async (
 
   const prods = (await Product.getUserProducts(categories)) ?? []
   res = { ok: true, data: prods }
+
+  return res
+}
+
+const getAllWebstoreTickets = async (): Promise<AllWebstoreTicketsRes> => {
+  let res: AllWebstoreTicketsRes = { ok: false, message: "" }
+
+  const webstoreTickets = (await WebstoreTicket.getEventWebstoreTicket()) ?? []
+  res = { ok: true, data: webstoreTickets }
 
   return res
 }
@@ -317,6 +350,7 @@ const Api = {
   syncUser,
   getProductsList,
   getAllProducts,
+  getAllWebstoreTickets,
   getAllCombos,
   getTicketValidation,
   getOnlineValidations,

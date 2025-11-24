@@ -3,6 +3,7 @@ import { ICombo } from "@utils/@types/sqlite/combo"
 import { IProduct } from "@utils/@types/sqlite/product"
 import { IProductsList } from "@utils/@types/sqlite/productsList"
 import { IValidation } from "@utils/@types/sqlite/validation"
+import { IWebstoreTicket } from "@utils/@types/sqlite/webstoreTicket"
 import Api from "@utils/api"
 
 const getTicketName = async (
@@ -11,7 +12,8 @@ const getTicketName = async (
   productList: IProductsList[],
   product_types: any[],
   allProducts: IProduct[],
-  allCombos: ICombo[]
+  allCombos: ICombo[],
+  allWebstoreTickets: IWebstoreTicket[]
 ) => {
   let productName = ""
 
@@ -78,11 +80,13 @@ const getTicketsNames = async (tickets: IValidation[], user: UserInfo) => {
     name: string
   }[] = []
 
-  const [productList, allProducts, allCombos] = await Promise.all([
-    await Api.getProductsList(),
-    await Api.getAllProducts(user.roleInfo.product_types ?? []),
-    await Api.getAllCombos(),
-  ])
+  const [productList, allProducts, allCombos, allWebstoreTickets] =
+    await Promise.all([
+      await Api.getProductsList(),
+      await Api.getAllProducts(user.roleInfo.product_types ?? []),
+      await Api.getAllCombos(),
+      await Api.getAllWebstoreTickets(),
+    ])
 
   if (productList.ok && allProducts.ok && allCombos.ok) {
     tickets.forEach(async (ticket) => {
@@ -92,7 +96,8 @@ const getTicketsNames = async (tickets: IValidation[], user: UserInfo) => {
         productList.data as IProductsList[],
         user.roleInfo.product_types ?? [],
         allProducts.data,
-        allCombos.data
+        allCombos.data,
+        allWebstoreTickets.ok ? allWebstoreTickets?.data : []
       )
 
       res.push({ ...ticket, name })

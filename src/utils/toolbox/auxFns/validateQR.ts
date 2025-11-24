@@ -17,82 +17,87 @@ const validateQR = async (
 ): Promise<boolean> => {
   return new Promise(async (resolve, reject) => {
     try {
-
       if (hasConnection) {
         const upperCode = code.toUpperCase()
 
-        const isValidable = isTicketValidable(
+        const { isValidable, validableCode } = isTicketValidable(
           upperCode,
           clientDb ?? user.db,
-          event.oid
+          event.oid,
+          event.id
         )
 
-          if (isValidable) {
-            const ticket = code.toUpperCase()
-            const locallyValidated = await Validation.searchByTicket(ticket)
-            if (locallyValidated.length > 0) {
-              const validation = locallyValidated[0]
-              if (!Boolean(validation.synced)) {
-                await Api.validateTicket(ticket, event.id, token)
-                await Validation.updateValidation(ticket, true)
-              }
-              reject("Ticket já validado")
-              return
-            } else {
-              const [prodsList, combos, userProdsList] = [
-                await ProductsList.getUserList(user.id),
-                await Api.getAllCombos(),
-                await Api.getAllProducts(user.roleInfo.product_types ?? []),
-              ]
+        if (isValidable) {
+          const locallyValidated = await Validation.searchByTicket(
+            validableCode
+          )
+          if (locallyValidated.length > 0) {
+            const validation = locallyValidated[0]
+            if (!Boolean(validation.synced)) {
+              await Api.validateTicket(validableCode, event.id, token)
+              await Validation.updateValidation(validableCode, true)
+            }
+            reject("Ticket já validado")
+            return
+          } else {
+            const [prodsList, combos, userProdsList, webstoreTickets] = [
+              await ProductsList.getUserList(user.id),
+              await Api.getAllCombos(),
+              await Api.getAllProducts(user.roleInfo.product_types ?? []),
+              await Api.getAllWebstoreTickets(),
+            ]
 
-              const prodName = await getTicketName(
-                upperCode,
-                user.id,
-                prodsList,
-                user.roleInfo.product_types ?? [],
-                userProdsList.ok ? userProdsList.data : [],
-                combos.ok ? combos.data : []
+            const prodName = await getTicketName(
+              upperCode,
+              user.id,
+              prodsList,
+              user.roleInfo.product_types ?? [],
+              userProdsList.ok ? userProdsList.data : [],
+              combos.ok ? combos.data : [],
+              webstoreTickets.ok ? webstoreTickets.data : []
+            )
+
+            if (prodName.length > 0) {
+              const validation = await Api.validateTicket(
+                validableCode,
+                event.id,
+                token
               )
 
-              if (prodName.length > 0) {
-                const validation = await Api.validateTicket(
-                  ticket,
-                  event.id,
-                  token
-                )
-
-                if (validation.ok) {
-                  switch (validation.data) {
-                    case 1:
-                      await registerLclValidation(ticket, user.id, true)
-                      resolve(true)
-                      break
-                    case 2:
-                      reject("Ticket já validado online. Sincronize seus dados.")
-                      break
-                    case 3:
-                      reject("Não foi possível validar. Produto não encontrado")
-                      break
-                    default:
-                      reject("Ticket cancelado")
-                      break
-                  }
-                } else {
-                  reject(
-                    "Não foi possível validar. Verifique sua conexão e tente novamente"
-                  )
+              if (validation.ok) {
+                switch (validation.data) {
+                  case 1:
+                    await registerLclValidation(validableCode, user.id, true)
+                    resolve(true)
+                    break
+                  case 2:
+                    reject("Ticket já validado online. Sincronize seus dados.")
+                    break
+                  case 3:
+                    reject("Não foi possível validar. Produto não encontrado")
+                    break
+                  default:
+                    reject("Ticket cancelado")
+                    break
                 }
               } else {
-                reject("Produto não encontrado")
-                return
+                reject(
+                  "Não foi possível validar. Verifique sua conexão e tente novamente"
+                )
               }
+            } else {
+              reject("Produto não encontrado")
+              return
             }
+          }
         } else {
           reject("Este ticket não pertence ao evento")
           return
         }
       } else {
-        reject("Validação disponível apenas online.\nVerifique a conexão e tente novamente.")
+        reject(
+          "Validação disponível apenas online.\nVerifique a conexão e tente novamente."
+        )
         return
 
         // Offline validation
@@ -119,7 +124,7 @@ const registerLclValidation = async (
   await Validation.insertValidation(
     ticketUid,
     userId,
-    false,
+    sync,
     new Date().getTime(),
     new Date().getTime()
   )

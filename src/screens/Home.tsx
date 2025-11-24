@@ -152,35 +152,49 @@ export function Home() {
         <SaveEnergyArea handleReturn={handleReturn} />
       ) : (
         <>
-          <View style={styles.overlay}>
-            <View
-              style={[
-                styles.scannerFrame,
-                {
-                  borderColor: isValidating
-                    ? "rgba(55, 83, 103, .5)"
-                    : showFeedback
-                    ? renderBgColor()
-                    : "rgba(55, 83, 103, .5)",
-                },
-              ]}
-            >
+          {mode === "camera" && (
+            <View style={styles.overlay}>
               <View
                 style={[
-                  styles.sideBar,
+                  styles.scannerFrame,
                   {
-                    backgroundColor: isValidating
+                    borderColor: isValidating
                       ? "rgba(55, 83, 103, .5)"
                       : showFeedback
                       ? renderBgColor()
                       : "rgba(55, 83, 103, .5)",
                   },
                 ]}
-              />
-              <View style={styles.centerFrame} />
+              >
+                <View
+                  style={[
+                    styles.sideBar,
+                    {
+                      backgroundColor: isValidating
+                        ? "rgba(55, 83, 103, .5)"
+                        : showFeedback
+                        ? renderBgColor()
+                        : "rgba(55, 83, 103, .5)",
+                    },
+                  ]}
+                />
+                <View style={styles.centerFrame} />
+                <View
+                  style={[
+                    styles.sideBar,
+                    {
+                      backgroundColor: isValidating
+                        ? "rgba(55, 83, 103, .5)"
+                        : showFeedback
+                        ? renderBgColor()
+                        : "rgba(55, 83, 103, .5)",
+                    },
+                  ]}
+                />
+              </View>
               <View
                 style={[
-                  styles.sideBar,
+                  styles.overlayBackground,
                   {
                     backgroundColor: isValidating
                       ? "rgba(55, 83, 103, .5)"
@@ -191,19 +205,7 @@ export function Home() {
                 ]}
               />
             </View>
-            <View
-              style={[
-                styles.overlayBackground,
-                {
-                  backgroundColor: isValidating
-                    ? "rgba(55, 83, 103, .5)"
-                    : showFeedback
-                    ? renderBgColor()
-                    : "rgba(55, 83, 103, .5)",
-                },
-              ]}
-            />
-          </View>
+          )}
 
           <View style={styles.cameraContainer}>
             {mode === "camera" && (

@@ -22,12 +22,12 @@ export type SyncInfo = {
     product_lists: Product[]
     combos: any[]
     complements: any[]
+    webstore_tickets: WebstoreTicket[]
   }
   orders: any[]
   logoFixed: string
   orgName: string
 }
-
 
 type UserData = {
   id: string
@@ -96,4 +96,14 @@ type Product = {
   combo_id: string
   list_id: null | string
   quantity: number
+}
+
+type WebstoreTicket = {
+  product_id: string
+  group_id: string
+  name: string
+  image: null | string
+  created_at: string
+  updated_at: string
+  active: number
 }

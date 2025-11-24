@@ -4,8 +4,12 @@ import ProductsList from "@services/sqlite/models/ProductsList"
 import Combo from "@services/sqlite/models/Combo"
 import { createTables } from "@services/sqlite/Database"
 import Event from "@services/sqlite/models/Events"
+import WebstoreTicket from "@services/sqlite/models/WebstoreTicket"
 
-export const storeDbUserInfo = async (kInfo: SyncInfo) => {
+export const storeDbUserInfo = async (
+  kInfo: SyncInfo,
+  role: "start" | "update" = "update"
+) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (kInfo) {
@@ -15,10 +19,10 @@ export const storeDbUserInfo = async (kInfo: SyncInfo) => {
           products,
           product_lists,
           combos,
-          complements,
-          groups,
-          group_lists,
+          webstore_tickets = [],
         } = kInfo.productsData
+
+        // if (role === "start") ...
 
         await createTables()
 
@@ -30,14 +34,8 @@ export const storeDbUserInfo = async (kInfo: SyncInfo) => {
 
         await Combo.insertCombos(combos)
 
-        // register complements -> [complements model].create
-        // console.log("complements", complements)
+        await WebstoreTicket.insertWebstoreTickets(webstore_tickets)
 
-        // register groups -> [groups model].create
-        // console.log("groups", groups)
-
-        // register groupLists -> [groupLists model].create
-        // console.log("groupLists", group_lists)
       }
       resolve(true)
     } catch (error) {

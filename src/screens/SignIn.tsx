@@ -109,6 +109,7 @@ export function SignIn() {
         const sync = await Api.syncUser(
           userInfo.org_id,
           userInfo.id,
+          null,
           0,
           auth.data.token
         )
@@ -123,13 +124,14 @@ export function SignIn() {
             const lastSync = await Api.syncUser(
               userInfo.org_id,
               userInfo.id,
+              null,
               sync.data.lastSyncServer,
               auth.data.token
             )
 
             if (lastSync.ok) {
               store.User.storeSyncInfo(sync.data)
-              storeDbUserInfo(sync.data).then(async () => {
+              storeDbUserInfo(sync.data, "start").then(async () => {
                 // pegar validações
                 const onlineValidations = await Api.getOnlineValidations(
                   store.currentEvent?.id as string,
@@ -304,9 +306,7 @@ export function SignIn() {
                   InputRightElement={
                     <Pressable onPress={() => setShowPassowrd(!showPassword)}>
                       <MaterialIcons
-                        name={
-                          showPassword ? "visibility" : "visibility-off"
-                        }
+                        name={showPassword ? "visibility" : "visibility-off"}
                         size={20}
                         color={THEME.colors.blue[500]}
                       />
@@ -336,10 +336,16 @@ export function SignIn() {
               }
             />
             <View style={styles.statusContainer}>
-              <Text style={[
-                styles.statusText,
-                { color: connection.isConnected ? THEME.colors.green[500] : THEME.colors.red[500] }
-              ]}>
+              <Text
+                style={[
+                  styles.statusText,
+                  {
+                    color: connection.isConnected
+                      ? THEME.colors.green[500]
+                      : THEME.colors.red[500],
+                  },
+                ]}
+              >
                 {`Você está ${connection.isConnected ? "ONLINE" : "OFFLINE"}`}
               </Text>
               <Text style={styles.syncText}>
@@ -348,9 +354,7 @@ export function SignIn() {
             </View>
           </View>
           <View style={styles.footer}>
-            <Text style={styles.imeiText}>
-              {imei ? `IMEI: ${imei}` : ""}
-            </Text>
+            <Text style={styles.imeiText}>{imei ? `IMEI: ${imei}` : ""}</Text>
           </View>
         </View>
       </ScrollView>
@@ -365,26 +369,26 @@ const styles = StyleSheet.create({
   },
   center: {
     marginVertical: 96,
-    alignItems: 'center',
+    alignItems: "center",
   },
   errorText: {
     fontFamily: THEME.fonts.body,
     color: THEME.colors.red[500],
     fontSize: 14,
-    width: '100%',
+    width: "100%",
     paddingRight: 16,
-    textAlign: 'right',
+    textAlign: "right",
   },
   statusContainer: {
     marginTop: 24,
   },
   statusText: {
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 18,
     fontFamily: THEME.fonts.heading,
   },
   syncText: {
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 18,
     fontFamily: THEME.fonts.body,
     color: THEME.colors.blue[200],
@@ -392,15 +396,15 @@ const styles = StyleSheet.create({
   footer: {
     flex: 1,
     paddingBottom: 32,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
   },
   imeiText: {
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 18,
     fontFamily: THEME.fonts.body,
     color: THEME.colors.blue[200],
   },
   textInput: {
-    flex: 1
-  }
+    flex: 1,
+  },
 })

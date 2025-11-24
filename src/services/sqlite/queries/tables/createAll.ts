@@ -89,6 +89,15 @@ export const DBQueryCreateAllTables = [
     synced INTEGER DEFAULT 0,
     archived INTEGER DEFAULT 0
   );`,
+  `CREATE TABLE IF NOT EXISTS webstoreTickets (
+    product_id TEXT,
+    group_id TEXT,
+    name TEXT,
+    image TEXT,
+    active INTEGER DEFAULT 0,
+    created_at datetime DEFAULT NULL,
+    updated_at datetime DEFAULT NULL
+  );`,
   `CREATE TABLE IF NOT EXISTS combos (
     id VARCHAR(64),
     oid TEXT,

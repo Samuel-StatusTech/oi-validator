@@ -88,70 +88,78 @@ export function AppRoutes() {
     const sync = await Api.syncUser(
       user?.org_id as string,
       user?.id as string,
+      event?.id as string,
       lastSync ?? 0,
       token
     )
 
-    if (sync.ok) {
-      User.storeSyncInfo(sync.data)
-      await storeDbUserInfo(sync.data)
-        .then(async () => {
-          try {
-            // pegar validações
-            const onlineValidations = await Api.getOnlineValidations(
-              event?.id as string,
-              token
-            )
-            // para cada uma, verificar se há um registro local
-            if (onlineValidations.ok) {
-              const localValidations = await Validation.getAll()
-              onlineValidations.data.forEach(async (val) => {
-                const localMatch = localValidations.find(
-                  (lv) => lv.uid === val.uid
-                )
-                // para aquelas que estiverem registradas localmente, atualizar campo 'sync'
-                if (localMatch && !Boolean(localMatch.synced)) {
-                  await Validation.updateValidation(localMatch.uid, true)
-                } else if (!localMatch && val.user_id === user?.id) {
-                  // para aquelas que não, registrar
-                  await Validation.insertValidation(
-                    val.uid,
-                    user?.id,
-                    true,
-                    new Date(val.created_at).getTime(),
-                    new Date(val.updated_at).getTime()
+    try {
+      if (sync.ok) {
+        User.storeSyncInfo(sync.data)
+        await storeDbUserInfo(sync.data)
+          .then(async () => {
+            try {
+              // pegar validações
+              const onlineValidations = await Api.getOnlineValidations(
+                event?.id as string,
+                token
+              )
+              // para cada uma, verificar se há um registro local
+              if (onlineValidations.ok) {
+                const localValidations = await Validation.getAll()
+                onlineValidations.data.forEach(async (val) => {
+                  const localMatch = localValidations.find(
+                    (lv) => lv.uid === val.uid
                   )
+                  // para aquelas que estiverem registradas localmente, atualizar campo 'sync'
+                  if (localMatch && !Boolean(localMatch.synced)) {
+                    await Validation.updateValidation(localMatch.uid, true)
+                  } else if (!localMatch && val.user_id === user?.id) {
+                    // para aquelas que não, registrar
+                    await Validation.insertValidation(
+                      val.uid,
+                      user?.id,
+                      true,
+                      new Date(val.created_at).getTime(),
+                      new Date(val.updated_at).getTime()
+                    )
+                  }
+                })
+              }
+
+              // uploadInfo
+              const now = new Date().getTime()
+              Api.uploadSync(data).then((upSync) => {
+                if (upSync.ok) {
+                  const { validations } = upSync.data
+                  if (validations) {
+                    validations.forEach(async (v: any) => {
+                      return new Promise(async (resolve) => {
+                        await Validation.updateValidation(v.uid, true)
+                        resolve(true)
+                      })
+                    })
+                  }
+                  setSyncPopup({ show: true, success: upSync.ok })
+
+                  Common.setLastSync(now)
+                  setData("lastSync", String(now))
+                  Common.setSyncObligation(false)
+                  setData("mustSync", "false")
                 }
               })
+            } catch (error) {
+              setSyncPopup({ show: true, success: false })
             }
-
-            // uploadInfo
-            const now = new Date().getTime()
-            Api.uploadSync(data).then((upSync) => {
-              if (upSync.ok) {
-                const { validations } = upSync.data
-                if (validations) {
-                  validations.forEach(async (v: any) => {
-                    return new Promise(async (resolve) => {
-                      await Validation.updateValidation(v.uid, true)
-                      resolve(true)
-                    })
-                  })
-                }
-                setSyncPopup({ show: true, success: upSync.ok })
-
-                Common.setLastSync(now)
-                setData("lastSync", String(now))
-                Common.setSyncObligation(false)
-                setData("mustSync", "false")
-              }
-            })
-          } catch (error) {}
-        })
-        .catch(() => {
-          setSyncPopup({ show: true, success: false })
-        })
-    } else {
+          })
+          .catch((err) => {
+            console.error(`Local sync error: `, err)
+            setSyncPopup({ show: true, success: false })
+          })
+      } else {
+        setSyncPopup({ show: true, success: false })
+      }
+    } catch (error) {
       setSyncPopup({ show: true, success: false })
     }
 
@@ -200,9 +208,7 @@ export function AppRoutes() {
     return (
       <View style={styles.headerContainer}>
         <View style={styles.headerTextContainer}>
-          <Text style={styles.headerTitle}>
-            {event?.name}
-          </Text>
+          <Text style={styles.headerTitle}>{event?.name}</Text>
           <Text style={styles.headerSubtitle}>
             {`${event?.local} ${
               event?.date ? `- ${getDateStr(event?.date as number)}` : ""
@@ -285,12 +291,8 @@ export function AppRoutes() {
                   paddingHorizontal: 12,
                 }}
               >
-                <Text style={styles.drawerTitle}>
-                  {event?.name}
-                </Text>
-                <Text style={styles.drawerSubtitle}>
-                  {user?.name}
-                </Text>
+                <Text style={styles.drawerTitle}>{event?.name}</Text>
+                <Text style={styles.drawerSubtitle}>{user?.name}</Text>
               </View>
               <View>
                 <DrawerItemList {...props} />

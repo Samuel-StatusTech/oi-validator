@@ -14,7 +14,7 @@ export const createTables = async () => {
               await db.execAsync(q)
               promResolve(true)
             } catch (error) {
-              promReject(false)
+              promReject(error)
             }
           })
 
@@ -28,6 +28,7 @@ export const createTables = async () => {
 
       resolve(true)
     } catch (error) {
+      console.error(error)
       reject(error)
     }
   })

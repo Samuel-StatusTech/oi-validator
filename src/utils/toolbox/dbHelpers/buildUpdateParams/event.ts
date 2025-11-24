@@ -1,0 +1,27 @@
+import { EventData } from "@utils/@types/data/event"
+
+export const buildEventUpdateParams = (event: EventData) => [
+  event.oid,
+  event.name,
+  event.description,
+  event.local,
+  event.status,
+  event.org_id,
+  event.date_ini,
+  event.time_ini,
+  event.date_end,
+  event.logo,
+  event.logo_print,
+  event.print_valid,
+  event.print_logo,
+  event.days,
+  event.has_cashless,
+  event.has_tax_active,
+  event.allow_cashback,
+  event.has_tax_cashback,
+  event.tax_active,
+  event.tax_payback_cash,
+  event.tax_payback_percent,
+  new Date().getTime(),
+  event.id,
+]

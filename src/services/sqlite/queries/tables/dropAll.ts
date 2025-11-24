@@ -6,4 +6,5 @@ export const DBQueryDropAllTables = [
   `DROP TABLE combos;`,
   `DROP TABLE product_lists;`,
   `DROP TABLE validations;`,
+  `DROP TABLE webstoreTickets;`,
 ]

@@ -246,7 +246,9 @@ const getOnlineValidations = async (
       .then(async (res) => (await res.data()) as IValidation[])
 
     res = { ok: true, data: sv }
-  } catch (error) {}
+  } catch (error) {
+    console.log("Error fetching online validations:", error)
+  }
 
   return res
 }
@@ -318,20 +320,20 @@ const uploadSync = async (data: {
   let res: UploadSyncRes = { ok: false, message: "" }
 
   try {
-    const upload = await a.request({
-      method: "post",
-      url: "/sync/v2-1/upload",
-      maxBodyLength: Infinity,
-      data: {
+    const upload = await a.post(
+      "/sync/v2-1/upload",
+      {
         orders: data.orders,
         products: data.products,
         validations: data.validations,
         operations: data.operations,
       },
-      headers: {
-        Authorization: `Bearer ${data.token}`,
-      },
-    })
+      {
+        headers: {
+          Authorization: `Bearer ${data.token}`,
+        },
+      }
+    )
 
     if (upload.status === 200)
       res = {

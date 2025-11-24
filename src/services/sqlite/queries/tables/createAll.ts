@@ -9,6 +9,8 @@ export const DBQueryCreateAllTables = [
     date_ini date,
     time_ini time,
     date_end date,
+    date int(11) DEFAULT 0,
+    order_number INTEGER DEFAULT 0,
     local varchar(255),
     city varchar(255),
     state varchar(255),

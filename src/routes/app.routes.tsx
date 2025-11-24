@@ -34,7 +34,6 @@ import Validation from "@services/sqlite/models/Validation"
 import Product from "@services/sqlite/models/Product"
 import Operation from "@services/sqlite/models/Operations"
 import Order from "@services/sqlite/models/Order"
-import { setData } from "../store/reducers/persistorReducer"
 import { storeDbUserInfo } from "@utils/toolbox/auxFns/storeDbUserInfo"
 
 export type Routes = "home" | "selectEvent" | "products" | "qrhistory"
@@ -70,92 +69,38 @@ export function AppRoutes() {
 
   const syncInfo = async () => {
     setSyncing(true)
-    setSyncPopup({ show: true, success: false })
-    const operations = await Operation.getOperationsNoSync()
-    const orders = await Order.getOrdersNoSync()
-    const products = await Product.getProductsNoSync()
-    const validations = await Validation.getValidationsNoSync()
-
-    const data = {
-      orders,
-      products,
-      validations,
-      operations,
-      token,
-    }
-
-    // get info
-    const sync = await Api.syncUser(
-      user?.org_id as string,
-      user?.id as string,
-      event?.id as string,
-      lastSync ?? 0,
-      token
-    )
 
     try {
+      setSyncPopup({ show: true, success: false })
+
+      const operations = await Operation.getOperationsNoSync()
+      const orders = await Order.getOrdersNoSync()
+      const products = await Product.getProductsNoSync()
+      const validations = await Validation.getValidationsNoSync()
+
+      const data = {
+        orders,
+        products,
+        validations,
+        operations,
+        token,
+      }
+
+      // get info
+      const sync = await Api.syncUser(
+        user?.org_id as string,
+        user?.id as string,
+        event?.id as string,
+        lastSync ?? 0,
+        token
+      )
+
       if (sync.ok) {
         User.storeSyncInfo(sync.data)
         await storeDbUserInfo(sync.data)
-          .then(async () => {
-            try {
-              // pegar validações
-              const onlineValidations = await Api.getOnlineValidations(
-                event?.id as string,
-                token
-              )
-              // para cada uma, verificar se há um registro local
-              if (onlineValidations.ok) {
-                const localValidations = await Validation.getAll()
-                onlineValidations.data.forEach(async (val) => {
-                  const localMatch = localValidations.find(
-                    (lv) => lv.uid === val.uid
-                  )
-                  // para aquelas que estiverem registradas localmente, atualizar campo 'sync'
-                  if (localMatch && !Boolean(localMatch.synced)) {
-                    await Validation.updateValidation(localMatch.uid, true)
-                  } else if (!localMatch && val.user_id === user?.id) {
-                    // para aquelas que não, registrar
-                    await Validation.insertValidation(
-                      val.uid,
-                      user?.id,
-                      true,
-                      new Date(val.created_at).getTime(),
-                      new Date(val.updated_at).getTime()
-                    )
-                  }
-                })
-              }
 
-              // uploadInfo
-              const now = new Date().getTime()
-              Api.uploadSync(data).then((upSync) => {
-                if (upSync.ok) {
-                  const { validations } = upSync.data
-                  if (validations) {
-                    validations.forEach(async (v: any) => {
-                      return new Promise(async (resolve) => {
-                        await Validation.updateValidation(v.uid, true)
-                        resolve(true)
-                      })
-                    })
-                  }
-                  setSyncPopup({ show: true, success: upSync.ok })
-
-                  Common.setLastSync(now)
-                  setData("lastSync", String(now))
-                  Common.setSyncObligation(false)
-                  setData("mustSync", "false")
-                }
-              })
-            } catch (error) {
-              setSyncPopup({ show: true, success: false })
-            }
-          })
-          .catch((err) => {
-            console.error(`Local sync error: `, err)
-            setSyncPopup({ show: true, success: false })
-          })
+        const syncValidationsRes = await Api.uploadSync(data)
+        setSyncPopup({ show: true, success: syncValidationsRes.ok })
       } else {
         setSyncPopup({ show: true, success: false })
       }

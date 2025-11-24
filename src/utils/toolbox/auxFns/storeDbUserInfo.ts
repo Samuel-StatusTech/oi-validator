@@ -2,8 +2,8 @@ import { SyncInfo } from "@utils/@types/api/responses/syncUser"
 import Product from "@services/sqlite/models/Product"
 import ProductsList from "@services/sqlite/models/ProductsList"
 import Combo from "@services/sqlite/models/Combo"
-import { createTables } from "@services/sqlite/Database"
-import Event from "@services/sqlite/models/Events"
+import { createTables, dropTables } from "@services/sqlite/Database"
+import Event from "@services/sqlite/models/Event"
 import WebstoreTicket from "@services/sqlite/models/WebstoreTicket"
 
 export const storeDbUserInfo = async (
@@ -22,24 +22,26 @@ export const storeDbUserInfo = async (
           webstore_tickets = [],
         } = kInfo.productsData
 
-        // if (role === "start") ...
-
-        await createTables()
-
-        await Event.insertEvents(events)
-
-        await Product.insertProducts(products)
-
-        await ProductsList.insertList(product_lists)
-
-        await Combo.insertCombos(combos)
-
-        await WebstoreTicket.insertWebstoreTickets(webstore_tickets)
-
+        if (role === "start") {
+          await createTables()
+          await Event.insertEvents(events)
+          await Product.insertProducts(products)
+          await ProductsList.insertProductsLists(product_lists)
+          await Combo.insertCombos(combos)
+          await WebstoreTicket.insertWebstoreTickets(webstore_tickets)
+        } else if (role === "update") {
+          await Event.updateEvents(events)
+          await Product.updateProducts(products)
+          await ProductsList.updateProductsLists(product_lists)
+          await Combo.updateCombos(combos)
+          await WebstoreTicket.updateWebstoreTickets(webstore_tickets)
+        }
       }
-      resolve(true)
     } catch (error) {
       reject("Houve um erro")
+      return
     }
+
+    resolve(true)
   })
 }

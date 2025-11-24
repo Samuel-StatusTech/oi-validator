@@ -1,5 +1,6 @@
 export interface IEvent {
   id: string
+  oid: string
   org_id: string
   name: string
   description: string
@@ -22,6 +23,8 @@ export interface IEvent {
   tax_active: number
   tax_payback_cash: number
   tax_payback_percent: number
+  order_number: number
+  date: number
   created_at: number | string
   updated_at: number | string
 }

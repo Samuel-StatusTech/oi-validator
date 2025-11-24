@@ -17,3 +17,14 @@ export const selectAllWebTickets = `
 export const selectWebTicketsNoSync = `
   SELECT * FROM webstoreTickets WHERE synced = 0;
 `
+
+export const updateWebTicket = `
+  UPDATE webstoreTickets SET
+    group_id = ?,
+    name = ?,
+    image = ?,
+    created_at = ?,
+    updated_at = ?,
+    active = ?
+  WHERE product_id = ?;
+`

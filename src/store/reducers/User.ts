@@ -7,7 +7,6 @@ const UserReducer = (set: Setter) => {
   return {
     storeInfo: (userInfo: UserInfo) =>
       set((state) => {
-        setData("user", JSON.stringify(userInfo))
 
         return {
           ...state,
@@ -29,7 +28,6 @@ const UserReducer = (set: Setter) => {
       }),
     cleanInfo: () =>
       set((state) => {
-        deleteData("user")
 
         return {
           ...state,

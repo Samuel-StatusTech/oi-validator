@@ -217,7 +217,7 @@ export function AppRoutes() {
           },
           headerShadowVisible: false,
         }}
-        initialRouteName={"selectEvent"}
+        initialRouteName={event ? "home" : "selectEvent"}
         drawerContent={(props) => {
           return (
             <SafeAreaView

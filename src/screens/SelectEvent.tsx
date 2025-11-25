@@ -11,14 +11,12 @@ import { useEffect, useRef, useState } from "react"
 import useStore from "../store"
 import { useNetInfo } from "@react-native-community/netinfo"
 import { PopUp } from "@components/PopUp"
-import { setData } from "../store/reducers/persistorReducer"
 import { AppNavigatiorRoutesProps } from "@routes/app.routes"
 import { dropTables } from "@services/sqlite/Database"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import AsyncStorage from "@react-native-async-storage/async-storage"
 
 export function SelectEvent() {
-  const insets = useSafeAreaInsets();
+  const insets = useSafeAreaInsets()
 
   const connection = useNetInfo()
 
@@ -26,7 +24,6 @@ export function SelectEvent() {
   const Token = useStore((s) => s.Token)
   const User = useStore((s) => s.User)
   const user = useStore((s) => s.user)
-  const currentEvent = useStore((s) => s.currentEvent)
 
   const [events, setEvents] = useState<EventData[]>([])
   const [showingPopUp, setShowingPopUp] = useState(false)
@@ -39,7 +36,6 @@ export function SelectEvent() {
   function handleDesconect() {
     User.cleanInfo()
     Token.deleteToken()
-    Common.clearEvent()
     dropTables()
     setShowingPopUp(false)
 
@@ -51,14 +47,15 @@ export function SelectEvent() {
 
   function handleSelect(event: EventData) {
     Common.registerEvent(event)
-    setData("currentEvent", JSON.stringify(event))
     navigation.navigate("home")
   }
 
   useEffect(() => {
-    console.log("User data:", user)
-    console.log("Current event:", currentEvent)
-    if (user?.kInfo) setEvents(user?.kInfo?.eventsData.filter(event => Boolean(event.status)))
+    Common.clearEvent()
+    if (user?.kInfo)
+      setEvents(
+        user?.kInfo?.eventsData.filter((event) => Boolean(event.status))
+      )
   }, [])
 
   return (
@@ -71,21 +68,21 @@ export function SelectEvent() {
         close={() => setShowingPopUp(false)}
         action={handleDesconect}
       />
-      <View style={{
-        ...styles.container,
-        paddingTop: styles.container.paddingTop + insets.top,
-        paddingRight: styles.container.paddingHorizontal + insets.right,
-        paddingBottom: styles.container.paddingTop + insets.bottom,
-        paddingLeft: styles.container.paddingHorizontal + insets.left,
-      }}>
+      <View
+        style={{
+          ...styles.container,
+          paddingTop: styles.container.paddingTop + insets.top,
+          paddingRight: styles.container.paddingHorizontal + insets.right,
+          paddingBottom: styles.container.paddingTop + insets.bottom,
+          paddingLeft: styles.container.paddingHorizontal + insets.left,
+        }}
+      >
         <View style={styles.header}>
           <LogoWhite />
           <Onlinetag isOnline={connection.isConnected ?? false} />
         </View>
         <View style={styles.center}>
-          <Text style={styles.greeting}>
-            Olá, {user?.name}
-          </Text>
+          <Text style={styles.greeting}>Olá, {user?.name}</Text>
           <Text style={styles.description}>
             Selecione o evento que você irá atender hoje
             {user?.kInfo?.orgName ? `pela ${user?.kInfo?.orgName}` : ""}.
@@ -98,7 +95,11 @@ export function SelectEvent() {
           ref={flatListRef}
           data={events}
           renderItem={({ item, index }) => (
-            <EventItem key={index} onSelect={() => handleSelect(item)} info={item} />
+            <EventItem
+              key={index}
+              onSelect={() => handleSelect(item)}
+              info={item}
+            />
           )}
           overScrollMode="never"
           style={styles.flatList}
@@ -107,10 +108,7 @@ export function SelectEvent() {
 
         <View style={styles.spacer} />
 
-        <Button
-          title="Desconectar"
-          onPress={() => setShowingPopUp(true)}
-        />
+        <Button title="Desconectar" onPress={() => setShowingPopUp(true)} />
       </View>
     </>
   )
@@ -124,23 +122,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   center: {
     marginTop: 16,
-    alignItems: 'center',
+    alignItems: "center",
   },
   greeting: {
-    color: 'white',
+    color: "white",
     fontFamily: THEME.fonts.heading,
     fontSize: THEME.fontSizes.xl,
   },
   description: {
-    color: 'white',
+    color: "white",
     fontSize: THEME.fontSizes.lg,
-    textAlign: 'center',
+    textAlign: "center",
   },
   spacer: {
     flex: 1,

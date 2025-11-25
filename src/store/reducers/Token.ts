@@ -5,7 +5,6 @@ const TokenReducer = (set: Setter) => {
   return {
     storeToken: (token: string) =>
       set((state) => {
-        setData("token", token)
 
         return {
           ...state,
@@ -14,7 +13,6 @@ const TokenReducer = (set: Setter) => {
       }),
     deleteToken: () =>
       set((state) => {
-        deleteData("token")
 
         return {
           ...state,

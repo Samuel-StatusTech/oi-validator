@@ -105,7 +105,6 @@ export function Home() {
               Common.setHeaderColor("green")
               if (!connection && isValid) {
                 Common.setSyncObligation(true)
-                setData("mustSync", "true")
               }
             })
             .catch((error) => {

@@ -66,9 +66,7 @@ export const syncValidations = async (data: {
       }
 
       Common.setLastSync(now)
-      setData("lastSync", String(now))
       Common.setSyncObligation(false)
-      setData("mustSync", "false")
       res = { ok: true, message: "Validações sincronizadas com sucesso" }
     } else {
       res = { ok: false, message: "Não autorizado" }

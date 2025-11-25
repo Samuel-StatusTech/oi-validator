@@ -1,5 +1,5 @@
-import { scanFromURLAsync, BarcodeScanningResult, useCameraPermissions, CameraView } from 'expo-camera';
-import { Camera, FlashMode } from 'expo-camera'
+import { BarcodeScanningResult, useCameraPermissions, CameraView } from 'expo-camera';
+import { FlashMode } from 'expo-camera'
 import React, { useEffect } from 'react';
 import { Dimensions, Text, StyleSheet } from 'react-native';
 
@@ -34,6 +34,7 @@ export function Scanner({ flashMode, scanned, onCodeScanned }: Props) {
   return (
     <>
       <CameraView
+        flash={flashMode}
         onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
         style={styles.camera}
       />

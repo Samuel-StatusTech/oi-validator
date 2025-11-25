@@ -19,7 +19,6 @@ import { useNetInfo } from "@react-native-community/netinfo"
 import {
   getData,
   getIMEI,
-  setData,
   setIMEI,
 } from "../store/reducers/persistorReducer"
 import { generateNumber } from "@utils/toolbox/auxFns/generateNumber"
@@ -103,8 +102,6 @@ export function SignIn() {
         }
         store.User.storeInfo(userInfo)
         store.Token.storeToken(auth.data.token)
-        await setData("user", JSON.stringify(userInfo))
-        await setData("token", auth.data.token)
 
         const sync = await Api.syncUser(
           userInfo.org_id,
@@ -165,7 +162,6 @@ export function SignIn() {
 
           store.User.storeSyncInfo(sync.data)
           storeDbUserInfo(fullData.kInfo)
-          await setData("user", JSON.stringify(fullData))
         } else {
           setAuthError({ ...authError, pass: true, name: true })
         }
@@ -241,12 +237,6 @@ export function SignIn() {
 
     if (store.lastSync && store.lastSync > 0) {
       setSyncText(`Última sincronização:   ${getDateStr(store.lastSync)}`)
-    } else {
-      getData("lastSync").then((pSync) => {
-        if (pSync) {
-          setSyncText(`Última sincronização:   ${getDateStr(pSync as number)}`)
-        }
-      })
     }
   }, [])
 

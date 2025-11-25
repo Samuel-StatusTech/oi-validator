@@ -13,7 +13,6 @@ const CommonReducer = (set: Setter) => {
       }),
     clearEvent: () =>
       set((state) => {
-        deleteData("currentEvent")
 
         return {
           ...state,
@@ -52,8 +51,6 @@ const CommonReducer = (set: Setter) => {
     setLastSync: (stored?: string | number) =>
       set((state) => {
         const time = new Date().getTime()
-
-        setData("lastSync", `${stored ?? time}`)
 
         return {
           ...state,

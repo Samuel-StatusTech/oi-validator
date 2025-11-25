@@ -1,4 +1,11 @@
-import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native"
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  Pressable,
+  TextInput,
+} from "react-native"
 import { THEME } from "../theme"
 import Logo from "@assets/logo.svg"
 import { Button } from "@components/Button"
@@ -7,7 +14,7 @@ import { MaterialIcons } from "@expo/vector-icons"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useNavigation } from "@react-navigation/native"
 import { AuthNavigatiorRoutesProps } from "@routes/auth.routes"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import * as yup from "yup"
 import Api from "@utils/api"
@@ -37,6 +44,9 @@ const signInSchema = yup.object({
 export function SignIn() {
   const connection = useNetInfo()
   const store = useStore((state) => state)
+
+  const inputUsernameRef = useRef<TextInput | null>(null)
+  const inputPassRef = useRef<TextInput | null>(null)
 
   const [imei, setImei] = useState(0)
   const [showPassword, setShowPassowrd] = useState(false)
@@ -108,10 +118,6 @@ export function SignIn() {
         )
 
         if (sync.ok) {
-          const fullData = {
-            ...userInfo,
-            kInfo: sync.data,
-          }
           if (sync.data.lastSyncServer) {
             store.Common.setLastSync(sync.data.lastSyncServer)
             const lastSync = await Api.syncUser(
@@ -223,15 +229,17 @@ export function SignIn() {
               name="name"
               render={({ field: { onChange, value } }) => (
                 <Input
+                  ref={inputUsernameRef}
                   placeholder="Usuário"
                   autoCapitalize="none"
                   value={value}
                   isInvalid={authError.name}
+                  enterKeyHint="next"
                   onChangeText={(v) => {
                     onChange(v)
                     if (authError.name) removeError("name")
                   }}
-                  returnKeyType="next"
+                  onSubmitEditing={() => inputPassRef.current?.focus()}
                   errorMessage={errors.name?.message}
                 />
               )}
@@ -242,6 +250,7 @@ export function SignIn() {
               name="password"
               render={({ field: { onChange, value } }) => (
                 <Input
+                  ref={inputPassRef}
                   placeholder="Senha"
                   secureTextEntry={!showPassword}
                   onChangeText={(v) => {
@@ -252,7 +261,7 @@ export function SignIn() {
                   isInvalid={authError.pass}
                   errorMessage={errors.password?.message}
                   onSubmitEditing={handleSubmit(handleSignIn)}
-                  returnKeyType="send"
+                  enterKeyHint="next"
                   InputRightElement={
                     <Pressable onPress={() => setShowPassowrd(!showPassword)}>
                       <MaterialIcons
@@ -327,7 +336,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     width: "100%",
     paddingRight: 16,
-    textAlign: "right",
+    textAlign: "center",
+    marginVertical: 16
   },
   statusContainer: {
     marginTop: 24,

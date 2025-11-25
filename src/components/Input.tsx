@@ -1,30 +1,30 @@
-import React from 'react';
-import { View, TextInput, Text, StyleSheet } from 'react-native';
-import { THEME } from '../theme';
+import React, { forwardRef, MutableRefObject } from "react"
+import { View, TextInput, Text, StyleSheet, TextInputProps } from "react-native"
+import { THEME } from "../theme"
 
-type Props = {
-  errorMessage?: string | null;
-  isInvalid?: boolean;
-  placeholder?: string;
-  value?: string;
-  onChangeText?: (text: string) => void;
-  secureTextEntry?: boolean;
-  onSubmitEditing?: () => void;
-  returnKeyType?: 'done' | 'go' | 'next' | 'search' | 'send';
-  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
-  InputRightElement?: React.ReactNode;
-};
+type Props = TextInputProps & {
+  errorMessage?: string | null
+  isInvalid?: boolean
+  placeholder?: string
+  value?: string
+  onChangeText?: (text: string) => void
+  secureTextEntry?: boolean
+  onSubmitEditing?: () => void
+  returnKeyType?: "done" | "go" | "next" | "search" | "send"
+  autoCapitalize?: "none" | "sentences" | "words" | "characters"
+  InputRightElement?: React.ReactNode
+}
 
-export function Input({ errorMessage = null, isInvalid, ...rest }: Props) {
-  const invalid = !!errorMessage || isInvalid;
+export const Input = forwardRef((props: Props, ref: any) => {
+  const { errorMessage = null, isInvalid, ...rest } = props
+
+  const invalid = !!errorMessage || isInvalid
 
   return (
     <View style={styles.container}>
       <TextInput
-        style={[
-          styles.input,
-          invalid && styles.inputError,
-        ]}
+        ref={ref}
+        style={[styles.input, invalid && styles.inputError]}
         placeholderTextColor={THEME.colors.blue[200]}
         {...rest}
       />
@@ -32,13 +32,13 @@ export function Input({ errorMessage = null, isInvalid, ...rest }: Props) {
         <Text style={styles.errorText}>{errorMessage}</Text>
       )}
     </View>
-  );
-}
+  )
+})
 
 const styles = StyleSheet.create({
   container: {
     marginBottom: 8,
-    width: '100%'
+    width: "100%",
   },
   input: {
     backgroundColor: THEME.colors.blue[50],
@@ -59,4 +59,4 @@ const styles = StyleSheet.create({
     fontSize: THEME.fontSizes.sm,
     marginTop: 4,
   },
-});
+})

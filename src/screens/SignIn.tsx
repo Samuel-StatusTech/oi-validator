@@ -16,14 +16,9 @@ import useStore from "../store"
 import { UserInfo } from "@utils/@types/data/user"
 import { storeDbUserInfo } from "@utils/toolbox/auxFns/storeDbUserInfo"
 import { useNetInfo } from "@react-native-community/netinfo"
-import {
-  getData,
-  getIMEI,
-  setIMEI,
-} from "../store/reducers/persistorReducer"
-import { generateNumber } from "@utils/toolbox/auxFns/generateNumber"
 import { PopUp } from "@components/PopUp"
 import Validation from "@services/sqlite/models/Validation"
+import { getImeiOrUnique } from "@utils/toolbox/imei"
 
 type FormDataProps = {
   name: string
@@ -210,14 +205,8 @@ export function SignIn() {
   }
 
   async function proccessImei() {
-    const persistedIMEI = await getIMEI()
-
-    if (persistedIMEI) setImei(Number(persistedIMEI))
-    else {
-      const n = generateNumber()
-      setIMEI(n)
-      setImei(n)
-    }
+    const newImei = await getImeiOrUnique()
+    setImei(newImei)
   }
 
   useEffect(() => {

@@ -15,12 +15,19 @@ import { setData } from "../store/reducers/persistorReducer"
 import { AppNavigatiorRoutesProps } from "@routes/app.routes"
 import { dropTables } from "@services/sqlite/Database"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
+import AsyncStorage from "@react-native-async-storage/async-storage"
 
 export function SelectEvent() {
   const insets = useSafeAreaInsets();
 
   const connection = useNetInfo()
-  const { user, User, Common, Token } = useStore((state) => state)
+
+  const Common = useStore((s) => s.Common)
+  const Token = useStore((s) => s.Token)
+  const User = useStore((s) => s.User)
+  const user = useStore((s) => s.user)
+  const currentEvent = useStore((s) => s.currentEvent)
+
   const [events, setEvents] = useState<EventData[]>([])
   const [showingPopUp, setShowingPopUp] = useState(false)
 
@@ -49,6 +56,8 @@ export function SelectEvent() {
   }
 
   useEffect(() => {
+    console.log("User data:", user)
+    console.log("Current event:", currentEvent)
     if (user?.kInfo) setEvents(user?.kInfo?.eventsData.filter(event => Boolean(event.status)))
   }, [])
 

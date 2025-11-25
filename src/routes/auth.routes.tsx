@@ -4,11 +4,12 @@ import {
 } from "@react-navigation/native-stack"
 import { SignIn } from "@screens/SignIn"
 import useStore from "../store"
-import { AppRoutes } from "./app.routes"
-import { useEffect, useState } from "react"
+import { AppNavigatiorRoutesProps, AppRoutes } from "./app.routes"
+import { useCallback, useEffect, useState } from "react"
 import { getData, setData } from "../store/reducers/persistorReducer"
 import { EventData } from "@utils/@types/data/event"
 import { UserInfo } from "@utils/@types/data/user"
+import { useNavigation } from "@react-navigation/native"
 
 export type Routes = "signIn" | "appNavigator"
 
@@ -21,44 +22,38 @@ export type AuthNavigatiorRoutesProps = NativeStackNavigationProp<AuthRoutes>
 const { Navigator, Screen } = createNativeStackNavigator<AuthRoutes>()
 
 export function AuthRoutes() {
-  const store = useStore((state) => state)
-  const [user, setUser] = useState(false)
+  const navigation = useNavigation<AppNavigatiorRoutesProps>()
+  const authNavigation = useNavigation<AuthNavigatiorRoutesProps>()
+
+  const { user: storeUser, currentEvent } = useStore((state) => state)
+
+  const [user, setUser] = useState(!!storeUser)
   const [canRender, setCanRender] = useState(false)
 
-  const checkUser = async () => {
+  const checkUser = useCallback(async () => {
     if (!user) {
-      if (store.user) {
+      if (storeUser) {
         setUser(true)
-      } else if (!store.user) {
-        const persistedUser = await getData("user")
-        if (persistedUser && typeof persistedUser === "object") {
-          store.User.storeInfo(persistedUser as UserInfo)
-
-          const token = await getData("token")
-          const event = await getData("currentEvent")
-          const lastS = await getData("lastSync")
-          const mustS = await getData("mustSync")
-
-          if (token) store.Token.storeToken(token as string)
-          if (event) store.Common.registerEvent(event as EventData)
-          if (lastS) setData("lastSync", String(lastS))
-          if (mustS) store.Common.setSyncObligation(Boolean(mustS))
-          setUser(true)
-        } else {
-          const persistedLastSync = await getData("lastSync")
-          store.Common.setLastSync(persistedLastSync as number)
-          store.Common.setLastSync(
-            persistedLastSync ? (persistedLastSync as string) : undefined
-          )
+        if (currentEvent) {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "home" }],
+          })
         }
+      } else {
+        authNavigation.reset({
+          index: 0,
+          routes: [{ name: "signIn" }],
+        })
       }
       setCanRender(true)
     }
-  }
+  }, [storeUser, currentEvent])
+
   useEffect(() => {
     setUser(false)
     checkUser()
-  }, [])
+  }, [checkUser])
 
   return canRender ? (
     <Navigator

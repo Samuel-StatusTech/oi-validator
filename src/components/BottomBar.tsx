@@ -5,14 +5,21 @@ import ToTypeOnSVG from "@assets/toType10.svg"
 import React, { useState } from "react"
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native"
 import { THEME } from "../theme"
+import { FlashMode } from "expo-camera"
 
 type Propos = {
+  flashMode: FlashMode
   mode: "camera" | "typing" | "saveEnergy"
   handleTyping: () => void
   updateFlash: () => void
 }
 
-export function BottomBar({ mode, handleTyping, updateFlash }: Propos) {
+export function BottomBar({
+  flashMode,
+  mode,
+  handleTyping,
+  updateFlash,
+}: Propos) {
   const [isFlashlight, setFlashlight] = useState(false)
 
   function handleiFlashlight() {
@@ -23,7 +30,9 @@ export function BottomBar({ mode, handleTyping, updateFlash }: Propos) {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.button} onPress={handleTyping}>
-        <View style={[styles.buttonInner, mode === "typing" && styles.activeButton]}>
+        <View
+          style={[styles.buttonInner, mode === "typing" && styles.activeButton]}
+        >
           {mode === "typing" ? <ToTypeOnSVG /> : <ToTypeOffSVG />}
           <Text style={[styles.text, mode === "typing" && styles.activeText]}>
             Digitar
@@ -32,9 +41,14 @@ export function BottomBar({ mode, handleTyping, updateFlash }: Propos) {
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.button} onPress={handleiFlashlight}>
-        <View style={[styles.buttonInner, isFlashlight && styles.activeButton]}>
-          {isFlashlight ? <FlashOnSVG /> : <FlashOffSVG />}
-          <Text style={[styles.text, isFlashlight && styles.activeText]}>
+        <View
+          style={[
+            styles.buttonInner,
+            flashMode === "on" && styles.activeButton,
+          ]}
+        >
+          {flashMode === "on" ? <FlashOnSVG /> : <FlashOffSVG />}
+          <Text style={[styles.text, flashMode === "on" && styles.activeText]}>
             Lanterna
           </Text>
         </View>
@@ -71,9 +85,9 @@ const styles = StyleSheet.create({
     color: THEME.colors.blue[500],
     fontFamily: THEME.fonts.body,
     fontSize: THEME.fontSizes.lg,
-    marginLeft: 8
+    marginLeft: 8,
   },
   activeText: {
     color: THEME.colors.blue[10],
   },
-});
+})

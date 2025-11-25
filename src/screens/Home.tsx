@@ -225,6 +225,7 @@ export function Home() {
           <BottomBar
             handleTyping={handleModeChange}
             mode={mode}
+            flashMode={flashMode}
             updateFlash={() => {
               setFlashMode(flashMode == "off" ? "on" : "off")
             }}

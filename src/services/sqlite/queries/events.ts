@@ -1,5 +1,5 @@
 export const insertEvent = `
-  INSERT INTO events (
+  INSERT OR REPLACE INTO events (
     id,
     oid,
     name,

@@ -2,16 +2,15 @@ import { SyncHelperRes } from "@utils/@types/api/responses/syncHelper"
 import useStore from "../../store"
 import Api from "@utils/api"
 import Validation from "@services/sqlite/models/Validation"
-import { setData } from "src/store/reducers/persistorReducer"
 import { IProduct } from "@utils/@types/sqlite/product"
 import { IValidation } from "@utils/@types/sqlite/validation"
 
-export const syncValidations = async (data: {
-  orders: any[]
-  products: IProduct[]
+export const syncValidations = async (data?: {
+  orders?: any[]
+  products?: IProduct[]
   validations: IValidation[]
-  operations: any[]
-  token: string
+  operations?: any[]
+  token?: string
 }): Promise<SyncHelperRes> => {
   let res: SyncHelperRes = { ok: true, message: "" }
 
@@ -47,8 +46,16 @@ export const syncValidations = async (data: {
         })
       }
 
+      const localNoSyncValidations = await Validation.getValidationsNoSync()
+
       const now = new Date().getTime()
-      const uploadReq = await Api.uploadSync(data)
+      const uploadReq = await Api.uploadSync({
+        orders: data?.orders || [],
+        products: data?.products || [],
+        validations: localNoSyncValidations,
+        operations: data?.operations || [],
+        token: data?.token || token,
+      })
 
       if (!uploadReq.ok) {
         throw new Error("Upload sync failed")

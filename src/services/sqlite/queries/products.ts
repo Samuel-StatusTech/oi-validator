@@ -1,5 +1,5 @@
 export const insertProduct = `
-  INSERT INTO products (
+  INSERT OR REPLACE INTO products (
     id,
     o_id,
     org_id,

@@ -1,6 +1,6 @@
 export const DBQueryCreateAllTables = [
   `CREATE TABLE IF NOT EXISTS events (
-    id TEXT,
+    id TEXT PRIMARY KEY,
     org_id TEXT,
     name VARCHAR(128),
     description varchar(512) DEFAULT NULL,
@@ -29,12 +29,12 @@ export const DBQueryCreateAllTables = [
     updated_at datetime DEFAULT NULL
   );`,
   `CREATE TABLE IF NOT EXISTS users (
-    id TEXT,
+    id TEXT PRIMARY KEY,
     org_id TEXT DEFAULT NULL,
-    username varchar(64) ,
+    username varchar(64),
     name varchar(128),
     email varchar(255) DEFAULT NULL,
-    password varchar(255) ,
+    password varchar(255),
     role varchar(64) DEFAULT 'validador',
     status INTEGER DEFAULT 0,
     created_at datetime DEFAULT NULL,
@@ -42,7 +42,7 @@ export const DBQueryCreateAllTables = [
     phone varchar(255) DEFAULT NULL
   );`,
   `CREATE TABLE IF NOT EXISTS waiters (
-    id TEXT,
+    id TEXT PRIMARY KEY,
     name VARCHAR(128),
     status INTEGER DEFAULT 0,
     has_commission INTEGER DEFAULT 0,
@@ -53,7 +53,7 @@ export const DBQueryCreateAllTables = [
     updated_at datetime DEFAULT NULL
   );`,
   `CREATE TABLE IF NOT EXISTS products (
-    id TEXT,
+    id TEXT PRIMARY KEY,
     o_id TEXT,
     org_id TEXT,
     name VARCHAR(128),
@@ -83,9 +83,9 @@ export const DBQueryCreateAllTables = [
     number_copy int DEFAULT 0,
     time_tolerance int DEFAULT 0,
     value_tolerance int DEFAULT 0,
-    price_cost int DEFAULT 0 ,
-    price_sell int DEFAULT 0 ,
-    quantity int DEFAULT 0 ,
+    price_cost int DEFAULT 0,
+    price_sell int DEFAULT 0,
+    quantity int DEFAULT 0,
     created_at datetime DEFAULT NULL,
     updated_at datetime DEFAULT NULL,
     synced INTEGER DEFAULT 0,
@@ -98,10 +98,11 @@ export const DBQueryCreateAllTables = [
     image TEXT,
     active INTEGER DEFAULT 0,
     created_at datetime DEFAULT NULL,
-    updated_at datetime DEFAULT NULL
+    updated_at datetime DEFAULT NULL,
+    PRIMARY KEY (product_id, group_id)
   );`,
   `CREATE TABLE IF NOT EXISTS combos (
-    id VARCHAR(64),
+    id VARCHAR(64) PRIMARY KEY,
     oid TEXT,
     favorite TEXT,
     org_id TEXT,
@@ -137,6 +138,7 @@ export const DBQueryCreateAllTables = [
     user_id VARCHAR(64),
     synced INTEGER DEFAULT 0,
     created_at datetime DEFAULT NULL,
-    updated_at datetime DEFAULT NULL
+    updated_at datetime DEFAULT NULL,
+    PRIMARY KEY (uid, user_id)
   );`,
 ]

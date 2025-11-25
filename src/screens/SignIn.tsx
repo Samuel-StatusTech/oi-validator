@@ -19,6 +19,7 @@ import { useNetInfo } from "@react-native-community/netinfo"
 import { PopUp } from "@components/PopUp"
 import Validation from "@services/sqlite/models/Validation"
 import { getImeiOrUnique } from "@utils/toolbox/imei"
+import { syncValidations } from "@services/sync/validations"
 
 type FormDataProps = {
   name: string
@@ -123,40 +124,10 @@ export function SignIn() {
 
             if (lastSync.ok) {
               store.User.storeSyncInfo(sync.data)
-              storeDbUserInfo(sync.data, "start").then(async () => {
-                // pegar validações
-                const onlineValidations = await Api.getOnlineValidations(
-                  store.currentEvent?.id as string,
-                  store.token
-                )
-                // para cada uma, verificar se há um registro local
-                if (onlineValidations.ok) {
-                  const localValidations = await Validation.getAll()
-                  onlineValidations.data.forEach(async (val) => {
-                    const localMatch = localValidations.find(
-                      (lv) => lv.uid === val.uid
-                    )
-                    // para aquelas que estiverem registradas localmente, atualizar campo 'sync'
-                    if (localMatch && !Boolean(localMatch.synced)) {
-                      await Validation.updateValidation(localMatch.uid, true)
-                    } else if (!localMatch && val.user_id === store.user?.id) {
-                      // para aquelas que não, registrar
-                      await Validation.insertValidation(
-                        val.uid,
-                        store.user?.id as string,
-                        true,
-                        new Date(val.created_at).getTime(),
-                        new Date(val.updated_at).getTime()
-                      )
-                    }
-                  })
-                }
-              })
+              await storeDbUserInfo(sync.data, "start")
+              await syncValidations()
             }
           }
-
-          store.User.storeSyncInfo(sync.data)
-          storeDbUserInfo(fullData.kInfo)
         } else {
           setAuthError({ ...authError, pass: true, name: true })
         }

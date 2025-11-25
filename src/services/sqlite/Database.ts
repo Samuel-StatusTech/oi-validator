@@ -1,5 +1,6 @@
 import * as SQLite from "expo-sqlite"
 import { DBQueryCreateAllTables } from "./queries/tables/createAll"
+import { DBQueryDropAllTables } from "./queries/tables/dropAll"
 
 const db = SQLite.openDatabaseSync("oiTicket-data.db")
 
@@ -37,7 +38,7 @@ export const createTables = async () => {
 export const dropTables = async () => {
   return new Promise(async (resolve, reject) => {
     try {
-      const dropProms: Promise<boolean>[] = DBQueryCreateAllTables.map((q) => {
+      const dropProms: Promise<boolean>[] = DBQueryDropAllTables.map((q) => {
         const prom = new Promise<boolean>(async (promResolve, promReject) => {
           try {
             await db.execAsync(q)

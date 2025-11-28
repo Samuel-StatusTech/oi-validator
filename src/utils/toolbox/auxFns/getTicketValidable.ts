@@ -9,8 +9,7 @@ export const isTicketValidable = (
   const isEventWebstoreTicket = ticket.startsWith(`${eventId.toUpperCase()}/`)
 
   if (isEventWebstoreTicket) {
-    const slashIdx = ticket.indexOf("/")
-    const cleanCode = ticket.slice(slashIdx, slashIdx + 1)
+    const cleanCode = ticket.split("/")[1]
 
     result = { isValidable: true, validableCode: cleanCode }
   } else {

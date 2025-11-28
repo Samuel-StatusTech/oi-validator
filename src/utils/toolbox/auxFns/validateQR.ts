@@ -20,12 +20,15 @@ const validateQR = async (
       if (hasConnection) {
         const upperCode = code.toUpperCase()
 
-        const { isValidable, validableCode } = isTicketValidable(
+        const validableCheckage = isTicketValidable(
           upperCode,
           clientDb ?? user.db,
           event.oid,
           event.id
         )
+
+        const { isValidable } = validableCheckage
+        let { validableCode } = validableCheckage
 
         if (isValidable) {
           const locallyValidated = await Validation.searchByTicket(
@@ -57,7 +60,24 @@ const validateQR = async (
               webstoreTickets.ok ? webstoreTickets.data : []
             )
 
-            if (prodName.length > 0) {
+            let isEventTicket = prodName.length > 0
+
+            if (!isEventTicket) {
+              // Check if it's a webstore ticket
+              const webstoreTicketDetailsRequest =
+                await Api.getWebstoreTicketDetails(
+                  validableCode,
+                  event.id,
+                  token
+                )
+
+              if (webstoreTicketDetailsRequest.ok) {
+                isEventTicket = true
+                validableCode = webstoreTicketDetailsRequest.data.webTicketUid
+              }
+            }
+
+            if (isEventTicket) {
               const validation = await Api.validateTicket(
                 validableCode,
                 event.id,

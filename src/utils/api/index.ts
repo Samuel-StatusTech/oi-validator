@@ -21,6 +21,7 @@ import { UploadSyncRes } from "@utils/@types/api/responses/uploadSync"
 import { IValidation } from "@utils/@types/sqlite/validation"
 import WebstoreTicket from "@services/sqlite/models/WebstoreTicket"
 import { AllWebstoreTicketsRes } from "@utils/@types/api/responses/getAllWebstoreTickets"
+import { TicketDetailsRes } from "@utils/@types/api/responses/ticketDetails"
 
 const na = axios.create({
   baseURL: "https://api.oitickets.com.br/api/v1",
@@ -30,7 +31,7 @@ const na = axios.create({
 })
 
 const a = axios.create({
-  baseURL: "https://apiadmin.oitickets.com.br/api/v1",
+  baseURL: "https://api.oitickets.com.br/api/v1",
   headers: {
     "Content-Type": "application/x-www-form-urlencoded",
   },
@@ -286,6 +287,44 @@ const getValidations = async (
   return res
 }
 
+const getWebstoreTicketDetails = async (
+  qrCode: string,
+  eventId: string,
+  token: string
+): Promise<TicketDetailsRes> => {
+  let res: TicketDetailsRes = { ok: false, message: "" }
+
+  const details = await a
+    .request({
+      method: "get",
+      url: `/${eventId}/validate_ticket/${qrCode}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((res) => res.data)
+    .catch((err) => err)
+
+  const requestSuccess = details.status ?? false
+
+  if (requestSuccess) {
+    const ticketDetails = details.detail.products.find(
+      (prod: any) => prod.qr_label === qrCode
+    )
+
+    if (ticketDetails) {
+      res = {
+        ok: true,
+        data: {
+          webTicketUid: ticketDetails.opuid,
+        },
+      }
+    }
+  }
+
+  return res
+}
+
 const validateTicket = async (
   ticketUid: string,
   eventId: string,
@@ -354,6 +393,7 @@ const Api = {
   getAllProducts,
   getAllWebstoreTickets,
   getAllCombos,
+  getWebstoreTicketDetails,
   getTicketValidation,
   getOnlineValidations,
   validateTicket,

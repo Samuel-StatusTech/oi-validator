@@ -233,7 +233,7 @@ export function Home() {
         </>
       )}
       <QrCodeStatusView
-        qrCode={qrCode}
+        qrCode={qrCode.replace(`${currentEvent?.id}/`, "")}
         isOpen={showFeedback}
         isSuccess={ticketState}
         isValidating={isValidating}

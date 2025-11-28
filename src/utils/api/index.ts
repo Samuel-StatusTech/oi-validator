@@ -352,7 +352,6 @@ const validateTicket = async (
 const uploadSync = async (data: {
   orders: any[]
   products: any[]
-  validations: any[]
   operations: any[]
   token: string
 }): Promise<UploadSyncRes> => {
@@ -364,7 +363,6 @@ const uploadSync = async (data: {
       {
         orders: data.orders,
         products: data.products,
-        validations: data.validations,
         operations: data.operations,
       },
       {

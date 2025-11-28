@@ -61,15 +61,14 @@ export const syncValidations = async (data?: {
         throw new Error("Upload sync failed")
       }
 
-      const { validations } = uploadReq.data
+      const validations: IValidation[] = uploadReq.data.validations
 
       if (validations) {
-        validations.forEach(async (v: any) => {
-          return new Promise(async (resolve) => {
-            await Validation.updateValidation(v.uid, true)
-            resolve(true)
-          })
-        })
+        const validationsIds: string[] = [
+          ...new Set(validations.map((v) => v.uid)),
+        ]
+
+        await Validation.updateValidations(validationsIds)
       }
 
       Common.setLastSync(now)

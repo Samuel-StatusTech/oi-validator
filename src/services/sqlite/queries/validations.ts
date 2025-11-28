@@ -12,6 +12,10 @@ export const updateValidation = `
   UPDATE validations SET synced = ? WHERE uid = ?;
 `;
 
+export const updateValidations = `
+  UPDATE validations SET synced = ? WHERE uid IN [?];
+`;
+
 export const selectValidationByUid = `
   SELECT * FROM validations WHERE uid = ?;
 `;

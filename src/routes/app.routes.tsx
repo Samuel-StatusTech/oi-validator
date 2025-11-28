@@ -81,7 +81,6 @@ export function AppRoutes() {
       const data = {
         orders,
         products,
-        validations,
         operations,
         token,
       }
@@ -100,6 +99,13 @@ export function AppRoutes() {
         await storeDbUserInfo(sync.data)
 
         const syncValidationsRes = await Api.uploadSync(data)
+
+        if (syncValidationsRes.ok) {
+          await Validation.updateValidations(
+            syncValidationsRes.data?.validations.map((v: any) => v.uid)
+          )
+        }
+
         setSyncPopup({ show: true, success: syncValidationsRes.ok })
       } else {
         setSyncPopup({ show: true, success: false })

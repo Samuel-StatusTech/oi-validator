@@ -7,13 +7,15 @@ import { Onlinetag } from "@components/OnlineTag"
 import { useNavigation } from "@react-navigation/native"
 import { AuthNavigatiorRoutesProps } from "@routes/auth.routes"
 import { EventData } from "@utils/@types/data/event"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import useStore from "../store"
 import { useNetInfo } from "@react-native-community/netinfo"
 import { PopUp } from "@components/PopUp"
 import { AppNavigatiorRoutesProps } from "@routes/app.routes"
 import { dropTables } from "@services/sqlite/Database"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
+import Api from "@utils/api"
+import { storeDbUserInfo } from "@utils/toolbox/auxFns/storeDbUserInfo"
 
 export function SelectEvent() {
   const insets = useSafeAreaInsets()
@@ -24,7 +26,11 @@ export function SelectEvent() {
   const Token = useStore((s) => s.Token)
   const User = useStore((s) => s.User)
   const user = useStore((s) => s.user)
+  const event = useStore((s) => s.currentEvent)
+  const token = useStore((s) => s.token)
+  const lastSync = useStore((s) => s.lastSync)
 
+  const [reloading, setReloading] = useState(false)
   const [events, setEvents] = useState<EventData[]>([])
   const [showingPopUp, setShowingPopUp] = useState(false)
 
@@ -32,6 +38,9 @@ export function SelectEvent() {
   const authNavigation = useNavigation<AuthNavigatiorRoutesProps>()
 
   const flatListRef = useRef(null)
+
+  const sortEvents = (list: EventData[]) =>
+    list.sort((a, b) => (a.date > b.date ? -1 : 1))
 
   function handleDesconect() {
     User.cleanInfo()
@@ -50,11 +59,40 @@ export function SelectEvent() {
     navigation.navigate("home")
   }
 
+  const reloadData = useCallback(async () => {
+    try {
+      setReloading(true)
+
+      const req = await Api.syncUser(
+        user?.org_id as string,
+        user?.id as string,
+        event?.id as string,
+        lastSync ?? 0,
+        token
+      )
+
+      if (req.ok) {
+        User.storeSyncInfo(req.data)
+        await storeDbUserInfo(req.data)
+
+        const newList = req.data.eventsData.filter((event) =>
+          Boolean(event.status)
+        )
+
+        setEvents(sortEvents(newList))
+      }
+    } catch (error) {}
+
+    setReloading(false)
+  }, [])
+
   useEffect(() => {
     Common.clearEvent()
     if (user?.kInfo)
       setEvents(
-        user?.kInfo?.eventsData.filter((event) => Boolean(event.status))
+        sortEvents(
+          user?.kInfo?.eventsData.filter((event) => Boolean(event.status))
+        )
       )
   }, [])
 
@@ -92,6 +130,8 @@ export function SelectEvent() {
         <View style={styles.spacer} />
 
         <FlatList
+          refreshing={reloading}
+          onRefresh={reloadData}
           ref={flatListRef}
           data={events}
           renderItem={({ item, index }) => (

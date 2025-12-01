@@ -55,7 +55,6 @@ export function AppRoutes() {
     lastSync,
     token,
     mustSync,
-    Common,
     User,
   } = useStore((state) => state)
   const [popupShow, setPopupShow] = useState(false)

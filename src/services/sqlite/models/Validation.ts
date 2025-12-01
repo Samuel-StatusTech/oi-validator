@@ -20,7 +20,7 @@ const insertValidation = async (
     const result = await db.runAsync(insertValidationQuery, [
       uid,
       user_id,
-      0,
+      synced ? 1 : 0,
       created_at,
       updated_at,
     ])

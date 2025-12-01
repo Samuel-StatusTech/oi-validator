@@ -91,7 +91,8 @@ const validateQR = async (
                     resolve(true)
                     break
                   case 2:
-                    reject("Ticket já validado online. Sincronize seus dados.")
+                    // reject("Ticket já validado online. Sincronize seus dados.")
+                    reject("Ticket já validado.")
                     break
                   case 3:
                     reject("Não foi possível validar. Produto não encontrado")

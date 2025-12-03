@@ -1,20 +1,25 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { Text, View, FlatList, StyleSheet } from "react-native"
 import { THEME } from "../theme"
 import Api from "@utils/api"
 import { IProduct } from "@utils/@types/sqlite/product"
-import { ProductListItem } from "@components/ProductListItem"
+import { MemoizedProductListItem } from "@components/ProductListItem"
 import useStore from "../store"
 import { IValidation } from "@utils/@types/sqlite/validation"
 import { TProductListItem } from "@utils/@types/components/ProductListItem"
-import { useNetInfo } from "@react-native-community/netinfo"
+import { ICombo } from "@utils/@types/sqlite/combo"
+import { IWebstoreTicket } from "@utils/@types/sqlite/webstoreTicket"
 
 function AvailableProductsScreen() {
   const { currentEvent: event, user, token } = useStore((state) => state)
 
   const [list, setList] = useState<TProductListItem[]>([])
+  const [refreshing, setRefreshing] = useState(false)
 
-  const countValidations = (prods: IProduct[], validations: IValidation[]) => {
+  const countValidations = (
+    prods: (IProduct | ICombo | IWebstoreTicket)[],
+    validations: IValidation[]
+  ) => {
     let nl: TProductListItem[] = []
 
     let restingValidations = [...validations]
@@ -22,20 +27,26 @@ function AvailableProductsScreen() {
       const n = restingValidations.filter((v) => {
         const ticketId = v.uid
         const prodOId = ticketId.substring(7, 10)
-        const prodInId = parseInt(String(p.o_id ?? ""))
+        const prodInId = parseInt(String((p as IProduct | ICombo).oid ?? ""))
           .toString(36)
           .padStart(3, "0")
           .slice(0, 3)
           .toUpperCase()
 
-        return prodOId === prodInId
+        return (
+          prodOId === prodInId ||
+          v.ticketProductId === (p as IWebstoreTicket).product_id
+        )
       }).length
 
-      if (p.name !== p.id)
+      if (
+        p.name !== (p as IProduct | ICombo).id &&
+        p.name !== (p as IWebstoreTicket).product_id
+      )
         nl.push({
           qnt: n,
           name: p.name,
-          msg: p.description1,
+          msg: (p as IProduct | ICombo).description1 ?? "",
         })
     })
 
@@ -62,6 +73,12 @@ function AvailableProductsScreen() {
     }
   }
 
+  const reloadList = useCallback(async () => {
+    setRefreshing(true)
+    await fetchData()
+    setRefreshing(false)
+  }, [])
+
   useEffect(() => {
     fetchData()
   }, [])
@@ -74,9 +91,11 @@ function AvailableProductsScreen() {
         </Text>
 
         <FlatList
+          refreshing={refreshing}
+          onRefresh={reloadList}
           data={list}
           renderItem={({ item }) => (
-            <ProductListItem
+            <MemoizedProductListItem
               info={{
                 msg: item.msg ?? "",
                 name: item.name,
@@ -86,6 +105,10 @@ function AvailableProductsScreen() {
             />
           )}
           overScrollMode="never"
+          initialNumToRender={32}
+          maxToRenderPerBatch={64}
+          windowSize={32}
+          removeClippedSubviews={false}
           style={styles.flatList}
           contentContainerStyle={styles.flatListContent}
         />

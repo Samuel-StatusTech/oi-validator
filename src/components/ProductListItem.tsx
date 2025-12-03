@@ -1,4 +1,4 @@
-import React from "react"
+import React, { memo } from "react"
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native"
 import { TProductListItem } from "@utils/@types/components/ProductListItem"
 import { THEME } from "../theme"
@@ -7,7 +7,7 @@ type Props = {
   info: TProductListItem
 }
 
-export function ProductListItem({ info }: Props) {
+function ProductListItem({ info }: Props) {
   const { name, qnt, msg } = info
 
   return (
@@ -30,6 +30,15 @@ export function ProductListItem({ info }: Props) {
     </TouchableOpacity>
   )
 }
+
+export const MemoizedProductListItem = memo(ProductListItem, (prev, current) => {
+  const isEqual = 
+    prev.info.msg === current.info.msg &&
+    prev.info.name === current.info.name &&
+    prev.info.qnt === current.info.qnt
+
+  return isEqual
+})
 
 const styles = StyleSheet.create({
   container: {

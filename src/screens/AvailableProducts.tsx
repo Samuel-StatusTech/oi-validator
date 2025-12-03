@@ -59,9 +59,35 @@ function AvailableProductsScreen() {
 
   const fetchData = async () => {
     if (event) {
+      let pdvProductsList: IProduct[] = []
+      let pdvCombosList: ICombo[] = []
+      let webstoreList: IWebstoreTicket[] = []
+
       const products = await Api.getAllProducts(
         user?.roleInfo.product_types ?? []
       )
+
+      if (products.ok) {
+        pdvProductsList = products.data
+      }
+
+      const combos = await Api.getAllCombos()
+
+      if (combos.ok) {
+        pdvCombosList = combos.data
+      }
+
+      if (
+        user?.roleInfo.product_types?.includes("ingresso") ||
+        user?.roleInfo.has_product_list !== 0
+      ) {
+        const webTickets = await Api.getAllWebstoreTickets()
+
+        if (webTickets.ok) {
+          webstoreList = webTickets.data
+        }
+      }
+
       const validations = await Api.getValidations({
         hasConnection: true,
         eventId: event.id,

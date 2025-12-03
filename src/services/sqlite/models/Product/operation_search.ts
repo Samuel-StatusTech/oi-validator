@@ -3,12 +3,7 @@ import {
   selectAllProducts,
   selectProductsNoSync,
 } from "@services/sqlite/queries/products"
-import { selectAllWebTickets } from "@services/sqlite/queries/webstoreTickets"
 import { IProduct } from "@utils/@types/sqlite/product"
-import { IWebstoreTicket } from "@utils/@types/sqlite/webstoreTicket"
-import dbModelWebstoreTicket from "../WebstoreTicket"
-import Api from "@utils/api"
-import { ICombo } from "@utils/@types/sqlite/combo"
 
 export const getEventProducts = async (): Promise<IProduct[]> => {
   try {
@@ -21,9 +16,9 @@ export const getEventProducts = async (): Promise<IProduct[]> => {
 
 export const getUserProducts = async (
   categories: string[]
-): Promise<(IProduct | ICombo | IWebstoreTicket)[]> => {
+): Promise<IProduct[]> => {
   try {
-    let list: (IProduct | ICombo | IWebstoreTicket)[] = []
+    let list: IProduct[] = []
 
     const listStr = "'" + categories.join("', '") + "'"
 
@@ -32,21 +27,6 @@ export const getUserProducts = async (
     )
 
     list = [...list, ...allProducts.filter((i) => Boolean(i.status))]
-
-    const allCombos = await db.getAllAsync<ICombo>(`SELECT * FROM combos;`)
-
-    list = [...list, ...allCombos.filter((i) => Boolean(i.status))]
-
-    if (categories.includes("ingresso")) {
-      const webstoreTicketsResult = await Api.getAllWebstoreTickets()
-
-      if (webstoreTicketsResult.ok) {
-        list = [
-          ...list,
-          ...webstoreTicketsResult.data.filter((i) => Boolean(i.active)),
-        ]
-      }
-    }
 
     return list
   } catch (error) {

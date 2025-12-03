@@ -29,6 +29,7 @@ const validateQR = async (
 
         const { isValidable } = validableCheckage
         let { validableCode } = validableCheckage
+        let ticketProductId = null
 
         if (isValidable) {
           const locallyValidated = await Validation.searchByTicket(
@@ -50,7 +51,7 @@ const validateQR = async (
               await Api.getAllWebstoreTickets(),
             ]
 
-            const prodName = await getTicketName(
+            const { id: prodId, name: prodName } = await getTicketName(
               upperCode,
               user.id,
               prodsList,
@@ -61,6 +62,7 @@ const validateQR = async (
             )
 
             let isEventTicket = prodName.length > 0
+            ticketProductId = prodId
 
             if (!isEventTicket) {
               // Check if it's a webstore ticket
@@ -74,6 +76,7 @@ const validateQR = async (
               if (webstoreTicketDetailsRequest.ok) {
                 isEventTicket = true
                 validableCode = webstoreTicketDetailsRequest.data.webTicketUid
+                ticketProductId = webstoreTicketDetailsRequest.data.productId
               }
             }
 
@@ -87,7 +90,16 @@ const validateQR = async (
               if (validation.ok) {
                 switch (validation.data) {
                   case 1:
-                    await registerLclValidation(validableCode, user.id, true)
+                    await registerLclValidation(
+                      validableCode,
+                      user.id,
+                      true,
+                      ticketProductId,
+                      upperCode.replace(
+                        `${(event?.id ?? "").toUpperCase()}/`,
+                        ""
+                      )
+                    )
                     resolve(true)
                     break
                   case 2:
@@ -140,14 +152,18 @@ const validateQR = async (
 const registerLclValidation = async (
   ticketUid: string,
   userId: string,
-  sync: boolean
+  sync: boolean,
+  ticketProductId: string,
+  ticketReadableCode: string
 ) => {
   await Validation.insertValidation(
     ticketUid,
     userId,
     sync,
     new Date().getTime(),
-    new Date().getTime()
+    new Date().getTime(),
+    ticketProductId,
+    ticketReadableCode
   )
 }
 

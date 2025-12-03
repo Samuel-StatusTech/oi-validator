@@ -1,20 +1,12 @@
 import db from "@services/sqlite/Database"
-import { updateWebTicket as updateWebTicketQuery } from "../../queries/webstoreTickets"
+import { insertOrReplaceWebTicket, insertWebTicket } from "../../queries/webstoreTickets"
 import { IWebstoreTicket } from "@utils/@types/sqlite/webstoreTicket"
 import { safeTransactions } from "@services/sqlite/safeTransactions"
-import { buildUpdateParams } from "@utils/toolbox/dbHelpers"
+import { buildInsertParams } from "@utils/toolbox/dbHelpers"
 
 export const updateWebstoreTicket = async (product: IWebstoreTicket) => {
   try {
-    const result = await db.runAsync(updateWebTicketQuery, [
-      product.group_id,
-      product.name,
-      product.image,
-      product.created_at,
-      product.updated_at,
-      product.active,
-      product.product_id,
-    ])
+    const result = await db.runAsync(insertWebTicket, buildInsertParams.webstoreTicket(product))
     return result.lastInsertRowId
   } catch (error) {
     throw error
@@ -26,9 +18,9 @@ export const updateWebstoreTickets = async (webTickets: IWebstoreTicket[]) => {
 
   try {
     const transactionResult = await safeTransactions(
-      updateWebTicketQuery,
+      insertOrReplaceWebTicket,
       webTickets,
-      buildUpdateParams.webstoreTicket
+      buildInsertParams.webstoreTicket
     )
 
     return transactionResult

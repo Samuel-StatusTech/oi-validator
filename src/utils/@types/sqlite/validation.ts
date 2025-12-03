@@ -5,4 +5,6 @@ export interface IValidation {
   synced: number
   created_at: Readonly<Date>
   updated_at: Readonly<Date>
+  ticketProductId?: string
+  ticketReadableCode?: string
 }

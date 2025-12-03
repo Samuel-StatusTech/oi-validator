@@ -159,7 +159,7 @@ const syncUser = async (
       }
     }
 
-    if (eventId) {
+    if (eventId && res.ok) {
       const req2 = await na
         .get(`/ecommerce/product/getList?eventId=${eventId}`)
         .catch((err) => err)
@@ -168,7 +168,16 @@ const syncUser = async (
         const sync = req2.data
 
         if (sync && res.ok) {
-          res.data.productsData.webstore_tickets = sync
+          res = {
+            ok: true,
+            data: {
+              ...res.data,
+              productsData: {
+                ...res.data.productsData,
+                webstore_tickets: sync,
+              },
+            },
+          }
         }
       }
     }
@@ -254,28 +263,31 @@ const getOnlineValidations = async (
   return res
 }
 
-const getValidations = async (
-  hasConnection: boolean,
-  eventId: string,
+const getValidations = async (syncParams?: {
+  hasConnection: boolean
+  eventId: string
   token: string
-): Promise<GetValidationsRes> => {
+}): Promise<GetValidationsRes> => {
   let res: GetValidationsRes = { ok: false, message: "" }
 
   let syncedValidations: IValidation[] = []
-  if (hasConnection) {
-    try {
-      const sv = await a
-        .get(`/validations/overview/${eventId}`, {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            "Api-Token": `Bearer ${token}`,
-          },
-        })
-        .then(async (res) => (await res.data()) as IValidation[])
 
-      syncedValidations = sv
-    } catch (error) {}
+  if (syncParams) {
+    if (syncParams.hasConnection) {
+      try {
+        const sv = await a
+          .get(`/validations/overview/${syncParams.eventId}`, {
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+              "Api-Token": `Bearer ${syncParams.token}`,
+            },
+          })
+          .then(async (res) => (await res.data()) as IValidation[])
+
+        syncedValidations = sv
+      } catch (error) {}
+    }
   }
 
   const localValidations = await Validation.getAll()
@@ -316,6 +328,7 @@ const getWebstoreTicketDetails = async (
       res = {
         ok: true,
         data: {
+          productId: ticketDetails.id,
           webTicketUid: ticketDetails.opuid,
         },
       }

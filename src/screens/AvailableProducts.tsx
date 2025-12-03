@@ -51,7 +51,11 @@ function AvailableProductsScreen() {
       const products = await Api.getAllProducts(
         user?.roleInfo.product_types ?? []
       )
-      const validations = await Api.getValidations(true, event.id, token)
+      const validations = await Api.getValidations({
+        hasConnection: true,
+        eventId: event.id,
+        token,
+      })
       if (products.ok && validations.ok) {
         countValidations(products.data, validations.data)
       }
@@ -100,7 +104,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: THEME.fonts.heading,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: THEME.fontSizes.lg,
     color: THEME.colors.blue[600],
     marginHorizontal: 18,

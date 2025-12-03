@@ -14,7 +14,9 @@ const insertValidation = async (
   user_id: string,
   synced: boolean,
   created_at: number,
-  updated_at: number
+  updated_at: number,
+  ticketProductId: string,
+  ticketReadableCode: string
 ) => {
   try {
     const result = await db.runAsync(insertValidationQuery, [
@@ -23,6 +25,8 @@ const insertValidation = async (
       synced ? 1 : 0,
       created_at,
       updated_at,
+      ticketProductId,
+      ticketReadableCode,
     ])
     if (result.changes > 0) return result.lastInsertRowId
     else throw new Error("Erro ao registrar validação")

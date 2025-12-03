@@ -75,7 +75,6 @@ export function AppRoutes() {
       const operations = await Operation.getOperationsNoSync()
       const orders = await Order.getOrdersNoSync()
       const products = await Product.getProductsNoSync()
-      const validations = await Validation.getValidationsNoSync()
 
       const data = {
         orders,
@@ -100,9 +99,13 @@ export function AppRoutes() {
         const syncValidationsRes = await Api.uploadSync(data)
 
         if (syncValidationsRes.ok) {
-          await Validation.updateValidations(
-            syncValidationsRes.data?.validations.map((v: any) => v.uid)
+          const syncsToUpdate = syncValidationsRes.data?.validationSuccess.map(
+            (v: any) => v.uid
           )
+
+          if (syncsToUpdate.length > 0) {
+            await Validation.updateValidations(syncsToUpdate)
+          }
         }
 
         setSyncPopup({ show: true, success: syncValidationsRes.ok })

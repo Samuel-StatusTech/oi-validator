@@ -46,13 +46,12 @@ export const syncValidations = async (data?: {
         })
       }
 
-      const localNoSyncValidations = await Validation.getValidationsNoSync()
+      // const localNoSyncValidations = await Validation.getValidationsNoSync()
 
       const now = new Date().getTime()
       const uploadReq = await Api.uploadSync({
         orders: data?.orders || [],
         products: data?.products || [],
-        validations: localNoSyncValidations,
         operations: data?.operations || [],
         token: data?.token || token,
       })

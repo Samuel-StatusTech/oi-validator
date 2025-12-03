@@ -1,21 +1,21 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { FlatList, Text, View, StyleSheet } from "react-native"
 import { THEME } from "../theme"
 import { QrHistoryItem } from "@components/QrHistoryItem"
 
 import { TQrHistoryItem } from "@utils/@types/components/QrHistoryItem"
 import Api from "@utils/api"
-import { useNetInfo } from "@react-native-community/netinfo"
 import useStore from "../store"
 import { IValidation } from "@utils/@types/sqlite/validation"
 import { getTicketsNames } from "@utils/toolbox/auxFns/getTicketNames"
 import QrHistoryEmpty from "@components/QrHistoryEmpty"
 
 export function QrHistory() {
-  const {user, token} = useStore((state) => state)
-  const connection = useNetInfo()
+  const { user } = useStore((state) => state)
   const event = useStore((state) => state.currentEvent)
+
   const [data, setData] = useState<TQrHistoryItem[]>([])
+  const [refreshing, setRefreshing] = useState(false)
 
   const parseList = (list: IValidation[]): TQrHistoryItem[] => {
     let nl: TQrHistoryItem[] = []
@@ -23,7 +23,7 @@ export function QrHistory() {
     for (let i = 0; i < list.length; i++) {
       const validation = list[i]
       nl.push({
-        code: validation.uid,
+        code: validation.ticketReadableCode ?? validation.uid,
         date: validation.created_at,
         name: validation.name ?? "",
       })
@@ -34,8 +34,8 @@ export function QrHistory() {
 
   const updateList = async () => {
     if (user && event) {
-      const hasConnection = false
-      const list = await Api.getValidations(hasConnection, event.id, token)
+      const list = await Api.getValidations()
+
       if (list.ok) {
         const listWithProdsNames = await getTicketsNames(list.data, user)
         const nl = parseList(listWithProdsNames)
@@ -46,6 +46,12 @@ export function QrHistory() {
       }
     }
   }
+
+  const reloadList = useCallback(async () => {
+    setRefreshing(true)
+    await updateList()
+    setRefreshing(false)
+  }, [])
 
   useEffect(() => {
     updateList()
@@ -59,6 +65,8 @@ export function QrHistory() {
         </Text>
 
         <FlatList
+          refreshing={refreshing}
+          onRefresh={reloadList}
           data={data}
           renderItem={({ item }) => <QrHistoryItem info={item} />}
           ListEmptyComponent={() => <QrHistoryEmpty />}
@@ -81,7 +89,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: THEME.fonts.heading,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: THEME.fontSizes.lg,
     color: THEME.colors.blue[600],
     marginHorizontal: 18,

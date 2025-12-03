@@ -44,12 +44,18 @@ export function QrHistoryItem({ info }: Props) {
   return (
     <TouchableOpacity activeOpacity={0.55}>
       <View style={styles.container}>
-        <Text style={styles.name}>
-          {name}
-        </Text>
-        <Text style={styles.details}>
-          {`${code} - ${getTime()}`}
-        </Text>
+        <Text style={styles.name}>{name}</Text>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <Text style={styles.details}>{code}</Text>
+
+          <Text style={styles.details}>{getTime()}</Text>
+        </View>
       </View>
     </TouchableOpacity>
   )
@@ -72,4 +78,4 @@ const styles = StyleSheet.create({
     fontSize: THEME.fontSizes.sm,
     color: THEME.colors.blue[500],
   },
-});
+})

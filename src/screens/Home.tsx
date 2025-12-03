@@ -119,7 +119,7 @@ export function Home() {
         }
       }
     } catch (error) {
-      console.log(`[DEBUG] Validating Error: `, error)
+      console.log(`Validating Error: `, error)
     }
   }
 

@@ -4,8 +4,10 @@ export const insertValidation = `
     user_id,
     synced,
     created_at,
-    updated_at
-  ) VALUES (?, ?, ?, ?, ?);
+    updated_at,
+    ticketProductId,
+    ticketReadableCode
+  ) VALUES (?, ?, ?, ?, ?, ?, ?);
 `;
 
 export const updateValidation = `

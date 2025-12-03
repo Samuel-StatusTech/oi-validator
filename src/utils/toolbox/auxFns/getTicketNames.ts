@@ -15,6 +15,7 @@ const getTicketName = async (
   allCombos: ICombo[],
   allWebstoreTickets: IWebstoreTicket[]
 ) => {
+  let productId = ""
   let productName = ""
 
   const [type, prodOId] = [ticket.substring(0, 1), ticket.substring(7, 10)]
@@ -38,6 +39,7 @@ const getTicketName = async (
             (pl: any) => pl.user_id == userId && pl.product_id == prods[idx].uid
           )
         ) {
+          productId = prods[idx].id
           productName = prods[idx].name
           break
         }
@@ -60,6 +62,7 @@ const getTicketName = async (
             (pl) => pl.user_id == userId && pl.product_id == prods[idx].uid
           )
         ) {
+          productId = prods[idx].id
           productName = prods[idx].name
           break
         }
@@ -67,7 +70,19 @@ const getTicketName = async (
     }
   }
 
-  return productName
+  if (!productName) {
+    // can be webstoreTicket
+    const webTicket = allWebstoreTickets.find(
+      (webstoreTicket) => webstoreTicket.product_id === ticket
+    )
+
+    if (webTicket) {
+      productId = webTicket.product_id
+      productName = webTicket.name
+    }
+  }
+
+  return { id: productId, name: productName }
 }
 
 const getTicketsNames = async (tickets: IValidation[], user: UserInfo) => {
@@ -90,8 +105,8 @@ const getTicketsNames = async (tickets: IValidation[], user: UserInfo) => {
 
   if (productList.ok && allProducts.ok && allCombos.ok) {
     tickets.forEach(async (ticket) => {
-      const name = await getTicketName(
-        ticket.uid,
+      const { name } = await getTicketName(
+        ticket.ticketProductId ?? ticket.uid,
         user.id,
         productList.data as IProductsList[],
         user.roleInfo.product_types ?? [],

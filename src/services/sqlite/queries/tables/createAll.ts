@@ -139,6 +139,8 @@ export const DBQueryCreateAllTables = [
     synced INTEGER DEFAULT 0,
     created_at datetime DEFAULT NULL,
     updated_at datetime DEFAULT NULL,
+    ticketProductId VARCHAR(64),
+    ticketReadableCode VARCHAR(64),
     PRIMARY KEY (uid, user_id)
   );`,
 ]

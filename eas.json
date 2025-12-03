@@ -16,10 +16,10 @@
     },
     "production": {
       "distribution": "internal",
-      "developmentClient": true,
       "android": {
         "buildType": "apk"
-      }
+      },
+      "node": "20.19.5"
     }
   },
   "submit": {

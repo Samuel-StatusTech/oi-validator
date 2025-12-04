@@ -14,7 +14,7 @@ export const filterUserProducts = async (): Promise<TAllProducts> => {
     if (!user) throw new Error()
 
     const [allProducts, allCombos, allWebstoreTickets] = [
-      await Api.getAllProducts(user.roleInfo.product_types ?? []),
+      await Api.getAllProducts(),
       await Api.getAllCombos(),
       await Api.getAllWebstoreTickets(),
     ]
@@ -26,12 +26,17 @@ export const filterUserProducts = async (): Promise<TAllProducts> => {
       ...allProducts.data,
       ...allCombos.data,
       ...allWebstoreTickets.data,
-    ]
+    ].filter((i) =>
+      (i as IProduct | ICombo).status !== undefined
+        ? Boolean((i as IProduct | ICombo).status)
+        : true
+    )
 
     // Validator config
     const userProductsTypes: string[] = user?.roleInfo.product_types as string[]
     const userProductsSpecificList: { id: string }[] =
       user?.roleInfo.products ?? []
+    const hasSpecificList = Boolean(user?.roleInfo.has_product_list)
     const userProductsSpecificIds = userProductsSpecificList.map((i) => i.id)
 
     // Filtering
@@ -42,17 +47,15 @@ export const filterUserProducts = async (): Promise<TAllProducts> => {
 
       const isTypeIncluded =
         userProductsTypes.includes((product as IProduct).type ?? "") ||
-        (product as ICombo).type === "combo" ||
-        (!(product as any).type &&
-          (product as IWebstoreTicket).product_id &&
+        userProductsTypes.includes((product as ICombo).direction ?? "") ||
+        ((product as IWebstoreTicket).product_id &&
           userProductsTypes.includes("ingresso"))
 
-      if (
-        userProductsSpecificIds.includes(productRegisterId) ||
-        isTypeIncluded
-      ) {
-        finalList.push(product)
-      }
+      const isOnSpecificList = hasSpecificList
+        ? userProductsSpecificIds.includes(productRegisterId)
+        : false
+
+      if (isOnSpecificList || isTypeIncluded) finalList.push(product)
     })
   } catch (error) {
     finalList = []

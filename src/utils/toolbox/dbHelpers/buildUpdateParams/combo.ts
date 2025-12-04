@@ -4,6 +4,7 @@ export const buildComboUpdateParams = (combo: ICombo) => [
   combo.oid,
   combo.favorite,
   combo.org_id,
+  "combo", // type
   combo.name,
   combo.image,
   combo.description1,

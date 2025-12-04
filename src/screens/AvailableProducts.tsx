@@ -98,13 +98,38 @@ function AvailableProductsScreen() {
               }}
             />
           )}
+          ListEmptyComponent={() => (
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Text
+                style={{
+                  width: "100%",
+                  textAlign: "center",
+                  color: THEME.colors.gray[300],
+                  fontSize: 18,
+                  fontWeight: 600,
+                  lineHeight: 28,
+                }}
+              >
+                Você não possui nenhuma permissão no momento. Sincronize as
+                informações e tente novamente.
+              </Text>
+            </View>
+          )}
           overScrollMode="never"
           initialNumToRender={32}
           maxToRenderPerBatch={64}
           windowSize={32}
           removeClippedSubviews={false}
           style={styles.flatList}
-          contentContainerStyle={styles.flatListContent}
+          contentContainerStyle={[
+            styles.flatListContent,
+            list.length === 0 && { flex: 1, justifyContent: "center" },
+          ]}
         />
       </View>
     </View>

@@ -3,6 +3,7 @@ export interface ICombo {
   oid: string
   favorite: string
   org_id: string
+  type: "combo"
   name: string
   image: string
   description1: string

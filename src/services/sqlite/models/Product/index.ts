@@ -1,6 +1,7 @@
 import { insertProduct, insertProducts } from "./operation_insert"
 import { updateProduct, updateProducts } from "./operation_update"
 import {
+  getAllProducts,
   getEventProducts,
   getUserProducts,
   getProductsNoSync,
@@ -13,6 +14,7 @@ const dbModelProduct = {
   updateProduct,
   updateProducts,
 
+  getAllProducts,
   getEventProducts,
   getUserProducts,
   getProductsNoSync,

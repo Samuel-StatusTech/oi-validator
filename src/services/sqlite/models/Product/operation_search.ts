@@ -5,6 +5,15 @@ import {
 } from "@services/sqlite/queries/products"
 import { IProduct } from "@utils/@types/sqlite/product"
 
+export const getAllProducts = async (): Promise<IProduct[]> => {
+  try {
+    const result = await db.getAllAsync<IProduct>(selectAllProducts)
+    return result
+  } catch (error) {
+    throw error
+  }
+}
+
 export const getEventProducts = async (): Promise<IProduct[]> => {
   try {
     const result = await db.getAllAsync<IProduct>(selectAllProducts)

@@ -4,6 +4,7 @@ export const insertCombo = `
     oid,
     favorite,
     org_id,
+    type,
     name,
     image,
     description1,
@@ -21,7 +22,7 @@ export const insertCombo = `
     updated_at,
     group_id,
     archived
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 `
 
 export const selectAllCombos = `
@@ -33,6 +34,7 @@ export const updateCombo = `
     oid = ?,
     favorite = ?,
     org_id = ?,
+    type = ?,
     name = ?,
     image = ?,
     description1 = ?,

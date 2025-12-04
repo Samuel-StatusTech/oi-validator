@@ -10,19 +10,19 @@ import { SyncUserRes } from "@utils/@types/api/responses/syncUser"
 import { AllCombosRes } from "@utils/@types/api/responses/getAllCombos"
 import { TicketAlrdValidRes } from "@utils/@types/api/responses/getTicketValidation"
 import { TicketValidationRes } from "@utils/@types/api/responses/validateTicket"
+import { UploadSyncRes } from "@utils/@types/api/responses/uploadSync"
+import { AllWebstoreTicketsRes } from "@utils/@types/api/responses/getAllWebstoreTickets"
+import { TicketDetailsRes } from "@utils/@types/api/responses/ticketDetails"
+import { ValidatorDataRes } from "@utils/@types/api/responses/getValidator"
+import { GetValidationsRes } from "@utils/@types/api/responses/getValidations"
 
 /* Models */
 import Product from "../../services/sqlite/models/Product"
 import ProductList from "../../services/sqlite/models/ProductsList"
 import Combo from "../../services/sqlite/models/Combo"
 import Validation from "../../services/sqlite/models/Validation"
-import { GetValidationsRes } from "@utils/@types/api/responses/getValidations"
-import { UploadSyncRes } from "@utils/@types/api/responses/uploadSync"
-import { IValidation } from "@utils/@types/sqlite/validation"
 import WebstoreTicket from "@services/sqlite/models/WebstoreTicket"
-import { AllWebstoreTicketsRes } from "@utils/@types/api/responses/getAllWebstoreTickets"
-import { TicketDetailsRes } from "@utils/@types/api/responses/ticketDetails"
-import { ValidatorDataRes } from "@utils/@types/api/responses/getValidator"
+import { IValidation } from "@utils/@types/sqlite/validation"
 import useStore from "src/store"
 
 const na = axios.create({
@@ -41,7 +41,7 @@ const a = axios.create({
 
 a.interceptors.request.use((req) => {
   const token = useStore.getState().token
-  req.headers.Authorization = token
+  req.headers.Authorization = `Bearer ${token}`
 
   return req
 })
@@ -230,12 +230,10 @@ const getProductsList = async (): Promise<ProductsListRes> => {
   return res
 }
 
-const getAllProducts = async (
-  categories: string[]
-): Promise<AllProductsRes> => {
+const getAllProducts = async (): Promise<AllProductsRes> => {
   let res: AllProductsRes = { ok: false, message: "" }
 
-  const prods = (await Product.getUserProducts(categories)) ?? []
+  const prods = (await Product.getAllProducts()) ?? []
   res = { ok: true, data: prods }
 
   return res

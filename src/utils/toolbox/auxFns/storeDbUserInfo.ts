@@ -13,7 +13,7 @@ export const storeDbUserInfo = async (
   return new Promise(async (resolve, reject) => {
     try {
       if (kInfo) {
-        const { eventsData: events, orders } = kInfo
+        const { eventsData: events } = kInfo
 
         const {
           products,

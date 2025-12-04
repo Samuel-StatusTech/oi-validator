@@ -106,6 +106,7 @@ export const DBQueryCreateAllTables = [
     oid TEXT,
     favorite TEXT,
     org_id TEXT,
+    type VARCHAR(128),
     name TEXT,
     image TEXT,
     description1 TEXT,

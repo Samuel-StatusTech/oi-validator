@@ -9,7 +9,7 @@ import { IValidation } from "@utils/@types/sqlite/validation"
 import { TProductListItem } from "@utils/@types/components/ProductListItem"
 import { ICombo } from "@utils/@types/sqlite/combo"
 import { IWebstoreTicket } from "@utils/@types/sqlite/webstoreTicket"
-import { filterUserProducts } from "@utils/toolbox/auxFns/filterUserProducts"
+import { getUserProducts } from "@utils/toolbox/auxFns/getUserProducts"
 
 function AvailableProductsScreen() {
   const { currentEvent: event, token } = useStore((state) => state)
@@ -52,7 +52,7 @@ function AvailableProductsScreen() {
   const fetchData = async () => {
     try {
       if (event) {
-        const userProducts = await filterUserProducts()
+        const userProducts = await getUserProducts()
 
         const validations = await Api.getValidations({
           hasConnection: true,

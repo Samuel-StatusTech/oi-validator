@@ -15,6 +15,7 @@ import { AllWebstoreTicketsRes } from "@utils/@types/api/responses/getAllWebstor
 import { TicketDetailsRes } from "@utils/@types/api/responses/ticketDetails"
 import { ValidatorDataRes } from "@utils/@types/api/responses/getValidator"
 import { GetValidationsRes } from "@utils/@types/api/responses/getValidations"
+import { AllPdvAndWebstoreProductsRes } from "@utils/@types/api/responses/getAllPdvAndWebstoreTickets"
 
 /* Models */
 import Product from "../../services/sqlite/models/Product"
@@ -239,6 +240,29 @@ const getAllProducts = async (): Promise<AllProductsRes> => {
   return res
 }
 
+const getAllPdvAndWebstoreProducts =
+  async (): Promise<AllPdvAndWebstoreProductsRes> => {
+    let res: AllPdvAndWebstoreProductsRes = { ok: false, message: "" }
+
+    const allProducts = (await Product.getAllProducts()) ?? []
+    const allCombos = (await Combo.getAllCombos()) ?? []
+
+    const allWebstoreTickets =
+      (await WebstoreTicket.getEventWebstoreTicket()) ?? []
+
+    const finalList = [
+      ...allProducts,
+      ...allCombos,
+      ...allWebstoreTickets,
+    ].filter((i: any) => {
+      return i.status !== undefined ? Boolean(i.status) : true
+    })
+
+    res = { ok: true, data: finalList }
+
+    return res
+  }
+
 const getAllWebstoreTickets = async (): Promise<AllWebstoreTicketsRes> => {
   let res: AllWebstoreTicketsRes = { ok: false, message: "" }
 
@@ -439,6 +463,7 @@ const Api = {
   getProductsList,
   getAllProducts,
   getAllWebstoreTickets,
+  getAllPdvAndWebstoreProducts,
   getAllCombos,
   getWebstoreTicketDetails,
   getTicketValidation,

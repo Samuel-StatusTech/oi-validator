@@ -37,9 +37,9 @@ export function QrHistory() {
       const list = await Api.getValidations()
 
       if (list.ok) {
-        const listWithProdsNames = await getTicketsNames(list.data, user)
-        const nl = parseList(listWithProdsNames)
-        const orderedData = nl.sort((a, b) => {
+        const listWithProdsNames = await getTicketsNames(list.data)
+        const newList = parseList(listWithProdsNames)
+        const orderedData = newList.sort((a, b) => {
           return a.date < b.date ? 1 : a.date > b.date ? -1 : 0
         })
         setData(orderedData)

@@ -4,9 +4,9 @@ import { IWebstoreTicket } from "@utils/@types/sqlite/webstoreTicket"
 import Api from "@utils/api"
 import useStore from "src/store"
 
-type TAllProducts = (IProduct | ICombo | IWebstoreTicket)[]
+export type TAllProducts = (IProduct | ICombo | IWebstoreTicket)[]
 
-export const filterUserProducts = async (): Promise<TAllProducts> => {
+export const getUserProducts = async (): Promise<TAllProducts> => {
   let finalList: TAllProducts = []
   try {
     const user = useStore.getState().user

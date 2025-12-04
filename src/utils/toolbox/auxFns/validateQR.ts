@@ -5,7 +5,9 @@ import { UserInfo } from "@utils/@types/data/user"
 import Validation from "@services/sqlite/models/Validation"
 import { getTicketName } from "./getTicketNames"
 import { isTicketValidable } from "./getTicketValidable"
-import { filterUserProducts } from "./filterUserProducts"
+import { getUserProducts } from "./getUserProducts"
+import { IWebstoreTicket } from "@utils/@types/sqlite/webstoreTicket"
+import { IProduct } from "@utils/@types/sqlite/product"
 
 const validateQR = async (
   code: string,
@@ -29,12 +31,14 @@ const validateQR = async (
 
         const { isValidable } = validableCheckage
         let { validableCode } = validableCheckage
-        let ticketProductId = null
+        let ticketProductId: string | null = null
 
         if (isValidable) {
           const locallyValidated = await Validation.searchByTicket(
             validableCode
           )
+
+          const userProds = await getUserProducts()
 
           if (locallyValidated.length > 0) {
             const validation = locallyValidated[0]
@@ -46,9 +50,12 @@ const validateQR = async (
             return
           } else {
             const { id: prodId, name: prodName } = await getTicketName(
-              upperCode
+              upperCode,
+              true,
+              userProds
             )
 
+            let isWebticket = false
             let isTicketCanceled = false
             let isEventTicket = prodName.length > 0
             ticketProductId = prodId
@@ -63,6 +70,7 @@ const validateQR = async (
                 )
 
               if (webstoreTicketDetailsRequest.ok) {
+                isWebticket = true
                 isEventTicket = true
                 isTicketCanceled =
                   webstoreTicketDetailsRequest.data.isTicketCanceled
@@ -77,6 +85,19 @@ const validateQR = async (
             }
 
             if (isEventTicket) {
+              const canValidateThisTicket = userProds.find(
+                (i) =>
+                  (i as IProduct).id === ticketProductId ||
+                  (i as IWebstoreTicket).product_id === ticketProductId
+              )
+
+              if (!canValidateThisTicket) {
+                reject(
+                  "Produto não encontrado. Verifique sua lista de produtos e tente novamente"
+                )
+                return
+              }
+
               const validation = await Api.validateTicket(
                 validableCode,
                 event.id,

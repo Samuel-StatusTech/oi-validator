@@ -9,9 +9,10 @@ import { IValidation } from "@utils/@types/sqlite/validation"
 import { TProductListItem } from "@utils/@types/components/ProductListItem"
 import { ICombo } from "@utils/@types/sqlite/combo"
 import { IWebstoreTicket } from "@utils/@types/sqlite/webstoreTicket"
+import { filterUserProducts } from "@utils/toolbox/auxFns/filterUserProducts"
 
 function AvailableProductsScreen() {
-  const { currentEvent: event, user, token } = useStore((state) => state)
+  const { currentEvent: event, token } = useStore((state) => state)
 
   const [list, setList] = useState<TProductListItem[]>([])
   const [refreshing, setRefreshing] = useState(false)
@@ -20,82 +21,49 @@ function AvailableProductsScreen() {
     prods: (IProduct | ICombo | IWebstoreTicket)[],
     validations: IValidation[]
   ) => {
-    let nl: TProductListItem[] = []
+    let newList: TProductListItem[] = []
 
     let restingValidations = [...validations]
     prods.forEach((p) => {
-      const n = restingValidations.filter((v) => {
-        const ticketId = v.uid
-        const prodOId = ticketId.substring(7, 10)
-        const prodInId = parseInt(String((p as IProduct | ICombo).oid ?? ""))
-          .toString(36)
-          .padStart(3, "0")
-          .slice(0, 3)
-          .toUpperCase()
+      let productValidations = 0
+      let newRestingValidations: IValidation[] = []
 
-        return (
-          prodOId === prodInId ||
-          v.ticketProductId === (p as IWebstoreTicket).product_id
-        )
-      }).length
+      restingValidations.map((v) => {
+        if ((p as IProduct).id === v.ticketProductId) productValidations += 1
+        else newRestingValidations.push(v)
+      })
 
-      if (
-        p.name !== (p as IProduct | ICombo).id &&
-        p.name !== (p as IWebstoreTicket).product_id
-      )
-        nl.push({
-          qnt: n,
-          name: p.name,
-          msg: (p as IProduct | ICombo).description1 ?? "",
-        })
+      newList.push({
+        qnt: productValidations,
+        name: p.name,
+        msg: (p as IProduct | ICombo).description1 ?? "",
+      })
+
+      restingValidations = newRestingValidations
     })
 
     setList(
-      nl.sort((a, b) => {
+      newList.sort((a, b) => {
         return a.name >= b.name ? 1 : -1
       })
     )
   }
 
   const fetchData = async () => {
-    if (event) {
-      let pdvProductsList: IProduct[] = []
-      let pdvCombosList: ICombo[] = []
-      let webstoreList: IWebstoreTicket[] = []
+    try {
+      if (event) {
+        const userProducts = await filterUserProducts()
 
-      const products = await Api.getAllProducts(
-        user?.roleInfo.product_types ?? []
-      )
+        const validations = await Api.getValidations({
+          hasConnection: true,
+          eventId: event.id,
+          token,
+        })
 
-      if (products.ok) {
-        pdvProductsList = products.data
+        countValidations(userProducts, validations.ok ? validations.data : [])
       }
-
-      const combos = await Api.getAllCombos()
-
-      if (combos.ok) {
-        pdvCombosList = combos.data
-      }
-
-      if (
-        user?.roleInfo.product_types?.includes("ingresso") ||
-        user?.roleInfo.has_product_list !== 0
-      ) {
-        const webTickets = await Api.getAllWebstoreTickets()
-
-        if (webTickets.ok) {
-          webstoreList = webTickets.data
-        }
-      }
-
-      const validations = await Api.getValidations({
-        hasConnection: true,
-        eventId: event.id,
-        token,
-      })
-      if (products.ok && validations.ok) {
-        countValidations(products.data, validations.data)
-      }
+    } catch (error) {
+      console.log(error)
     }
   }
 

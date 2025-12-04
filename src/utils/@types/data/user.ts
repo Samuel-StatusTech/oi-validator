@@ -21,5 +21,6 @@ export type TUserRoleInfo = {
   has_ticket: number
   has_product_list: number
   product_types?: any[]
+  products?: { id: string }[]
   user_id: string
 }

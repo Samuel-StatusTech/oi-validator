@@ -4,6 +4,8 @@ export type TicketDetailsRes =
       data: {
         productId: string
         webTicketUid: string
+        isTicketCanceled: boolean
+        isValidated: boolean
       }
     }
   | {

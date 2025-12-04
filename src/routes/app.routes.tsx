@@ -35,6 +35,8 @@ import Product from "@services/sqlite/models/Product"
 import Operation from "@services/sqlite/models/Operations"
 import Order from "@services/sqlite/models/Order"
 import { storeDbUserInfo } from "@utils/toolbox/auxFns/storeDbUserInfo"
+import { UserInfo } from "@utils/@types/data/user"
+import { SyncInfo } from "@utils/@types/api/responses/syncUser"
 
 export type Routes = "home" | "selectEvent" | "products" | "qrhistory"
 
@@ -93,6 +95,28 @@ export function AppRoutes() {
       )
 
       if (sync.ok) {
+        const validatorSync = await Api.getValidatorData(user?.id as string)
+
+        if (validatorSync.ok) {
+          const validatorData = validatorSync.data
+          let product_types = []
+
+          if (Boolean(validatorData.validator.has_bar))
+            product_types.push("bar")
+          if (Boolean(validatorData.validator.has_park))
+            product_types.push("estacionamento")
+          if (Boolean(validatorData.validator.has_ticket))
+            product_types.push("ingresso")
+
+          const userRoleInfo: UserInfo["roleInfo"] = {
+            ...validatorData.validator,
+            products: validatorData.products,
+            product_types,
+          }
+
+          User.storeInfo({ ...(user as UserInfo), roleInfo: userRoleInfo })
+        }
+
         User.storeSyncInfo(sync.data)
         await storeDbUserInfo(sync.data)
 

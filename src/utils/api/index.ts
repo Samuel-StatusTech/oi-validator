@@ -22,6 +22,8 @@ import { IValidation } from "@utils/@types/sqlite/validation"
 import WebstoreTicket from "@services/sqlite/models/WebstoreTicket"
 import { AllWebstoreTicketsRes } from "@utils/@types/api/responses/getAllWebstoreTickets"
 import { TicketDetailsRes } from "@utils/@types/api/responses/ticketDetails"
+import { ValidatorDataRes } from "@utils/@types/api/responses/getValidator"
+import useStore from "src/store"
 
 const na = axios.create({
   baseURL: "https://api.oitickets.com.br/api/v1",
@@ -35,6 +37,13 @@ const a = axios.create({
   headers: {
     "Content-Type": "application/x-www-form-urlencoded",
   },
+})
+
+a.interceptors.request.use((req) => {
+  const token = useStore.getState().token
+  req.headers.Authorization = token
+
+  return req
 })
 
 const getDatabase = async (imei: number): Promise<GetDbRes> => {
@@ -116,6 +125,30 @@ const getMachData = async (
       res = {
         ok: true,
         data: { ...req },
+      }
+    } else {
+      res.message = req ?? ""
+    }
+  } catch (error) {
+    res = {
+      ok: false,
+      message: "",
+    }
+  }
+
+  return res
+}
+
+const getValidatorData = async (userId: string): Promise<ValidatorDataRes> => {
+  let res: ValidatorDataRes = { ok: false, message: "" }
+
+  try {
+    const req = await (await a.get(`/validator/getData/${userId}`)).data
+
+    if (req.success && req.validator) {
+      res = {
+        ok: true,
+        data: { validator: req.validator, products: req.products },
       }
     } else {
       res.message = req ?? ""
@@ -330,6 +363,10 @@ const getWebstoreTicketDetails = async (
         data: {
           productId: ticketDetails.id,
           webTicketUid: ticketDetails.opuid,
+          isTicketCanceled:
+            ticketDetails.status === "cancelamento" ||
+            ticketDetails.status === "cancelamento_pendente",
+          isValidated: ticketDetails.status === "validado",
         },
       }
     }
@@ -398,6 +435,7 @@ const uploadSync = async (data: {
 const Api = {
   getDatabase,
   authenticate,
+  getValidatorData,
   getMachData,
   syncUser,
   getProductsList,

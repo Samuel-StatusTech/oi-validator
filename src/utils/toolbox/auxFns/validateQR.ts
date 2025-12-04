@@ -3,9 +3,9 @@ import Api from "@utils/api"
 import { EventData } from "@utils/@types/data/event"
 import { UserInfo } from "@utils/@types/data/user"
 import Validation from "@services/sqlite/models/Validation"
-import ProductsList from "@services/sqlite/models/ProductsList"
 import { getTicketName } from "./getTicketNames"
 import { isTicketValidable } from "./getTicketValidable"
+import { filterUserProducts } from "./filterUserProducts"
 
 const validateQR = async (
   code: string,
@@ -35,6 +35,7 @@ const validateQR = async (
           const locallyValidated = await Validation.searchByTicket(
             validableCode
           )
+
           if (locallyValidated.length > 0) {
             const validation = locallyValidated[0]
             if (!Boolean(validation.synced)) {
@@ -44,23 +45,11 @@ const validateQR = async (
             reject("Ticket já validado")
             return
           } else {
-            const [prodsList, combos, userProdsList, webstoreTickets] = [
-              await ProductsList.getUserList(user.id),
-              await Api.getAllCombos(),
-              await Api.getAllProducts(user.roleInfo.product_types ?? []),
-              await Api.getAllWebstoreTickets(),
-            ]
-
             const { id: prodId, name: prodName } = await getTicketName(
-              upperCode,
-              user.id,
-              prodsList,
-              user.roleInfo.product_types ?? [],
-              userProdsList.ok ? userProdsList.data : [],
-              combos.ok ? combos.data : [],
-              webstoreTickets.ok ? webstoreTickets.data : []
+              upperCode
             )
 
+            let isTicketCanceled = false
             let isEventTicket = prodName.length > 0
             ticketProductId = prodId
 
@@ -75,9 +64,16 @@ const validateQR = async (
 
               if (webstoreTicketDetailsRequest.ok) {
                 isEventTicket = true
+                isTicketCanceled =
+                  webstoreTicketDetailsRequest.data.isTicketCanceled
                 validableCode = webstoreTicketDetailsRequest.data.webTicketUid
                 ticketProductId = webstoreTicketDetailsRequest.data.productId
               }
+            }
+
+            if (isTicketCanceled) {
+              reject("A compra do ticket foi cancelada")
+              return
             }
 
             if (isEventTicket) {
@@ -129,21 +125,12 @@ const validateQR = async (
         }
       } else {
         reject(
-          "Validação disponível apenas online.\nVerifique a conexão e tente novamente."
+          "Validação disponível apenas online.\nVerifique a conexão e tente novamente"
         )
         return
-
-        // Offline validation
-        // if (locallyValidated.length > 0) {
-        //   reject("Ticket já validado.")
-        //   return
-        // } else {
-        //   registerLclValidation(ticket, user.id, false)
-        //   resolve(true)
-        // }
       }
     } catch (error) {
-      reject(false)
+      reject("Houve um erro.\nTente novamente mais tarde")
       return
     }
   })

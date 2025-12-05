@@ -63,13 +63,12 @@ export function SelectEvent() {
     try {
       setReloading(true)
 
-      const req = await Api.syncUser(
-        user?.org_id as string,
-        user?.id as string,
-        event?.id as string,
-        lastSync ?? 0,
-        token
-      )
+      const req = await Api.users.syncUser({
+        orgId: user?.org_id as string,
+        userId: user?.id as string,
+        eventId: event?.id as string,
+        lastSync: lastSync ?? 0,
+      })
 
       if (req.ok) {
         User.storeSyncInfo(req.data)

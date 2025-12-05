@@ -85,10 +85,14 @@ export function SignIn() {
 
     const { name, password } = control._formValues
 
-    const db = await Api.getDatabase(imei)
+    const db = await Api.auth.getDatabase({ imei })
 
     if (db.ok) {
-      const auth = await Api.authenticate(name, password, db.data.client)
+      const auth = await Api.auth.authenticate({
+        username: name,
+        password: password,
+        db: db.data.client,
+      })
 
       if (auth.ok) {
         setIsAuthenticating(true)
@@ -109,24 +113,22 @@ export function SignIn() {
         store.User.storeInfo(userInfo)
         store.Token.storeToken(auth.data.token)
 
-        const sync = await Api.syncUser(
-          userInfo.org_id,
-          userInfo.id,
-          null,
-          0,
-          auth.data.token
-        )
+        const sync = await Api.users.syncUser({
+          orgId: userInfo.org_id,
+          userId: userInfo.id,
+          eventId: null,
+          lastSync: 0,
+        })
 
         if (sync.ok) {
           if (sync.data.lastSyncServer) {
             store.Common.setLastSync(sync.data.lastSyncServer)
-            const lastSync = await Api.syncUser(
-              userInfo.org_id,
-              userInfo.id,
-              null,
-              sync.data.lastSyncServer,
-              auth.data.token
-            )
+            const lastSync = await Api.users.syncUser({
+              orgId: userInfo.org_id,
+              userId: userInfo.id,
+              eventId: null,
+              lastSync: sync.data.lastSyncServer,
+            })
 
             if (lastSync.ok) {
               store.User.storeSyncInfo(sync.data)
@@ -138,7 +140,7 @@ export function SignIn() {
           setAuthError({ ...authError, pass: true, name: true })
         }
 
-        const machData = await Api.getMachData(imei, auth.data.token)
+        const machData = await Api.auth.getMachData({ imei })
         if (machData.ok) {
           setIsLoading(false)
           navigation.reset({
@@ -337,7 +339,7 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingRight: 16,
     textAlign: "center",
-    marginVertical: 16
+    marginVertical: 16,
   },
   statusContainer: {
     marginTop: 24,

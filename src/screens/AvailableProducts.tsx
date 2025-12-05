@@ -54,10 +54,12 @@ function AvailableProductsScreen() {
       if (event) {
         const userProducts = await getUserProducts()
 
-        const validations = await Api.getValidations({
-          hasConnection: true,
-          eventId: event.id,
-          token,
+        const validations = await Api.validations.getValidations({
+          syncParams: {
+            hasConnection: true,
+            eventId: event.id,
+            token,
+          },
         })
 
         countValidations(userProducts, validations.ok ? validations.data : [])

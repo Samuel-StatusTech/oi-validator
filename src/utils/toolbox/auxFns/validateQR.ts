@@ -43,7 +43,10 @@ const validateQR = async (
           if (locallyValidated.length > 0) {
             const validation = locallyValidated[0]
             if (!Boolean(validation.synced)) {
-              await Api.validateTicket(validableCode, event.id, token)
+              await Api.validations.validateTicket({
+                ticketUid: validableCode,
+                eventId: event.id,
+              })
               await Validation.updateValidation(validableCode, true)
             }
             reject("Ticket já validado")
@@ -63,11 +66,10 @@ const validateQR = async (
             if (!isEventTicket) {
               // Check if it's a webstore ticket
               const webstoreTicketDetailsRequest =
-                await Api.getWebstoreTicketDetails(
-                  validableCode,
-                  event.id,
-                  token
-                )
+                await Api.tickets.getWebstoreTicketDetails({
+                  qrCode: validableCode,
+                  eventId: event.id,
+                })
 
               if (webstoreTicketDetailsRequest.ok) {
                 isWebticket = true
@@ -98,11 +100,10 @@ const validateQR = async (
                 return
               }
 
-              const validation = await Api.validateTicket(
-                validableCode,
-                event.id,
-                token
-              )
+              const validation = await Api.validations.validateTicket({
+                ticketUid: validableCode,
+                eventId: event.id,
+              })
 
               if (validation.ok) {
                 switch (validation.data) {

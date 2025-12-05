@@ -7,7 +7,7 @@ export type TApiParams_Validations_ValidateTicket = {
   eventId: string
 }
 
-export type TApiResponse_Validations_ValidateTicket = boolean
+export type TApiResponse_Validations_ValidateTicket = number
 
 export const validateTicket: TApiValidations["validateTicket"] = async ({
   eventId,

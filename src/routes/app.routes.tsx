@@ -86,16 +86,17 @@ export function AppRoutes() {
       }
 
       // get info
-      const sync = await Api.syncUser(
-        user?.org_id as string,
-        user?.id as string,
-        event?.id as string,
-        lastSync ?? 0,
-        token
-      )
+      const sync = await Api.users.syncUser({
+        orgId: user?.org_id as string,
+        userId: user?.id as string,
+        eventId: event?.id as string,
+        lastSync: lastSync ?? 0,
+      })
 
       if (sync.ok) {
-        const validatorSync = await Api.getValidatorData(user?.id as string)
+        const validatorSync = await Api.users.getValidatorData({
+          userId: user?.id as string,
+        })
 
         if (validatorSync.ok) {
           const validatorData = validatorSync.data
@@ -120,7 +121,7 @@ export function AppRoutes() {
         User.storeSyncInfo(sync.data)
         await storeDbUserInfo(sync.data)
 
-        const syncValidationsRes = await Api.uploadSync(data)
+        const syncValidationsRes = await Api.users.uploadData(data)
 
         if (syncValidationsRes.ok) {
           const syncsToUpdate = syncValidationsRes.data?.validationSuccess.map(

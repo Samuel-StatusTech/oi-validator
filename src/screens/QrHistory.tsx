@@ -9,6 +9,7 @@ import useStore from "../store"
 import { IValidation } from "@utils/@types/sqlite/validation"
 import { getTicketsNames } from "@utils/toolbox/auxFns/getTicketNames"
 import QrHistoryEmpty from "@components/QrHistoryEmpty"
+import Validation from "@services/sqlite/models/Validation"
 
 export function QrHistory() {
   const { user } = useStore((state) => state)
@@ -34,16 +35,14 @@ export function QrHistory() {
 
   const updateList = async () => {
     if (user && event) {
-      const list = await Api.getValidations()
+      const list = await Validation.getAll()
 
-      if (list.ok) {
-        const listWithProdsNames = await getTicketsNames(list.data)
-        const newList = parseList(listWithProdsNames)
-        const orderedData = newList.sort((a, b) => {
-          return a.date < b.date ? 1 : a.date > b.date ? -1 : 0
-        })
-        setData(orderedData)
-      }
+      const listWithProdsNames = await getTicketsNames(list)
+      const newList = parseList(listWithProdsNames)
+      const orderedData = newList.sort((a, b) => {
+        return a.date < b.date ? 1 : a.date > b.date ? -1 : 0
+      })
+      setData(orderedData)
     }
   }
 

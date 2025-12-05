@@ -4,6 +4,7 @@ import { IProduct } from "@utils/@types/sqlite/product"
 import { ICombo } from "@utils/@types/sqlite/combo"
 import { IWebstoreTicket } from "@utils/@types/sqlite/webstoreTicket"
 import Api from "src/api"
+import dbModelProduct from "@services/sqlite/models/Product"
 
 const getTicketName = async (
   ticket: string,
@@ -20,8 +21,8 @@ const getTicketName = async (
     else {
       if (shouldFilterUserProducts) userProducts = await getUserProducts()
       else {
-        const allProds = await Api.getAllPdvAndWebstoreProducts()
-        if (allProds.ok) userProducts = allProds.data
+        const allProds = await dbModelProduct.getAllProducts()
+        userProducts = allProds
       }
     }
 
@@ -55,8 +56,8 @@ const getTicketsNames = async (tickets: IValidation[]) => {
 
   let userProducts: TAllProducts = []
 
-  const allProds = await Api.getAllPdvAndWebstoreProducts()
-  if (allProds.ok) userProducts = allProds.data
+  const allProds = await dbModelProduct.getAllPdvAndWebstoreProducts()
+  userProducts = allProds
 
   tickets.forEach(async (ticket) => {
     const { name } = await getTicketName(

@@ -5,6 +5,7 @@ import {
   getEventProducts,
   getUserProducts,
   getProductsNoSync,
+  getAllPdvAndWebstoreProducts,
 } from "./operation_search"
 
 const dbModelProduct = {
@@ -15,6 +16,7 @@ const dbModelProduct = {
   updateProducts,
 
   getAllProducts,
+  getAllPdvAndWebstoreProducts,
   getEventProducts,
   getUserProducts,
   getProductsNoSync,

@@ -24,10 +24,9 @@ export const syncValidations = async (data?: {
     const user = store.user
 
     if (token && event) {
-      const onlineValidations = await Api.getOnlineValidations(
-        event?.id as string,
-        token
-      )
+      const onlineValidations = await Api.validations.getOnlineValidations({
+        eventId: event?.id as string,
+      })
       if (onlineValidations.ok) {
         const localValidations = await Validation.getAll()
         onlineValidations.data.forEach(async (val) => {
@@ -40,7 +39,9 @@ export const syncValidations = async (data?: {
               user?.id,
               true,
               new Date(val.created_at).getTime(),
-              new Date(val.updated_at).getTime()
+              new Date(val.updated_at).getTime(),
+              "",
+              ""
             )
           }
         })
@@ -49,18 +50,17 @@ export const syncValidations = async (data?: {
       // const localNoSyncValidations = await Validation.getValidationsNoSync()
 
       const now = new Date().getTime()
-      const uploadReq = await Api.uploadSync({
+      const uploadReq = await Api.users.uploadData({
         orders: data?.orders || [],
         products: data?.products || [],
         operations: data?.operations || [],
-        token: data?.token || token,
       })
 
       if (!uploadReq.ok) {
         throw new Error("Upload sync failed")
       }
 
-      const validations: IValidation[] = uploadReq.data.validations
+      const validations: IValidation[] = uploadReq.data.validationSuccess
 
       if (validations) {
         const validationsIds: string[] = [

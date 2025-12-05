@@ -1,7 +1,9 @@
+import dbModelCombo from "@services/sqlite/models/Combo"
+import dbModelProduct from "@services/sqlite/models/Product"
+import dbModelWebstoreTicket from "@services/sqlite/models/WebstoreTicket"
 import { ICombo } from "@utils/@types/sqlite/combo"
 import { IProduct } from "@utils/@types/sqlite/product"
 import { IWebstoreTicket } from "@utils/@types/sqlite/webstoreTicket"
-import Api from "src/api"
 import useStore from "src/store"
 
 export type TAllProducts = (IProduct | ICombo | IWebstoreTicket)[]
@@ -14,18 +16,15 @@ export const getUserProducts = async (): Promise<TAllProducts> => {
     if (!user) throw new Error()
 
     const [allProducts, allCombos, allWebstoreTickets] = [
-      await Api.getAllProducts(),
-      await Api.getAllCombos(),
-      await Api.getAllWebstoreTickets(),
+      await dbModelProduct.getAllProducts(),
+      await dbModelCombo.getAllCombos(),
+      await dbModelWebstoreTicket.getEventWebstoreTicket(),
     ]
 
-    if (!allProducts.ok || !allCombos.ok || !allWebstoreTickets.ok)
-      throw new Error()
-
     const products: TAllProducts = [
-      ...allProducts.data,
-      ...allCombos.data,
-      ...allWebstoreTickets.data,
+      ...allProducts,
+      ...allCombos,
+      ...allWebstoreTickets,
     ].filter((i) =>
       (i as IProduct | ICombo).status !== undefined
         ? Boolean((i as IProduct | ICombo).status)

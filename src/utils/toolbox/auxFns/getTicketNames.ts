@@ -3,7 +3,7 @@ import { getUserProducts, TAllProducts } from "./getUserProducts"
 import { IProduct } from "@utils/@types/sqlite/product"
 import { ICombo } from "@utils/@types/sqlite/combo"
 import { IWebstoreTicket } from "@utils/@types/sqlite/webstoreTicket"
-import Api from "@utils/api"
+import Api from "src/api"
 
 const getTicketName = async (
   ticket: string,

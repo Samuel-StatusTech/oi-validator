@@ -4,7 +4,7 @@ import { THEME } from "../theme"
 import { QrHistoryItem } from "@components/QrHistoryItem"
 
 import { TQrHistoryItem } from "@utils/@types/components/QrHistoryItem"
-import Api from "@utils/api"
+import Api from "src/api"
 import useStore from "../store"
 import { IValidation } from "@utils/@types/sqlite/validation"
 import { getTicketsNames } from "@utils/toolbox/auxFns/getTicketNames"

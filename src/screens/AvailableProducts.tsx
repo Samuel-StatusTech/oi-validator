@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { Text, View, FlatList, StyleSheet } from "react-native"
 import { THEME } from "../theme"
-import Api from "@utils/api"
+import Api from "src/api"
 import { IProduct } from "@utils/@types/sqlite/product"
 import { MemoizedProductListItem } from "@components/ProductListItem"
 import useStore from "../store"

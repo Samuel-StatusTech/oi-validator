@@ -1,6 +1,6 @@
 import { SyncHelperRes } from "@utils/@types/api/responses/syncHelper"
 import useStore from "../../store"
-import Api from "@utils/api"
+import Api from "src/api"
 import Validation from "@services/sqlite/models/Validation"
 import { IProduct } from "@utils/@types/sqlite/product"
 import { IValidation } from "@utils/@types/sqlite/validation"

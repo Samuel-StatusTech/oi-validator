@@ -1,4 +1,4 @@
-import Api from "@utils/api"
+import Api from "src/api"
 
 import { EventData } from "@utils/@types/data/event"
 import { UserInfo } from "@utils/@types/data/user"

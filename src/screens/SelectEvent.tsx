@@ -14,7 +14,7 @@ import { PopUp } from "@components/PopUp"
 import { AppNavigatiorRoutesProps } from "@routes/app.routes"
 import { dropTables } from "@services/sqlite/Database"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import Api from "@utils/api"
+import Api from "src/api"
 import { storeDbUserInfo } from "@utils/toolbox/auxFns/storeDbUserInfo"
 
 export function SelectEvent() {

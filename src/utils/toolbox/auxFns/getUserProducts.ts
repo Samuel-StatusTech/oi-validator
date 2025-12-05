@@ -1,7 +1,7 @@
 import { ICombo } from "@utils/@types/sqlite/combo"
 import { IProduct } from "@utils/@types/sqlite/product"
 import { IWebstoreTicket } from "@utils/@types/sqlite/webstoreTicket"
-import Api from "@utils/api"
+import Api from "src/api"
 import useStore from "src/store"
 
 export type TAllProducts = (IProduct | ICombo | IWebstoreTicket)[]

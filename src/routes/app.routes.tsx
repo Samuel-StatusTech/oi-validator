@@ -36,7 +36,6 @@ import Operation from "@services/sqlite/models/Operations"
 import Order from "@services/sqlite/models/Order"
 import { storeDbUserInfo } from "@utils/toolbox/auxFns/storeDbUserInfo"
 import { UserInfo } from "@utils/@types/data/user"
-import { SyncInfo } from "@utils/@types/api/responses/syncUser"
 
 export type Routes = "home" | "selectEvent" | "products" | "qrhistory"
 

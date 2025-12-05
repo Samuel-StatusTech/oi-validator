@@ -1,4 +1,3 @@
-import { SyncInfo } from "@utils/@types/api/responses/syncUser"
 import Product from "@services/sqlite/models/Product"
 import ProductsList from "@services/sqlite/models/ProductsList"
 import Combo from "@services/sqlite/models/Combo"
@@ -7,7 +6,7 @@ import Event from "@services/sqlite/models/Event"
 import WebstoreTicket from "@services/sqlite/models/WebstoreTicket"
 
 export const storeDbUserInfo = async (
-  kInfo: SyncInfo,
+  kInfo: any,
   role: "start" | "update" = "update"
 ) => {
   return new Promise(async (resolve, reject) => {

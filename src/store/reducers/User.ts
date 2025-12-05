@@ -1,6 +1,5 @@
 import { Setter } from "../../utils/@types/store"
 import { UserInfo } from "../../utils/@types/data/user"
-import { SyncInfo } from "@utils/@types/api/responses/syncUser"
 import { deleteData, getData, setData } from "./persistorReducer"
 
 const UserReducer = (set: Setter) => {
@@ -16,7 +15,7 @@ const UserReducer = (set: Setter) => {
           },
         }
       }),
-    storeSyncInfo: (syncInfo: SyncInfo) =>
+    storeSyncInfo: (syncInfo: any) =>
       set((state) => {
         return {
           ...state,

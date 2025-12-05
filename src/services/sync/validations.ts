@@ -1,4 +1,3 @@
-import { SyncHelperRes } from "@utils/@types/api/responses/syncHelper"
 import useStore from "../../store"
 import Api from "src/api"
 import Validation from "@services/sqlite/models/Validation"
@@ -11,8 +10,8 @@ export const syncValidations = async (data?: {
   validations: IValidation[]
   operations?: any[]
   token?: string
-}): Promise<SyncHelperRes> => {
-  let res: SyncHelperRes = { ok: true, message: "" }
+}): Promise<any> => {
+  let res: any = { ok: true, message: "" }
 
   try {
     const store = useStore()

@@ -4,6 +4,10 @@ import {
   selectProductsNoSync,
 } from "@services/sqlite/queries/products"
 import { IProduct } from "@utils/@types/sqlite/product"
+import dbModelProduct from "."
+import dbModelCombo from "../Combo"
+import dbModelWebstoreTicket from "../WebstoreTicket"
+import { TAllProducts } from "@utils/toolbox/auxFns/getUserProducts"
 
 export const getAllProducts = async (): Promise<IProduct[]> => {
   try {
@@ -50,4 +54,28 @@ export const getProductsNoSync = async (): Promise<IProduct[]> => {
   } catch (error) {
     throw error
   }
+}
+
+export const getAllPdvAndWebstoreProducts = async (): Promise<TAllProducts> => {
+  let list: TAllProducts = []
+
+  try {
+    const allProducts = (await dbModelProduct.getAllProducts()) ?? []
+    const allCombos = (await dbModelCombo.getAllCombos()) ?? []
+
+    const allWebstoreTickets =
+      (await dbModelWebstoreTicket.getEventWebstoreTicket()) ?? []
+
+    const finalList = [
+      ...allProducts,
+      ...allCombos,
+      ...allWebstoreTickets,
+    ].filter((i: any) => {
+      return i.status !== undefined ? Boolean(i.status) : true
+    })
+
+    list = finalList
+  } catch (error) {}
+
+  return list
 }

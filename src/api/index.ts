@@ -1,47 +1,16 @@
 import axios from "axios"
 
 /* Functions Returns */
-import { AuthRes } from "@utils/@types/api/responses/authenticate"
-import { AllProductsRes } from "@utils/@types/api/responses/getAllProducts"
-import { GetDbRes } from "@utils/@types/api/responses/getDataBase"
-import { MachDataRes } from "@utils/@types/api/responses/getMachData"
-import { ProductsListRes } from "@utils/@types/api/responses/getProductsList"
 import { SyncUserRes } from "@utils/@types/api/responses/syncUser"
-import { AllCombosRes } from "@utils/@types/api/responses/getAllCombos"
-import { TicketAlrdValidRes } from "@utils/@types/api/responses/getTicketValidation"
-import { TicketValidationRes } from "@utils/@types/api/responses/validateTicket"
 import { UploadSyncRes } from "@utils/@types/api/responses/uploadSync"
-import { AllWebstoreTicketsRes } from "@utils/@types/api/responses/getAllWebstoreTickets"
-import { TicketDetailsRes } from "@utils/@types/api/responses/ticketDetails"
 import { ValidatorDataRes } from "@utils/@types/api/responses/getValidator"
-import { GetValidationsRes } from "@utils/@types/api/responses/getValidations"
-import { AllPdvAndWebstoreProductsRes } from "@utils/@types/api/responses/getAllPdvAndWebstoreTickets"
 
 /* Models */
-import Product from "../services/sqlite/models/Product"
-import ProductList from "../services/sqlite/models/ProductsList"
-import Combo from "../services/sqlite/models/Combo"
-import Validation from "../services/sqlite/models/Validation"
-import WebstoreTicket from "@services/sqlite/models/WebstoreTicket"
-import { IValidation } from "@utils/@types/sqlite/validation"
 import useStore from "src/store"
 import { TApi } from "./@types"
 import { ApiAuth } from "./auth"
 import { ApiValidations } from "./validations"
-
-const na = axios.create({
-  baseURL: "https://api.oitickets.com.br/api/v1",
-  headers: {
-    "Content-Type": "application/x-www-form-urlencoded",
-  },
-})
-
-const a = axios.create({
-  baseURL: "https://api.oitickets.com.br/api/v1",
-  headers: {
-    "Content-Type": "application/x-www-form-urlencoded",
-  },
-})
+import { ApiTickets } from "./tickets"
 
 export const api = axios.create({
   baseURL: "https://api.oitickets.com.br/api/v1",
@@ -50,7 +19,7 @@ export const api = axios.create({
   },
 })
 
-a.interceptors.request.use((req) => {
+api.interceptors.request.use((req) => {
   const token = useStore.getState().token
   req.headers.Authorization = `Bearer ${token}`
 
@@ -139,108 +108,6 @@ const syncUser = async (
   return res
 }
 
-const getProductsList = async (): Promise<ProductsListRes> => {
-  let res: ProductsListRes = { ok: false, message: "" }
-
-  const prods = (await ProductList.getLists()) ?? []
-  res = { ok: true, data: prods }
-
-  return res
-}
-
-const getAllProducts = async (): Promise<AllProductsRes> => {
-  let res: AllProductsRes = { ok: false, message: "" }
-
-  const prods = (await Product.getAllProducts()) ?? []
-  res = { ok: true, data: prods }
-
-  return res
-}
-
-const getAllPdvAndWebstoreProducts =
-  async (): Promise<AllPdvAndWebstoreProductsRes> => {
-    let res: AllPdvAndWebstoreProductsRes = { ok: false, message: "" }
-
-    const allProducts = (await Product.getAllProducts()) ?? []
-    const allCombos = (await Combo.getAllCombos()) ?? []
-
-    const allWebstoreTickets =
-      (await WebstoreTicket.getEventWebstoreTicket()) ?? []
-
-    const finalList = [
-      ...allProducts,
-      ...allCombos,
-      ...allWebstoreTickets,
-    ].filter((i: any) => {
-      return i.status !== undefined ? Boolean(i.status) : true
-    })
-
-    res = { ok: true, data: finalList }
-
-    return res
-  }
-
-const getAllWebstoreTickets = async (): Promise<AllWebstoreTicketsRes> => {
-  let res: AllWebstoreTicketsRes = { ok: false, message: "" }
-
-  const webstoreTickets = (await WebstoreTicket.getEventWebstoreTicket()) ?? []
-  res = { ok: true, data: webstoreTickets }
-
-  return res
-}
-
-const getAllCombos = async (): Promise<AllCombosRes> => {
-  let res: AllCombosRes = { ok: false, message: "" }
-
-  const combos = (await Combo.getAllCombos()) ?? []
-  res = { ok: true, data: combos }
-
-  return res
-}
-
-const getWebstoreTicketDetails = async (
-  qrCode: string,
-  eventId: string,
-  token: string
-): Promise<TicketDetailsRes> => {
-  let res: TicketDetailsRes = { ok: false, message: "" }
-
-  const details = await a
-    .request({
-      method: "get",
-      url: `/${eventId}/validate_ticket/${qrCode}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    .then((res) => res.data)
-    .catch((err) => err)
-
-  const requestSuccess = details.status ?? false
-
-  if (requestSuccess) {
-    const ticketDetails = details.detail.products.find(
-      (prod: any) => prod.qr_label === qrCode
-    )
-
-    if (ticketDetails) {
-      res = {
-        ok: true,
-        data: {
-          productId: ticketDetails.id,
-          webTicketUid: ticketDetails.opuid,
-          isTicketCanceled:
-            ticketDetails.status === "cancelamento" ||
-            ticketDetails.status === "cancelamento_pendente",
-          isValidated: ticketDetails.status === "validado",
-        },
-      }
-    }
-  }
-
-  return res
-}
-
 const uploadSync = async (data: {
   orders: any[]
   products: any[]
@@ -277,16 +144,7 @@ const uploadSync = async (data: {
 const Api: TApi = {
   auth: ApiAuth,
   validations: ApiValidations,
-
-  getValidatorData,
-  syncUser,
-  getProductsList,
-  getAllProducts,
-  getAllWebstoreTickets,
-  getAllPdvAndWebstoreProducts,
-  getAllCombos,
-  getWebstoreTicketDetails,
-  uploadSync,
+  tickets: ApiTickets,
 }
 
 export default Api

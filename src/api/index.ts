@@ -25,6 +25,9 @@ import Validation from "../services/sqlite/models/Validation"
 import WebstoreTicket from "@services/sqlite/models/WebstoreTicket"
 import { IValidation } from "@utils/@types/sqlite/validation"
 import useStore from "src/store"
+import { TApi } from "./@types"
+import { ApiAuth } from "./auth"
+import { ApiValidations } from "./validations"
 
 const na = axios.create({
   baseURL: "https://api.oitickets.com.br/api/v1",
@@ -53,99 +56,6 @@ a.interceptors.request.use((req) => {
 
   return req
 })
-
-const getDatabase = async (imei: number): Promise<GetDbRes> => {
-  let res: GetDbRes = { ok: false, message: "" }
-
-  try {
-    const req = await a.post(`/imeidatabase`, { imei })
-
-    const data = await req.data
-
-    if (data.success) {
-      res = {
-        ok: true,
-        data: {
-          client: data.client,
-          expireAt: data.expireAt,
-          status: data.status,
-        },
-      }
-    } else {
-      res.message =
-        "Imei não cadastrado. Por favor, faça o cadastro e tente novamente"
-    }
-  } catch (error) {
-    res = {
-      ok: false,
-      message: "Houve um erro. Tente novamente mais tarde",
-    }
-  }
-
-  return res
-}
-
-const authenticate = async (
-  username: string,
-  password: string,
-  db: string
-): Promise<AuthRes> => {
-  let res: AuthRes = { ok: false, message: "" }
-
-  try {
-    const req = await (
-      await a.post(`/authenticate`, {
-        username,
-        password,
-        database: db,
-      })
-    ).data
-
-    if (req.success) {
-      res = {
-        ok: true,
-        data: { ...req },
-      }
-      a.defaults.headers.common.Authorization = `Bearer ${req.token}`
-    } else {
-      res.message = req.error
-    }
-  } catch (error) {
-    res = {
-      ok: false,
-      message: "",
-    }
-  }
-
-  return res
-}
-
-const getMachData = async (
-  imei: number,
-  token: string
-): Promise<MachDataRes> => {
-  let res: MachDataRes = { ok: false, message: "" }
-
-  try {
-    const req = await (await a.get(`/device/getDataByImei/${imei}`)).data
-
-    if (req.imei) {
-      res = {
-        ok: true,
-        data: { ...req },
-      }
-    } else {
-      res.message = req ?? ""
-    }
-  } catch (error) {
-    res = {
-      ok: false,
-      message: "",
-    }
-  }
-
-  return res
-}
 
 const getValidatorData = async (userId: string): Promise<ValidatorDataRes> => {
   let res: ValidatorDataRes = { ok: false, message: "" }
@@ -288,79 +198,6 @@ const getAllCombos = async (): Promise<AllCombosRes> => {
   return res
 }
 
-const getTicketValidation = async (
-  ticketUid: string
-): Promise<TicketAlrdValidRes> => {
-  let res: TicketAlrdValidRes = { ok: false, message: "" }
-
-  const validations = (await Validation.searchByTicket(ticketUid)) ?? []
-  const isAlreadyValidated = validations.length > 0
-  res = { ok: true, data: isAlreadyValidated }
-
-  return res
-}
-
-const getOnlineValidations = async (
-  eventId: string,
-  token: string
-): Promise<GetValidationsRes> => {
-  let res: GetValidationsRes = { ok: false, message: "" }
-
-  try {
-    const sv = await a
-      .get(`/validations/overview/${eventId}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "Api-Token": `Bearer ${token}`,
-        },
-      })
-      .then(async (res) => (await res.data()) as IValidation[])
-
-    res = { ok: true, data: sv }
-  } catch (error) {
-    console.log("Error fetching online validations:", error)
-  }
-
-  return res
-}
-
-const getValidations = async (syncParams?: {
-  hasConnection: boolean
-  eventId: string
-  token: string
-}): Promise<GetValidationsRes> => {
-  let res: GetValidationsRes = { ok: false, message: "" }
-
-  let syncedValidations: IValidation[] = []
-
-  if (syncParams) {
-    if (syncParams.hasConnection) {
-      try {
-        const sv = await a
-          .get(`/validations/overview/${syncParams.eventId}`, {
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-              "Api-Token": `Bearer ${syncParams.token}`,
-            },
-          })
-          .then(async (res) => (await res.data()) as IValidation[])
-
-        syncedValidations = sv
-      } catch (error) {}
-    }
-  }
-
-  const localValidations = await Validation.getAll()
-
-  const validations = [...syncedValidations, ...localValidations]
-
-  res = { ok: true, data: validations }
-
-  return res
-}
-
 const getWebstoreTicketDetails = async (
   qrCode: string,
   eventId: string,
@@ -404,30 +241,6 @@ const getWebstoreTicketDetails = async (
   return res
 }
 
-const validateTicket = async (
-  ticketUid: string,
-  eventId: string,
-  token: string
-): Promise<TicketValidationRes> => {
-  let res: TicketValidationRes = { ok: false, message: "" }
-
-  const validation = await (
-    await a.request({
-      method: "put",
-      maxBodyLength: Infinity,
-      url: "/validator/updateTicket",
-      data: `ticketUid=${ticketUid}&event=${eventId}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-  ).data
-
-  res = { ok: true, data: validation.status }
-
-  return res
-}
-
 const uploadSync = async (data: {
   orders: any[]
   products: any[]
@@ -461,11 +274,11 @@ const uploadSync = async (data: {
   return res
 }
 
-const Api = {
-  getDatabase,
-  authenticate,
+const Api: TApi = {
+  auth: ApiAuth,
+  validations: ApiValidations,
+
   getValidatorData,
-  getMachData,
   syncUser,
   getProductsList,
   getAllProducts,
@@ -473,10 +286,6 @@ const Api = {
   getAllPdvAndWebstoreProducts,
   getAllCombos,
   getWebstoreTicketDetails,
-  getTicketValidation,
-  getOnlineValidations,
-  validateTicket,
-  getValidations,
   uploadSync,
 }
 

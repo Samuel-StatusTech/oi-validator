@@ -87,6 +87,16 @@ const getValidationsNoSync = async (): Promise<IValidation[]> => {
   }
 }
 
+const getTicketValidation = async (ticketUid: string): Promise<boolean> => {
+  try {
+    const validations = (await searchByTicket(ticketUid)) ?? []
+    const isAlreadyValidated = validations.length > 0
+    return isAlreadyValidated
+  } catch (error) {
+    throw error
+  }
+}
+
 const Validation = {
   insertValidation,
   updateValidation,
@@ -94,6 +104,7 @@ const Validation = {
   searchByTicket,
   getAll,
   getValidationsNoSync,
+  getTicketValidation,
 }
 
 export default Validation

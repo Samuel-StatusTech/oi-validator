@@ -12,7 +12,7 @@ export type TApiResponse_Auth_GetDatabase = {
   status: boolean
 }
 
-export const authenticate: TApiAuth["getDatabase"] = async ({ imei }) => {
+export const getDataBase: TApiAuth["getDatabase"] = async ({ imei }) => {
   let res: TDefaultApiRes<TApiResponse_Auth_GetDatabase> = {
     ok: false,
     message: "",

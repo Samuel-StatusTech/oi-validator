@@ -26,20 +26,26 @@ export const getMachData: TApiAuth["getMachData"] = async ({ imei }) => {
   }
 
   try {
-    const req = await (await api.get(`/device/getDataByImei/${imei}`)).data
+    const req = await api.get(`/device/getDataByImei/${imei}`)
 
-    if (req.imei) {
-      res = {
-        ok: true,
-        data: { ...req },
+    if (req.status === 200 && req.data) {
+      if (req.data.imei) {
+        res = {
+          ok: true,
+          data: { ...req.data },
+        }
+      } else {
+        res.message = "Imei não cadastrado na plataforma"
       }
     } else {
-      res.message = req ?? ""
+      res.message =
+        "Houve um erro ao receber as informações do dispositivo. Verifique a conexão e tente novamente."
     }
   } catch (error) {
     res = {
       ok: false,
-      message: "",
+      message:
+        "Houve um erro ao receber as informações do dispositivo. Verifique a conexão e tente novamente.",
     }
   }
 

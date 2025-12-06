@@ -75,6 +75,7 @@ export function SignIn() {
   const {
     control,
     handleSubmit,
+    getValues,
     formState: { errors },
   } = useForm<FormDataProps>({
     resolver: yupResolver(signInSchema),
@@ -83,86 +84,95 @@ export function SignIn() {
   async function handleSignIn() {
     setIsLoading(true)
 
-    const { name, password } = control._formValues
+    try {
+      const { name, password } = getValues()
 
-    const db = await Api.auth.getDatabase({ imei })
+      const db = await Api.auth.getDatabase({ imei })
 
-    if (db.ok) {
-      const auth = await Api.auth.authenticate({
-        username: name,
-        password: password,
-        db: db.data.client,
-      })
-
-      if (auth.ok) {
-        setIsAuthenticating(true)
-        let product_types = []
-
-        if (auth.data.roleData.has_bar) product_types.push("bar")
-        if (auth.data.roleData.has_park) product_types.push("estacionamento")
-        if (auth.data.roleData.has_ticket) product_types.push("ingresso")
-
-        const userInfo: UserInfo = {
-          ...auth.data.user,
-          roleInfo: {
-            ...auth.data.roleData,
-            product_types,
-          },
+      if (db.ok) {
+        const auth = await Api.auth.authenticate({
+          username: name,
+          password: password,
           db: db.data.client,
-        }
-        store.User.storeInfo(userInfo)
-        store.Token.storeToken(auth.data.token)
-
-        const sync = await Api.users.syncUser({
-          orgId: userInfo.org_id,
-          userId: userInfo.id,
-          eventId: null,
-          lastSync: 0,
         })
 
-        if (sync.ok) {
-          if (sync.data.lastSyncServer) {
-            store.Common.setLastSync(sync.data.lastSyncServer)
-            const lastSync = await Api.users.syncUser({
-              orgId: userInfo.org_id,
-              userId: userInfo.id,
-              eventId: null,
-              lastSync: sync.data.lastSyncServer,
-            })
+        if (auth.ok) {
+          setIsAuthenticating(true)
+          let product_types = []
 
-            if (lastSync.ok) {
-              store.User.storeSyncInfo(sync.data)
-              await storeDbUserInfo(sync.data, "start")
-              await syncValidations()
-            }
+          if (auth.data.roleData.has_bar) product_types.push("bar")
+          if (auth.data.roleData.has_park) product_types.push("estacionamento")
+          if (auth.data.roleData.has_ticket) product_types.push("ingresso")
+
+          const userInfo: UserInfo = {
+            ...auth.data.user,
+            roleInfo: {
+              ...auth.data.roleData,
+              product_types,
+            },
+            db: db.data.client,
           }
-        } else {
-          setAuthError({ ...authError, pass: true, name: true })
-        }
+          store.User.storeInfo(userInfo)
+          store.Token.storeToken(auth.data.token)
 
-        const machData = await Api.auth.getMachData({ imei })
-        if (machData.ok) {
-          setIsLoading(false)
-          navigation.reset({
-            index: 0,
-            routes: [{ name: "appNavigator" }],
+          const sync = await Api.users.syncUser({
+            orgId: userInfo.org_id,
+            userId: userInfo.id,
+            eventId: null,
+            lastSync: 0,
           })
+
+          if (sync.ok) {
+            if (sync.data.lastSyncServer) {
+              store.Common.setLastSync(sync.data.lastSyncServer)
+              const lastSync = await Api.users.syncUser({
+                orgId: userInfo.org_id,
+                userId: userInfo.id,
+                eventId: null,
+                lastSync: sync.data.lastSyncServer,
+              })
+
+              if (lastSync.ok) {
+                store.User.storeSyncInfo(sync.data)
+                await storeDbUserInfo(sync.data, "start")
+                await syncValidations()
+              } else {
+              }
+            }
+          } else {
+            setAuthError({ ...authError, pass: true, name: true })
+          }
+
+          const machData = await Api.auth.getMachData({ imei })
+          if (machData.ok) {
+            setIsLoading(false)
+            navigation.reset({
+              index: 0,
+              routes: [{ name: "appNavigator" }],
+            })
+          } else {
+            setPopup({ show: true, success: false, message: machData.message })
+            setAuthError({ ...authError, pass: true, name: true })
+          }
+
+          setIsLoading(false)
+          setIsAuthenticating(false)
         } else {
-          setAuthError({ ...authError, pass: true, name: true })
-        }
+          if (auth.message.match(/(senha)+/gi)) {
+            setAuthError({ ...authError, pass: true })
+          } else if (auth.message.match(/(usuário)+/i)) {
+            setAuthError({ ...authError, name: true })
+          }
 
-        setIsAuthenticating(false)
+          setIsLoading(false)
+        }
       } else {
-        if (auth.message.match(/(senha)+/gi)) {
-          setAuthError({ ...authError, pass: true })
-        } else if (auth.message.match(/(usuário)+/i)) {
-          setAuthError({ ...authError, name: true })
-        }
-
+        setPopup({ show: true, success: false, message: db.message })
         setIsLoading(false)
+        throw new Error(db.message)
       }
-    } else {
-      setPopup({ show: true, success: false, message: db.message })
+    } catch (error) {
+      setPopup({ show: true, success: false, message: JSON.stringify(error) })
       setIsLoading(false)
     }
   }
@@ -288,8 +298,8 @@ export function SignIn() {
               onPress={handleSubmit(handleSignIn)}
               isLoading={isLoading}
               isDisabled={
-                (control._formValues.username &&
-                  control._formValues.username.trim().length === 0) ||
+                (control._formValues.name &&
+                  control._formValues.name.trim().length === 0) ||
                 (control._formValues.password &&
                   control._formValues.password.trim().length === 0) ||
                 isAuthenticating ||

@@ -21,10 +21,10 @@ export function EventItem({ onSelect, info }: Props) {
   return (
     <TouchableOpacity onPress={onSelect} style={styles.container}>
       <View style={styles.content}>
-        {info.logo_print ? (
+        {info.logo ? (
           <Image
             source={{
-              uri: info.logo_print,
+              uri: info.logo as string,
             }}
             style={styles.image}
           />
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   textContainer: {
     marginLeft: 16,
     marginRight: 16,
-    flexShrink: 1
+    flexShrink: 1,
   },
   title: {
     color: THEME.colors.blue[600],

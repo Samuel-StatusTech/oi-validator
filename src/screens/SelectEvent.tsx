@@ -16,6 +16,7 @@ import { dropTables } from "@services/sqlite/Database"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import Api from "src/api"
 import { storeDbUserInfo } from "@utils/toolbox/auxFns/storeDbUserInfo"
+import { UserInfo } from "@utils/@types/data/user"
 
 export function SelectEvent() {
   const insets = useSafeAreaInsets()
@@ -27,7 +28,6 @@ export function SelectEvent() {
   const User = useStore((s) => s.User)
   const user = useStore((s) => s.user)
   const event = useStore((s) => s.currentEvent)
-  const token = useStore((s) => s.token)
   const lastSync = useStore((s) => s.lastSync)
 
   const [reloading, setReloading] = useState(false)
@@ -54,8 +54,44 @@ export function SelectEvent() {
     })
   }
 
-  function handleSelect(event: EventData) {
-    Common.registerEvent(event)
+  async function handleSelect(newEvent: EventData) {
+    Common.registerEvent(newEvent)
+
+    const sync = await Api.users.syncUser({
+      orgId: user?.org_id as string,
+      userId: user?.id as string,
+      eventId: newEvent.id,
+      lastSync: lastSync ?? 0,
+    })
+
+    if (sync.ok) {
+      User.storeSyncInfo(sync.data)
+      await storeDbUserInfo(sync.data, "update")
+
+      const validatorSync = await Api.users.getValidatorData({
+        userId: user?.id as string,
+      })
+
+      if (validatorSync.ok) {
+        const validatorData = validatorSync.data
+        let product_types = []
+
+        if (Boolean(validatorData.validator.has_bar)) product_types.push("bar")
+        if (Boolean(validatorData.validator.has_park))
+          product_types.push("estacionamento")
+        if (Boolean(validatorData.validator.has_ticket))
+          product_types.push("ingresso")
+
+        const userRoleInfo: UserInfo["roleInfo"] = {
+          ...validatorData.validator,
+          products: validatorData.products,
+          product_types,
+        }
+
+        User.storeInfo({ ...(user as UserInfo), roleInfo: userRoleInfo })
+      }
+    }
+
     navigation.navigate("home")
   }
 
@@ -90,7 +126,9 @@ export function SelectEvent() {
     if (user?.kInfo)
       setEvents(
         sortEvents(
-          user?.kInfo?.eventsData.filter((event) => Boolean(event.status))
+          user?.kInfo?.eventsData.filter((event: EventData) =>
+            Boolean(event.status)
+          )
         )
       )
   }, [])

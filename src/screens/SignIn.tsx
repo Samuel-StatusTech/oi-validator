@@ -27,6 +27,7 @@ import { PopUp } from "@components/PopUp"
 import Validation from "@services/sqlite/models/Validation"
 import { getImeiOrUnique } from "@utils/toolbox/imei"
 import { syncValidations } from "@services/sync/validations"
+import { dropTables } from "@services/sqlite/Database"
 
 type FormDataProps = {
   name: string
@@ -80,6 +81,14 @@ export function SignIn() {
   } = useForm<FormDataProps>({
     resolver: yupResolver(signInSchema),
   })
+
+  const clearData = async () => {
+    try {
+      await dropTables()
+      store.User.cleanInfo()
+      store.Token.deleteToken()
+    } catch (error) {}
+  }
 
   async function handleSignIn() {
     setIsLoading(true)
@@ -153,6 +162,8 @@ export function SignIn() {
           } else {
             setPopup({ show: true, success: false, message: machData.message })
             setAuthError({ ...authError, pass: true, name: true })
+
+            await clearData()
           }
 
           setIsLoading(false)
@@ -174,6 +185,8 @@ export function SignIn() {
     } catch (error) {
       setPopup({ show: true, success: false, message: JSON.stringify(error) })
       setIsLoading(false)
+
+      await clearData()
     }
   }
 

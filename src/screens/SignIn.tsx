@@ -5,6 +5,11 @@ import {
   StyleSheet,
   Pressable,
   TextInput,
+  Platform,
+  ToastAndroid,
+  Clipboard,
+  Alert,
+  TouchableOpacity,
 } from "react-native"
 import { THEME } from "../theme"
 import Logo from "@assets/logo.svg"
@@ -14,7 +19,7 @@ import { MaterialIcons } from "@expo/vector-icons"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useNavigation } from "@react-navigation/native"
 import { AuthNavigatiorRoutesProps } from "@routes/auth.routes"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import * as yup from "yup"
 import Api from "src/api"
@@ -24,7 +29,6 @@ import { UserInfo } from "@utils/@types/data/user"
 import { storeDbUserInfo } from "@utils/toolbox/auxFns/storeDbUserInfo"
 import { useNetInfo } from "@react-native-community/netinfo"
 import { PopUp } from "@components/PopUp"
-import Validation from "@services/sqlite/models/Validation"
 import { getImeiOrUnique } from "@utils/toolbox/imei"
 import { syncValidations } from "@services/sync/validations"
 import { dropTables } from "@services/sqlite/Database"
@@ -231,6 +235,16 @@ export function SignIn() {
     }
   }, [])
 
+  const handleCopyImei = useCallback(async () => {
+    Clipboard.setString(String(imei))
+
+    if (Platform.OS === "android") {
+      ToastAndroid.show("Copiado!", ToastAndroid.SHORT)
+    } else {
+      Alert.alert("Copiado!", "O texto foi copiado para o clipboard.")
+    }
+  }, [imei])
+
   return (
     <>
       <PopUp
@@ -338,7 +352,17 @@ export function SignIn() {
             </View>
           </View>
           <View style={styles.footer}>
-            <Text style={styles.imeiText}>{imei ? `IMEI: ${imei}` : ""}</Text>
+            <TouchableOpacity
+              onPress={handleCopyImei}
+              style={styles.imeiPressArea}
+            >
+              <Text style={styles.imeiText}>{imei ? `IMEI: ${imei}` : ""}</Text>
+              <MaterialIcons
+                name="content-copy"
+                size={20}
+                color={THEME.colors.blue[200]}
+              />
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
@@ -382,6 +406,13 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingBottom: 32,
     justifyContent: "flex-end",
+  },
+  imeiPressArea: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 12,
+    padding: 4,
   },
   imeiText: {
     textAlign: "center",

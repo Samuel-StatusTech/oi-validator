@@ -185,8 +185,18 @@ export function AppRoutes() {
     return (
       <View style={styles.headerContainer}>
         <View style={styles.headerTextContainer}>
-          <Text style={styles.headerTitle}>{event?.name}</Text>
-          <Text style={styles.headerSubtitle}>
+          <Text
+            style={styles.headerTitle}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {event?.name}
+          </Text>
+          <Text
+            style={styles.headerSubtitle}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
             {`${event?.local} ${
               event?.date ? `- ${getDateStr(event?.date as number)}` : ""
             }`}
@@ -347,6 +357,7 @@ const styles = StyleSheet.create({
   },
   headerTextContainer: {
     flex: 1,
+    flexShrink: 1,
   },
   headerTitle: {
     fontFamily: THEME.fonts.heading,

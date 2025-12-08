@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react"
 import { EventData } from "@utils/@types/data/event"
 import { TouchableOpacity, View, Image, Text, StyleSheet } from "react-native"
-import { THEME } from '../theme';
+import { THEME } from "../theme"
 
 type Props = {
   onSelect: () => void
@@ -33,7 +33,7 @@ export function EventItem({ onSelect, info }: Props) {
         )}
 
         <View style={styles.textContainer}>
-          <Text style={styles.title}>
+          <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
             {info.name}
           </Text>
           <Text style={styles.subtitle}>
@@ -47,16 +47,16 @@ export function EventItem({ onSelect, info }: Props) {
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
+    width: "100%",
   },
   content: {
-    width: '100%',
+    width: "100%",
     backgroundColor: THEME.colors.white,
     height: 96,
     marginTop: 16,
     borderRadius: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   image: {
     width: 100,
@@ -71,6 +71,7 @@ const styles = StyleSheet.create({
   textContainer: {
     marginLeft: 16,
     marginRight: 16,
+    flexShrink: 1
   },
   title: {
     color: THEME.colors.blue[600],
@@ -81,4 +82,4 @@ const styles = StyleSheet.create({
     color: THEME.colors.blue[200],
     fontSize: THEME.fontSizes.md,
   },
-});
+})

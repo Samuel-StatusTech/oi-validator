@@ -1,10 +1,10 @@
 {
   "expo": {
     "name": "Validador",
-    "slug": "validador",
-    "version": "1.0.0",
+    "slug": "Validador",
+    "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/logo_.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/logo_.png",
@@ -19,7 +19,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/logo_.png",
         "backgroundColor": "#000fff"
       },
       "package": "com.validator"

@@ -22,6 +22,10 @@ export const selectValidationByUid = `
   SELECT * FROM validations WHERE uid = ?;
 `;
 
+export const selectValidationByReadableCode = `
+  SELECT * FROM validations WHERE ticketReadableCode = ?;
+`;
+
 export const selectAllValidations = `
   SELECT * FROM validations;
 `;

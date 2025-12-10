@@ -26,6 +26,7 @@
     "crc32": "^0.2.2",
     "expo": "~52.0.0",
     "expo-asset": "~11.0.5",
+    "expo-blur": "~14.0.3",
     "expo-camera": "~16.0.3",
     "expo-constants": "~17.0.8",
     "expo-dev-client": "~5.0.1",

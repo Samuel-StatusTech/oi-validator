@@ -7,6 +7,7 @@ import {
   selectValidationByUid,
   selectAllValidations,
   selectValidationsNoSync,
+  selectValidationByReadableCode,
 } from "../queries/validations"
 
 const insertValidation = async (
@@ -69,6 +70,20 @@ const searchByTicket = async (ticketUid: string): Promise<IValidation[]> => {
   }
 }
 
+const searchByReadableCode = async (
+  ticketReadableCode: string
+): Promise<IValidation[]> => {
+  try {
+    const result = await db.getAllAsync<IValidation>(
+      selectValidationByReadableCode,
+      [ticketReadableCode]
+    )
+    return result
+  } catch (error) {
+    throw error
+  }
+}
+
 const getAll = async (): Promise<IValidation[]> => {
   try {
     const result = await db.getAllAsync<IValidation>(selectAllValidations)
@@ -102,6 +117,7 @@ const Validation = {
   updateValidation,
   updateValidations,
   searchByTicket,
+  searchByReadableCode,
   getAll,
   getValidationsNoSync,
   getTicketValidation,

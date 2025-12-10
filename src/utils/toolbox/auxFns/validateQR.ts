@@ -34,7 +34,7 @@ const validateQR = async (
         let ticketProductId: string | null = null
 
         if (isValidable) {
-          const locallyValidated = await Validation.searchByTicket(
+          const locallyValidated = await Validation.searchByReadableCode(
             validableCode
           )
 
@@ -60,6 +60,7 @@ const validateQR = async (
 
             let isWebticket = false
             let isTicketCanceled = false
+            let isOrderPayed = false
             let isEventTicket = prodName.length > 0
             ticketProductId = prodId
 
@@ -76,6 +77,7 @@ const validateQR = async (
                 isEventTicket = true
                 isTicketCanceled =
                   webstoreTicketDetailsRequest.data.isTicketCanceled
+                isOrderPayed = webstoreTicketDetailsRequest.data.isOrderPayed
                 validableCode = webstoreTicketDetailsRequest.data.webTicketUid
                 ticketProductId = webstoreTicketDetailsRequest.data.productId
               }
@@ -83,6 +85,11 @@ const validateQR = async (
 
             if (isTicketCanceled) {
               reject("A compra do ticket foi cancelada")
+              return
+            }
+
+            if (!isOrderPayed) {
+              reject("O pagamento do ticket não foi realizado")
               return
             }
 
@@ -121,7 +128,6 @@ const validateQR = async (
                     resolve(true)
                     break
                   case 2:
-                    // reject("Ticket já validado online. Sincronize seus dados.")
                     reject("Ticket já validado.")
                     break
                   case 3:

@@ -12,6 +12,7 @@ export type TApiResponse_Tickets_GetWebstoreTicketDetails = {
   webTicketUid: string
   isTicketCanceled: boolean
   isValidated: boolean
+  isOrderPayed: boolean
 }
 
 export const getWebstoreTicketDetails: TApiTickets["getWebstoreTicketDetails"] =
@@ -47,6 +48,7 @@ export const getWebstoreTicketDetails: TApiTickets["getWebstoreTicketDetails"] =
                 ticketDetails.status === "cancelamento" ||
                 ticketDetails.status === "cancelamento_pendente",
               isValidated: ticketDetails.status === "validado",
+              isOrderPayed: details.detail.status === "validado",
             },
           }
         }

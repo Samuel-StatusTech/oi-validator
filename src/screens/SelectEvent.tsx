@@ -1,4 +1,10 @@
-import { FlatList, View, Text, StyleSheet } from "react-native"
+import {
+  FlatList,
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native"
 import { THEME } from "../theme"
 import LogoWhite from "@assets/logoWhite.svg"
 import { Button } from "@components/Button"
@@ -17,6 +23,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import Api from "src/api"
 import { storeDbUserInfo } from "@utils/toolbox/auxFns/storeDbUserInfo"
 import { UserInfo } from "@utils/@types/data/user"
+import { LoadingOverlay } from "@components/LoadingOverlay"
 
 export function SelectEvent() {
   const insets = useSafeAreaInsets()
@@ -30,6 +37,7 @@ export function SelectEvent() {
   const event = useStore((s) => s.currentEvent)
   const lastSync = useStore((s) => s.lastSync)
 
+  const [loading, setLoading] = useState(false)
   const [reloading, setReloading] = useState(false)
   const [events, setEvents] = useState<EventData[]>([])
   const [showingPopUp, setShowingPopUp] = useState(false)
@@ -55,6 +63,10 @@ export function SelectEvent() {
   }
 
   async function handleSelect(newEvent: EventData) {
+    if (loading) return
+
+    setLoading(true)
+
     Common.registerEvent(newEvent)
 
     const sync = await Api.users.syncUser({
@@ -92,11 +104,16 @@ export function SelectEvent() {
       }
     }
 
-    navigation.navigate("home")
+    setLoading(false)
+
+    setTimeout(() => {
+      navigation.navigate("home")
+    }, 200)
   }
 
   const reloadData = useCallback(async () => {
     try {
+      setLoading(true)
       setReloading(true)
 
       const req = await Api.users.syncUser({
@@ -118,6 +135,7 @@ export function SelectEvent() {
       }
     } catch (error) {}
 
+    setLoading(false)
     setReloading(false)
   }, [])
 
@@ -143,6 +161,7 @@ export function SelectEvent() {
         close={() => setShowingPopUp(false)}
         action={handleDesconect}
       />
+      <LoadingOverlay visible={loading} />
       <View
         style={{
           ...styles.container,

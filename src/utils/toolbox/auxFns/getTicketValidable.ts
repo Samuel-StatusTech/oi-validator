@@ -6,12 +6,14 @@ export const isTicketValidable = (
 ): { isValidable: boolean; validableCode: string } => {
   let result = { isValidable: true, validableCode: "" }
 
-  const isEventWebstoreTicket = ticket.startsWith(`${eventId.toUpperCase()}/`)
+  const isWebstoreTicket = ticket.includes("/")
 
-  if (isEventWebstoreTicket) {
+  if (isWebstoreTicket) {
+    const isEventWebstoreTicket = ticket.split("/")[0] === eventId.toUpperCase()
+
     const cleanCode = ticket.split("/")[1]
 
-    result = { isValidable: true, validableCode: cleanCode }
+    result = { isValidable: isEventWebstoreTicket, validableCode: cleanCode }
   } else {
     const ticketClient = ticket.substring(4, 7)
     const clientDatabase = cliendDb.slice(2, 5).toUpperCase()

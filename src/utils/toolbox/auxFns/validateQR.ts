@@ -96,17 +96,18 @@ const validateQR = async (
               }
             }
 
-            if (isTicketCanceled) {
-              reject("A compra do ticket foi cancelada")
-              return
-            }
-
-            if (!isOrderPayed) {
-              reject("O pagamento do ticket não foi realizado")
-              return
-            }
-
             if (isEventTicket) {
+
+              if (isTicketCanceled) {
+                reject("A compra do ticket foi cancelada")
+                return
+              }
+
+              if (!isOrderPayed) {
+                reject("O pagamento do ticket não foi realizado")
+                return
+              }
+
               const canValidateThisTicket = userProds.find(
                 (i) =>
                   (i as IProduct).id === ticketProductId ||

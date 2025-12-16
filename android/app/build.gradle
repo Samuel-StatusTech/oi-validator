@@ -91,8 +91,8 @@ android {
         applicationId 'com.validator'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 3
-        versionName "1.0.3"
+        versionCode 8
+        versionName "1.0.8"
     }
     signingConfigs {
         debug {

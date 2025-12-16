@@ -70,6 +70,7 @@ export function Home() {
   function handleConfirm() {
     setQrCode(qrCodeText)
     validateCode(qrCodeText)
+    setQrCodeText("")
   }
 
   function handleModeChange() {

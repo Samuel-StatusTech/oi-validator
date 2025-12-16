@@ -29,9 +29,22 @@ const validateQR = async (
           event.id
         )
 
-        const { isValidable } = validableCheckage
-        let { validableCode } = validableCheckage
+        let { isValidable, validableCode } = validableCheckage
         let ticketProductId: string | null = null
+
+        if (!isValidable) {
+          const codeToRecheck = `${event.id}/${code}`.toUpperCase()
+
+          const validableCheckage = isTicketValidable(
+            codeToRecheck,
+            clientDb ?? user.db,
+            event.oid,
+            event.id
+          )
+
+          isValidable = validableCheckage.isValidable
+          validableCode = validableCheckage.validableCode
+        }
 
         if (isValidable) {
           const locallyValidated = await Validation.searchByReadableCode(

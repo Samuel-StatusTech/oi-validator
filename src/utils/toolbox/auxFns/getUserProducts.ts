@@ -44,11 +44,12 @@ export const getUserProducts = async (): Promise<TAllProducts> => {
         (product as IProduct | ICombo).id ??
         (product as IWebstoreTicket).product_id
 
+      const isWebTicket = (product as IWebstoreTicket).product_id !== undefined
+
       const isTypeIncluded =
         userProductsTypes.includes((product as IProduct).type ?? "") ||
         userProductsTypes.includes((product as ICombo).direction ?? "") ||
-        ((product as IWebstoreTicket).product_id &&
-          userProductsTypes.includes("ingresso"))
+        (isWebTicket && userProductsTypes.includes("ingresso"))
 
       const isOnSpecificList = hasSpecificList
         ? userProductsSpecificIds.includes(productRegisterId)

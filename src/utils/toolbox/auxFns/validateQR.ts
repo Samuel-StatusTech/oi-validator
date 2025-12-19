@@ -16,7 +16,7 @@ const validateQR = async (
   user: UserInfo,
   hasConnection: boolean,
   token: string
-): Promise<boolean> => {
+): Promise<{ validated: true; productName: string }> => {
   return new Promise(async (resolve, reject) => {
     try {
       if (hasConnection) {
@@ -72,8 +72,9 @@ const validateQR = async (
             )
 
             let isWebticket = false
+            let webticketName = ""
             let isTicketCanceled = false
-            let isOrderPayed = false
+            let isOrderPayed = true
             let isEventTicket = prodName.length > 0
             ticketProductId = prodId
 
@@ -93,6 +94,7 @@ const validateQR = async (
                 isOrderPayed = webstoreTicketDetailsRequest.data.isOrderPayed
                 validableCode = webstoreTicketDetailsRequest.data.webTicketUid
                 ticketProductId = webstoreTicketDetailsRequest.data.productId
+                webticketName = webstoreTicketDetailsRequest.data.productName
               }
             }
 
@@ -113,6 +115,8 @@ const validateQR = async (
                   (i as IProduct).id === ticketProductId ||
                   (i as IWebstoreTicket).product_id === ticketProductId
               )
+
+              const productName = isWebticket ? webticketName : prodName
 
               if (!canValidateThisTicket) {
                 reject(
@@ -139,7 +143,7 @@ const validateQR = async (
                         ""
                       )
                     )
-                    resolve(true)
+                    resolve({ validated: true, productName: productName })
                     break
                   case 2:
                     reject("Ticket já validado.")

@@ -1,12 +1,20 @@
 import ErrorSVG from "@assets/erro.svg"
 import SuccessSVG from "@assets/sucesso.svg"
 import React, { useEffect, useRef } from "react"
-import { Animated, Dimensions, TouchableOpacity, View, Text, StyleSheet } from "react-native"
+import {
+  Animated,
+  Dimensions,
+  TouchableOpacity,
+  View,
+  Text,
+  StyleSheet,
+} from "react-native"
 import { THEME } from "../theme"
 
 type Props = {
   qrCode: string
   isSuccess: boolean
+  productName: string
   isOpen: boolean
   message: string
   onClose: () => any
@@ -17,6 +25,7 @@ type Props = {
 export function QrCodeStatusView({
   qrCode,
   isSuccess,
+  productName,
   isOpen,
   onClose,
   message,
@@ -53,7 +62,7 @@ export function QrCodeStatusView({
     }).start()
   }
 
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
   return (
     <View style={styles.overlay}>
@@ -75,6 +84,9 @@ export function QrCodeStatusView({
                 ? `${qrCode}`
                 : message ?? "Código não aceito nessa portaria."}
             </Text>
+            {isSuccess && productName && (
+              <Text style={styles.message}>{productName}</Text>
+            )}
           </View>
           <TouchableOpacity
             activeOpacity={0.7}
@@ -153,4 +165,4 @@ const styles = StyleSheet.create({
     backgroundColor: "#375367",
     height: 7,
   },
-});
+})

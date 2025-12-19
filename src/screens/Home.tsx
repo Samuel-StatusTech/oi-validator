@@ -13,7 +13,6 @@ import { EventData } from "@utils/@types/data/event"
 import { useFocusEffect } from "@react-navigation/native"
 import { BackHandler, Dimensions } from "react-native"
 import Netinfo from "@react-native-community/netinfo"
-import { setData } from "../store/reducers/persistorReducer"
 
 export function Home() {
   const store = useStore((state) => state)
@@ -27,12 +26,15 @@ export function Home() {
   const [qrCode, setQrCode] = useState("")
   const [qrCodeText, setQrCodeText] = useState("")
   const [lastScanTime, setLastScanTime] = useState(0)
-  const [ticketState, setTicketState] = useState(false)
+  const [ticketState, setTicketState] = useState({
+    validated: false,
+    productName: "",
+  })
   const [isValidating, setIsValidating] = useState(false)
   const [checkComplete, setCheckComplete] = useState(false)
   const [msg, setMsg] = useState("")
 
-  let waitTime = 60 * 1000
+  let waitTime = 45 * 1000
   let timer: undefined | NodeJS.Timeout = undefined
 
   useEffect(() => {
@@ -71,6 +73,7 @@ export function Home() {
     setQrCode(qrCodeText)
     validateCode(qrCodeText)
     setQrCodeText("")
+    setMode("camera")
   }
 
   function handleModeChange() {
@@ -101,15 +104,15 @@ export function Home() {
               connection,
               token
             )
-            .then((isValid) => {
-              setTicketState(isValid)
+            .then((validation) => {
+              setTicketState(validation)
               Common.setHeaderColor("green")
-              if (!connection && isValid) {
+              if (!connection && validation) {
                 Common.setSyncObligation(true)
               }
             })
             .catch((error) => {
-              setTicketState(false)
+              setTicketState({ validated: false, productName: "" })
               Common.setHeaderColor("red")
               setMsg(error)
             })
@@ -236,7 +239,8 @@ export function Home() {
       <QrCodeStatusView
         qrCode={qrCode.replace(`${currentEvent?.id}/`, "")}
         isOpen={showFeedback}
-        isSuccess={ticketState}
+        isSuccess={ticketState.validated}
+        productName={ticketState.productName}
         isValidating={isValidating}
         isChecked={checkComplete}
         message={msg}

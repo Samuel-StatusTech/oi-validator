@@ -3,14 +3,16 @@ import { getUserProducts, TAllProducts } from "./getUserProducts"
 import { IProduct } from "@utils/@types/sqlite/product"
 import { ICombo } from "@utils/@types/sqlite/combo"
 import { IWebstoreTicket } from "@utils/@types/sqlite/webstoreTicket"
-import Api from "src/api"
 import dbModelProduct from "@services/sqlite/models/Product"
 
 const getTicketName = async (
   ticket: string,
   shouldFilterUserProducts: boolean = true,
-  productsList?: TAllProducts
+  productsList?: TAllProducts,
+  isSearchingBy: "qrCode" | "id" = "qrCode"
 ) => {
+  const ticketProdOid = ticket.substring(7, 10)
+
   let productId = ""
   let productName = ""
 
@@ -27,10 +29,22 @@ const getTicketName = async (
     }
 
     const matchItem = userProducts.find((i) => {
-      return (
-        (i as IProduct | ICombo).id === ticket ||
-        (i as IWebstoreTicket).product_id === ticket
-      )
+      const isWebstoreTicket = (i as IWebstoreTicket).product_id !== undefined
+
+      if (isWebstoreTicket) return (i as IWebstoreTicket).product_id === ticket
+      else {
+        let doesMatch = false
+
+        if (isSearchingBy === "qrCode") {
+          const prodId = getProductUidFromQrCode(i as any)
+
+          doesMatch = ticketProdOid === prodId
+        } else {
+          doesMatch = (i as IProduct | ICombo).id === ticket
+        }
+
+        return doesMatch
+      }
     })
 
     if (matchItem) {
@@ -54,22 +68,30 @@ const getTicketsNames = async (tickets: IValidation[]) => {
     name: string
   }[] = []
 
-  let userProducts: TAllProducts = []
-
-  const allProds = await dbModelProduct.getAllPdvAndWebstoreProducts()
-  userProducts = allProds
+  const userProducts = await getUserProducts()
 
   tickets.forEach(async (ticket) => {
     const { name } = await getTicketName(
       ticket.ticketProductId ?? ticket.uid,
       false,
-      userProducts
+      userProducts,
+      "id"
     )
 
     res.push({ ...ticket, name })
   })
 
   return res
+}
+
+const getProductUidFromQrCode = (product: IProduct | ICombo) => {
+  const prodOId = parseInt(String(product.oid ?? (product as IProduct).o_id))
+    .toString(36)
+    .padStart(3, "0")
+    .slice(0, 3)
+    .toUpperCase()
+
+  return prodOId
 }
 
 export { getTicketName, getTicketsNames }

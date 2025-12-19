@@ -32,6 +32,7 @@ import { PopUp } from "@components/PopUp"
 import { getImeiOrUnique } from "@utils/toolbox/imei"
 import { syncValidations } from "@services/sync/validations"
 import { dropTables } from "@services/sqlite/Database"
+import { LoadingOverlay } from "@components/LoadingOverlay"
 
 type FormDataProps = {
   name: string
@@ -255,6 +256,7 @@ export function SignIn() {
         close={() => setPopup({ show: false, success: false, message: "" })}
         action={() => setPopup({ show: false, success: false, message: "" })}
       />
+      <LoadingOverlay visible={isAuthenticating} />
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
@@ -346,9 +348,7 @@ export function SignIn() {
               >
                 {`Você está ${connection.isConnected ? "ONLINE" : "OFFLINE"}`}
               </Text>
-              <Text style={styles.syncText}>
-                {isAuthenticating ? "Sincronizando..." : syncText ?? ""}
-              </Text>
+              <Text style={styles.syncText}>{syncText ?? ""}</Text>
             </View>
           </View>
           <View style={styles.footer}>

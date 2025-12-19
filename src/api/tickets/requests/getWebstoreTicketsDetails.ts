@@ -9,6 +9,7 @@ export type TApiParams_Tickets_GetWebstoreTicketDetails = {
 
 export type TApiResponse_Tickets_GetWebstoreTicketDetails = {
   productId: string
+  productName: string
   webTicketUid: string
   isTicketCanceled: boolean
   isValidated: boolean
@@ -43,6 +44,7 @@ export const getWebstoreTicketDetails: TApiTickets["getWebstoreTicketDetails"] =
             ok: true,
             data: {
               productId: ticketDetails.id,
+              productName: ticketDetails.name, // `${ticketDetails.name} ${ticketDetails.batch_name}`
               webTicketUid: ticketDetails.opuid,
               isTicketCanceled:
                 ticketDetails.status === "cancelamento" ||

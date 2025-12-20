@@ -3,6 +3,7 @@ import { buildProductInsertParams } from "./buildInsertParams/product"
 import { buildComboInsertParams } from "./buildInsertParams/combo"
 import { buildProductsListInsertParams } from "./buildInsertParams/productsList"
 import { buildWebstoreTicketsInsertParams } from "./buildInsertParams/webstoreTicket"
+import { buildValidationInsertParams } from "./buildInsertParams/validation"
 
 import { buildEventUpdateParams } from "./buildUpdateParams/event"
 import { buildProductUpdateParams } from "./buildUpdateParams/product"
@@ -16,6 +17,7 @@ export const buildInsertParams = {
   combo: buildComboInsertParams,
   productsList: buildProductsListInsertParams,
   webstoreTicket: buildWebstoreTicketsInsertParams,
+  validation: buildValidationInsertParams,
 }
 
 export const buildUpdateParams = {

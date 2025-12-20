@@ -13,6 +13,7 @@ export type TApiResponse_Tickets_GetWebstoreTicketDetails = {
   webTicketUid: string
   isTicketCanceled: boolean
   isValidated: boolean
+  validationTime: string
   isOrderPayed: boolean
 }
 
@@ -35,6 +36,9 @@ export const getWebstoreTicketDetails: TApiTickets["getWebstoreTicketDetails"] =
       const requestSuccess = details.status ?? false
 
       if (requestSuccess) {
+        const purchaseStatus = details.detail.status
+        const cancelledStatuses = ["cancelamento", "cancelamento_pendente"]
+
         const ticketDetails = details.detail.products.find(
           (prod: any) => prod.qr_label === qrCode
         )
@@ -47,10 +51,11 @@ export const getWebstoreTicketDetails: TApiTickets["getWebstoreTicketDetails"] =
               productName: ticketDetails.name, // `${ticketDetails.name} ${ticketDetails.batch_name}`
               webTicketUid: ticketDetails.opuid,
               isTicketCanceled:
-                ticketDetails.status === "cancelamento" ||
-                ticketDetails.status === "cancelamento_pendente",
+                cancelledStatuses.includes(ticketDetails.status) ||
+                cancelledStatuses.includes(purchaseStatus),
               isValidated: ticketDetails.status === "validado",
-              isOrderPayed: details.detail.status === "validado",
+              validationTime: ticketDetails.validationTime ?? "",
+              isOrderPayed: purchaseStatus === "validado",
             },
           }
         }

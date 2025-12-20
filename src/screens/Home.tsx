@@ -10,8 +10,7 @@ import { THEME } from "../theme"
 import tb from "@utils/toolbox"
 import useStore from "../store"
 import { EventData } from "@utils/@types/data/event"
-import { useFocusEffect } from "@react-navigation/native"
-import { BackHandler, Dimensions } from "react-native"
+import { Dimensions } from "react-native"
 import Netinfo from "@react-native-community/netinfo"
 
 export function Home() {
@@ -21,7 +20,6 @@ export function Home() {
   const [mode, setMode] = useState<"camera" | "typing" | "saveEnergy">("camera")
   const [flashMode, setFlashMode] = useState<FlashMode>("off")
   const [showFeedback, setFeedback] = useState(false)
-  const [showProds, setShowProds] = useState(false)
   const [scanned, setScanned] = useState(false)
   const [qrCode, setQrCode] = useState("")
   const [qrCodeText, setQrCodeText] = useState("")
@@ -130,24 +128,6 @@ export function Home() {
   const renderBgColor = () => {
     return ticketState ? "rgba(90, 188, 106, .5)" : "rgba(232, 83, 83, .5)"
   }
-
-  useFocusEffect(
-    useCallback(() => {
-      const onBackPress = () => {
-        if (showProds) {
-          setShowProds(false)
-          return true
-        } else return false
-      }
-
-      const subscription = BackHandler.addEventListener(
-        "hardwareBackPress",
-        onBackPress
-      )
-
-      return () => subscription.remove()
-    }, [showProds])
-  )
 
   return (
     <View style={styles.container}>

@@ -162,7 +162,7 @@ export function SignIn() {
             setIsLoading(false)
             navigation.reset({
               index: 0,
-              routes: [{ name: "appNavigator" }],
+              routes: [{ name: "appNavigator", path: "selectEvent" }],
             })
           } else {
             setPopup({ show: true, success: false, message: machData.message })

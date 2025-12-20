@@ -8,6 +8,7 @@ import { isTicketValidable } from "./getTicketValidable"
 import { getUserProducts } from "./getUserProducts"
 import { IWebstoreTicket } from "@utils/@types/sqlite/webstoreTicket"
 import { IProduct } from "@utils/@types/sqlite/product"
+import { checkLocallyValidation } from "./validateQR/checkLocallyValidation"
 
 const validateQR = async (
   code: string,
@@ -47,14 +48,13 @@ const validateQR = async (
         }
 
         if (isValidable) {
-          const locallyValidated = await Validation.searchByReadableCode(
-            validableCode
-          )
+          const locallyValidated = await checkLocallyValidation({
+            eventId: event.id,
+            validableCode,
+          })
 
-          const userProds = await getUserProducts()
-
-          if (locallyValidated.length > 0) {
-            const validation = locallyValidated[0]
+          if (locallyValidated?.validated) {
+            const validation = locallyValidated.validation
             if (!Boolean(validation.synced)) {
               await Api.validations.validateTicket({
                 ticketUid: validableCode,
@@ -62,9 +62,12 @@ const validateQR = async (
               })
               await Validation.updateValidation(validableCode, true)
             }
-            reject("Ticket já validado")
+
+            reject(locallyValidated.message)
             return
           } else {
+            const userProds = await getUserProducts()
+
             const { id: prodId, name: prodName } = await getTicketName(
               upperCode,
               true,
@@ -99,7 +102,6 @@ const validateQR = async (
             }
 
             if (isEventTicket) {
-
               if (isTicketCanceled) {
                 reject("A compra do ticket foi cancelada")
                 return
@@ -125,6 +127,37 @@ const validateQR = async (
                 return
               }
 
+              // 1. Sync Validations
+              const validationsSync =
+                await Api.validations.getOnlineValidations({
+                  eventId: event.id,
+                })
+
+              if (validationsSync.ok) {
+                const onlineValidations = validationsSync.data
+                Validation.insertOrReplaceValidations(onlineValidations)
+              }
+              // 2. Search Validations locally again
+              const locallyValidated = await checkLocallyValidation({
+                eventId: event.id,
+                validableCode,
+              })
+
+              if (locallyValidated?.validated) {
+                const validation = locallyValidated.validation
+                if (!Boolean(validation.synced)) {
+                  await Api.validations.validateTicket({
+                    ticketUid: validableCode,
+                    eventId: event.id,
+                  })
+                  await Validation.updateValidation(validableCode, true)
+                }
+
+                reject(locallyValidated.message)
+                return
+              }
+
+              // 3. If not found, proceed to validate online
               const validation = await Api.validations.validateTicket({
                 ticketUid: validableCode,
                 eventId: event.id,
@@ -176,6 +209,9 @@ const validateQR = async (
         return
       }
     } catch (error) {
+      console.log("Erro: ")
+      console.log("Erro: ", error)
+      console.log("Erro: ")
       reject("Houve um erro.\nTente novamente mais tarde")
       return
     }

@@ -22,20 +22,21 @@ export const syncValidations = async (data?: {
     const event = store.currentEvent
     const user = store.user
 
-    if (token && event) {
+    if (token && event && user) {
       const onlineValidations = await Api.validations.getOnlineValidations({
         eventId: event?.id as string,
       })
+
       if (onlineValidations.ok) {
         const localValidations = await Validation.getAll()
         onlineValidations.data.forEach(async (val) => {
           const localMatch = localValidations.find((lv) => lv.uid === val.uid)
           if (localMatch && !Boolean(localMatch.synced)) {
             await Validation.updateValidation(localMatch.uid, true)
-          } else if (!localMatch && val.user_id === user?.id) {
+          } else if (!localMatch) {
             await Validation.insertValidation(
               val.uid,
-              user?.id,
+              user.id,
               true,
               new Date(val.created_at).getTime(),
               new Date(val.updated_at).getTime(),

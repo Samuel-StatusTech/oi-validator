@@ -1,6 +1,7 @@
 import { IValidation } from "@utils/@types/sqlite/validation"
 import db from "../Database"
 import {
+  insertOrReplaceValidationQuery,
   insertValidation as insertValidationQuery,
   updateValidation as updateValidationQuery,
   updateValidations as updateValidationsQuery,
@@ -8,7 +9,10 @@ import {
   selectAllValidations,
   selectValidationsNoSync,
   selectValidationByReadableCode,
+  selectAllUsersValidations,
 } from "../queries/validations"
+import { safeTransactions } from "../safeTransactions"
+import { buildInsertParams } from "@utils/toolbox/dbHelpers"
 
 const insertValidation = async (
   uid: string,
@@ -33,6 +37,23 @@ const insertValidation = async (
     else throw new Error("Erro ao registrar validação")
   } catch (error) {
     throw error
+  }
+}
+
+const insertOrReplaceValidations = async (validations: IValidation[]) => {
+  if (!validations?.length) return true
+
+  try {
+    const transactionResult = await safeTransactions(
+      insertOrReplaceValidationQuery,
+      validations,
+      buildInsertParams.validation
+    )
+
+    return transactionResult
+  } catch (error) {
+    console.log("Error inserting webstore products:", error)
+    return false
   }
 }
 
@@ -93,6 +114,18 @@ const getAll = async (): Promise<IValidation[]> => {
   }
 }
 
+const getAllUsersValidations = async (userId: string): Promise<IValidation[]> => {
+  try {
+    const result = await db.getAllAsync<IValidation>(
+      selectAllUsersValidations,
+      [userId]
+    )
+    return result
+  } catch (error) {
+    throw error
+  }
+}
+
 const getValidationsNoSync = async (): Promise<IValidation[]> => {
   try {
     const result = await db.getAllAsync<IValidation>(selectValidationsNoSync)
@@ -114,11 +147,13 @@ const getTicketValidation = async (ticketUid: string): Promise<boolean> => {
 
 const Validation = {
   insertValidation,
+  insertOrReplaceValidations,
   updateValidation,
   updateValidations,
   searchByTicket,
   searchByReadableCode,
   getAll,
+  getAllUsersValidations,
   getValidationsNoSync,
   getTicketValidation,
 }

@@ -4,7 +4,6 @@ import { THEME } from "../theme"
 import { QrHistoryItem } from "@components/QrHistoryItem"
 
 import { TQrHistoryItem } from "@utils/@types/components/QrHistoryItem"
-import Api from "src/api"
 import useStore from "../store"
 import { IValidation } from "@utils/@types/sqlite/validation"
 import { getTicketsNames } from "@utils/toolbox/auxFns/getTicketNames"
@@ -35,7 +34,7 @@ export function QrHistory() {
 
   const updateList = async () => {
     if (user && event) {
-      const list = await Validation.getAll()
+      const list = await Validation.getAllUsersValidations(user.id)
 
       const listWithProdsNames = await getTicketsNames(list)
       const newList = parseList(listWithProdsNames)

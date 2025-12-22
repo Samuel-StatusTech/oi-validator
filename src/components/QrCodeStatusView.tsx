@@ -65,7 +65,14 @@ export function QrCodeStatusView({
   if (!isOpen) return null
 
   return (
-    <View style={styles.overlay}>
+    <View
+      style={[
+        styles.overlay,
+        {
+          backgroundColor: THEME.colors.gray[700],
+        },
+      ]}
+    >
       {isValidating ? (
         <Text style={styles.validatingText}>Validando...</Text>
       ) : (
@@ -113,15 +120,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#FFF",
+    backgroundColor: THEME.colors.gray[700],
   },
   validatingText: {
-    color: THEME.colors.blue[600],
+    color: THEME.colors.blue[500],
     fontFamily: THEME.fonts.heading,
     fontSize: 32,
   },
   content: {
-    backgroundColor: "#FFF",
+    backgroundColor: THEME.colors.gray[700],
     width: Dimensions.get("screen").width * 0.8,
     height: Dimensions.get("screen").width * 0.8,
     borderRadius: 16,
@@ -142,14 +149,14 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     marginTop: 64,
-    backgroundColor: "rgb(255, 255, 255)",
+    backgroundColor: THEME.colors.gray[600],
     paddingHorizontal: 42,
     paddingVertical: 22,
     elevation: 12,
     borderRadius: 64,
   },
   closeButtonText: {
-    color: "#232323",
+    color: THEME.colors.gray[200],
     fontSize: 24,
     fontFamily: THEME.fonts.heading,
   },

@@ -186,14 +186,30 @@ export function AppRoutes() {
       <View style={styles.headerContainer}>
         <View style={styles.headerTextContainer}>
           <Text
-            style={styles.headerTitle}
+            style={[
+              styles.headerTitle,
+              {
+                color:
+                  headerColor === THEME.colors.gray[700]
+                    ? THEME.colors.blue[400]
+                    : THEME.colors.white,
+              },
+            ]}
             numberOfLines={1}
             ellipsizeMode="tail"
           >
             {event?.name}
           </Text>
           <Text
-            style={styles.headerSubtitle}
+            style={[
+              styles.headerSubtitle,
+              {
+                color:
+                  headerColor === THEME.colors.gray[700]
+                    ? THEME.colors.blue[500]
+                    : THEME.colors.white,
+              },
+            ]}
             numberOfLines={1}
             ellipsizeMode="tail"
           >
@@ -253,7 +269,10 @@ export function AppRoutes() {
           },
           headerRight: () => renderHeader(),
           headerTitle: "",
-          headerTintColor: THEME.colors.blue[400],
+          headerTintColor:
+            headerColor === THEME.colors.gray[700]
+              ? THEME.colors.blue[400]
+              : THEME.colors.white,
           headerStyle: {
             backgroundColor: headerColor,
           },
@@ -304,7 +323,9 @@ export function AppRoutes() {
                 onPress={() => setPopupShow(true)}
               >
                 <SignOutIcon width={32} />
-                <Text style={{ color: THEME.colors.blue[400] }}>Sair do evento</Text>
+                <Text style={{ color: THEME.colors.blue[400] }}>
+                  Sair do evento
+                </Text>
               </TouchableOpacity>
             </SafeAreaView>
           )

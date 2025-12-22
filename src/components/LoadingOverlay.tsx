@@ -74,7 +74,7 @@ export const LoadingOverlay = ({ visible }: Props) => {
             width: "100%",
             height: "100%",
           }}
-          tint="light"
+          tint="dark"
           intensity={blur}
           experimentalBlurMethod={"dimezisBlurView"}
           blurReductionFactor={14}

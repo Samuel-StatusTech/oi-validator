@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react"
-import { Dimensions, TouchableOpacity, View, Text, ActivityIndicator, StyleSheet } from "react-native"
+import {
+  Dimensions,
+  TouchableOpacity,
+  View,
+  Text,
+  ActivityIndicator,
+  StyleSheet,
+} from "react-native"
 import { THEME } from "../theme"
 
 import RefreshIcon from "../assets/atualizar.svg"
@@ -38,7 +45,7 @@ export function PopUp({
     })
   }, [])
 
-  if (!showing) return null;
+  if (!showing) return null
 
   return (
     <>
@@ -95,7 +102,7 @@ const styles = StyleSheet.create({
     marginVertical: Dimensions.get("screen").height / 2,
     transform: [{ translateY: -Dimensions.get("screen").height / 6 }],
     alignSelf: "center",
-    backgroundColor: THEME.colors.blue[10],
+    backgroundColor: THEME.colors.gray[600],
     borderRadius: 16,
     paddingVertical: 32,
     paddingHorizontal: 16,
@@ -108,7 +115,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily: THEME.fonts.heading,
     fontSize: 28,
-    color: THEME.colors.blue[600],
+    color: THEME.colors.blue[400],
     marginTop: 12,
   },
   description: {
@@ -116,14 +123,14 @@ const styles = StyleSheet.create({
     fontSize: THEME.fontSizes.lg,
     margin: 16,
     textAlign: "center",
-    color: "#283046",
+    color: THEME.colors.blue[500],
   },
   spinnerContainer: {
     alignItems: "center",
     marginTop: 12,
   },
   button: {
-    backgroundColor: THEME.colors.blue[50],
+    backgroundColor: THEME.colors.blue[400],
     borderRadius: 50,
     alignItems: "center",
     paddingTop: 21,
@@ -133,6 +140,6 @@ const styles = StyleSheet.create({
   buttonText: {
     fontFamily: THEME.fonts.heading,
     fontSize: THEME.fontSizes.lg,
-    color: THEME.colors.blue[400],
+    color: THEME.colors.white,
   },
-});
+})

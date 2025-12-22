@@ -19,7 +19,7 @@ export function EventItem({ onSelect, info }: Props) {
   }
 
   return (
-    <TouchableOpacity onPress={onSelect} style={styles.container}>
+    <TouchableOpacity onPress={onSelect} style={styles.container} activeOpacity={0.8}>
       <View style={styles.content}>
         {info.logo ? (
           <Image
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
   },
   content: {
     width: "100%",
-    backgroundColor: THEME.colors.white,
+    backgroundColor: THEME.colors.gray[600],
     height: 96,
     marginTop: 16,
     borderRadius: 16,
@@ -74,12 +74,12 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   title: {
-    color: THEME.colors.blue[600],
+    color: THEME.colors.blue[400],
     fontSize: THEME.fontSizes.lg,
     fontFamily: THEME.fonts.heading,
   },
   subtitle: {
-    color: THEME.colors.blue[200],
+    color: THEME.colors.blue[500],
     fontSize: THEME.fontSizes.md,
   },
 })

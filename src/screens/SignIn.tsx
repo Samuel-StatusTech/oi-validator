@@ -162,13 +162,13 @@ export function SignIn() {
           const machData = await Api.auth.getMachData({ imei })
           if (machData.ok) {
             setIsLoading(false)
-            setIsAuthenticating(false)
             setTimeout(() => {
               navigation.reset({
                 index: 0,
-                routes: [{ name: "appNavigator" }],
+                routes: [{ name: "appNavigator", path: "selectEvent" }],
               })
-            }, 100)
+            }, 400)
+            setIsAuthenticating(false)
           } else {
             setPopup({ show: true, success: false, message: machData.message })
             setAuthError({ ...authError, pass: true, name: true })

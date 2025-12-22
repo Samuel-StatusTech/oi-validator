@@ -4,9 +4,10 @@ import {
   Text,
   StyleSheet,
   ActivityIndicator,
+  BackHandler,
 } from "react-native"
 import { THEME } from "../theme"
-import LogoWhite from "@assets/logoWhite.svg"
+import Logo from "@assets/logo.svg"
 import { Button } from "@components/Button"
 import { EventItem } from "@components/EventItem"
 import { Onlinetag } from "@components/OnlineTag"
@@ -149,6 +150,12 @@ export function SelectEvent() {
           )
         )
       )
+
+    const handler = BackHandler.addEventListener("hardwareBackPress", () => {
+      setShowingPopUp(true)
+      return true
+    })
+    return () => handler.remove()
   }, [])
 
   return (
@@ -172,7 +179,7 @@ export function SelectEvent() {
         }}
       >
         <View style={styles.header}>
-          <LogoWhite />
+          <Logo width={"30%"} />
           <Onlinetag isOnline={connection.isConnected ?? false} />
         </View>
         <View style={styles.center}>
@@ -213,7 +220,7 @@ export function SelectEvent() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: THEME.colors.blue[300],
+    backgroundColor: THEME.colors.gray[700],
     paddingTop: 16,
     paddingHorizontal: 24,
   },

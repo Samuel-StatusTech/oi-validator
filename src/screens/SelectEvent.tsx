@@ -234,12 +234,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   greeting: {
-    color: "white",
+    color: THEME.colors.blue[400],
     fontFamily: THEME.fonts.heading,
     fontSize: THEME.fontSizes.xl,
   },
   description: {
-    color: "white",
+    color: THEME.colors.blue[500],
     fontSize: THEME.fontSizes.lg,
     textAlign: "center",
   },

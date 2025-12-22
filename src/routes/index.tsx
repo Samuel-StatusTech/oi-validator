@@ -8,7 +8,7 @@ export function Routes() {
   theme.colors.background = THEME.colors.white;
 
   return (
-    <View style={{ flex: 1, backgroundColor: THEME.colors.white }}>
+    <View style={{ flex: 1, backgroundColor: THEME.colors.gray[700] }}>
       <NavigationContainer theme={theme}>
         <AuthRoutes />
       </NavigationContainer>

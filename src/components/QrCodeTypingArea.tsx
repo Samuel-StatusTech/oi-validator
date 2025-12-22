@@ -37,25 +37,25 @@ export function QrCodeTypingArea({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: THEME.colors.blue[300],
+    backgroundColor: THEME.colors.gray[700],
     justifyContent: 'center',
     paddingHorizontal: 32,
     rowGap: 24,
   },
   label: {
     textAlign: 'center',
-    color: THEME.colors.blue[10],
+    color: THEME.colors.blue[400],
     fontSize: THEME.fontSizes.lg,
     fontFamily: THEME.fonts.heading,
   },
   input: {
-    backgroundColor: THEME.colors.blue[50],
+    backgroundColor: THEME.colors.blue[600],
     borderRadius: 16,
     paddingVertical: 20,
     textAlign: 'center',
     fontFamily: THEME.fonts.heading,
     fontSize: 24,
-    color: THEME.colors.blue[600],
+    color: THEME.colors.blue[300],
   },
   button: {
     paddingVertical: 21,

@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     zIndex: 10,
-    backgroundColor: THEME.colors.white,
+    backgroundColor: THEME.colors.gray[700],
   },
   button: {
     flex: 1,
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     marginLeft: 16,
     marginRight: 8,
     height: 64,
-    backgroundColor: THEME.colors.blue[50],
+    backgroundColor: THEME.colors.gray[600],
     borderRadius: 32,
     flexDirection: "row",
     alignItems: "center",
@@ -82,12 +82,12 @@ const styles = StyleSheet.create({
     backgroundColor: THEME.colors.blue[400],
   },
   text: {
-    color: THEME.colors.blue[500],
+    color: THEME.colors.blue[400],
     fontFamily: THEME.fonts.body,
     fontSize: THEME.fontSizes.lg,
     marginLeft: 8,
   },
   activeText: {
-    color: THEME.colors.blue[10],
+    color: THEME.colors.gray[100],
   },
 })

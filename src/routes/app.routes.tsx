@@ -247,13 +247,13 @@ export function AppRoutes() {
         useLegacyImplementation={false}
         screenOptions={{
           headerShown: true,
-          drawerLabelStyle: { fontSize: 16 },
+          drawerLabelStyle: { fontSize: 16, color: THEME.colors.blue[400] },
           drawerStyle: {
             width: Dimensions.get("screen").width * 0.8,
           },
           headerRight: () => renderHeader(),
           headerTitle: "",
-          headerTintColor: "white",
+          headerTintColor: THEME.colors.blue[400],
           headerStyle: {
             backgroundColor: headerColor,
           },
@@ -269,6 +269,7 @@ export function AppRoutes() {
                 paddingHorizontal: 12,
                 flex: 1,
                 width: "100%",
+                backgroundColor: THEME.colors.gray[600],
               }}
             >
               <View
@@ -285,7 +286,7 @@ export function AppRoutes() {
                 <DrawerItemList {...props} />
                 <View>
                   <DrawerItem
-                    labelStyle={{ fontSize: 16 }}
+                    labelStyle={{ fontSize: 16, color: THEME.colors.blue[400] }}
                     label={"Sincronizar informações"}
                     icon={() => renderIcon("sync")}
                     onPress={syncing ? () => null : syncInfo}
@@ -303,7 +304,7 @@ export function AppRoutes() {
                 onPress={() => setPopupShow(true)}
               >
                 <SignOutIcon width={32} />
-                <Text>Sair do evento</Text>
+                <Text style={{ color: THEME.colors.blue[400] }}>Sair do evento</Text>
               </TouchableOpacity>
             </SafeAreaView>
           )
@@ -362,21 +363,22 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontFamily: THEME.fonts.heading,
     fontSize: THEME.fontSizes.lg,
-    color: THEME.colors.gray[50],
+    color: THEME.colors.blue[400],
   },
   headerSubtitle: {
     fontFamily: THEME.fonts.body,
     fontSize: THEME.fontSizes.md,
-    color: THEME.colors.gray[50],
+    color: THEME.colors.blue[500],
   },
   drawerTitle: {
+    color: THEME.colors.blue[400],
     fontFamily: THEME.fonts.heading,
     fontSize: 24,
   },
   drawerSubtitle: {
     fontFamily: THEME.fonts.body,
     fontSize: 16,
-    color: THEME.colors.gray[400],
+    color: THEME.colors.blue[500],
   },
   badge: {
     position: "absolute",

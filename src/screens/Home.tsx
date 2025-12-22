@@ -13,6 +13,8 @@ import { EventData } from "@utils/@types/data/event"
 import { Dimensions } from "react-native"
 import Netinfo from "@react-native-community/netinfo"
 
+const isValidatingColor = "rgba(18, 18, 20, .5)"
+
 export function Home() {
   const store = useStore((state) => state)
   const { user, currentEvent, token, Common } = store
@@ -37,12 +39,14 @@ export function Home() {
 
   useEffect(() => {
     if (timer !== undefined) clearTimeout(timer)
-    else if (timer === undefined) {
-      timer = setTimeout(() => {
-        setMode("saveEnergy")
-      }, waitTime)
+    if (mode === "camera") {
+      if (timer === undefined) {
+        timer = setTimeout(() => {
+          setMode("saveEnergy")
+        }, waitTime)
+      }
     }
-  }, [lastScanTime])
+  }, [lastScanTime, mode])
 
   useEffect(() => {
     if (timer !== undefined) clearTimeout(timer)
@@ -142,10 +146,10 @@ export function Home() {
                   styles.scannerFrame,
                   {
                     borderColor: isValidating
-                      ? "rgba(55, 83, 103, .5)"
+                      ? isValidatingColor
                       : showFeedback
                       ? renderBgColor()
-                      : "rgba(55, 83, 103, .5)",
+                      : isValidatingColor,
                   },
                 ]}
               >
@@ -154,10 +158,10 @@ export function Home() {
                     styles.sideBar,
                     {
                       backgroundColor: isValidating
-                        ? "rgba(55, 83, 103, .5)"
+                        ? isValidatingColor
                         : showFeedback
                         ? renderBgColor()
-                        : "rgba(55, 83, 103, .5)",
+                        : isValidatingColor,
                     },
                   ]}
                 />
@@ -167,10 +171,10 @@ export function Home() {
                     styles.sideBar,
                     {
                       backgroundColor: isValidating
-                        ? "rgba(55, 83, 103, .5)"
+                        ? isValidatingColor
                         : showFeedback
                         ? renderBgColor()
-                        : "rgba(55, 83, 103, .5)",
+                        : isValidatingColor,
                     },
                   ]}
                 />
@@ -180,10 +184,10 @@ export function Home() {
                   styles.overlayBackground,
                   {
                     backgroundColor: isValidating
-                      ? "rgba(55, 83, 103, .5)"
+                      ? isValidatingColor
                       : showFeedback
                       ? renderBgColor()
-                      : "rgba(55, 83, 103, .5)",
+                      : isValidatingColor,
                   },
                 ]}
               />
@@ -256,13 +260,13 @@ const styles = StyleSheet.create({
     width: Dimensions.get("screen").width * 0.8,
     height: Dimensions.get("screen").width * 0.8,
     borderWidth: 2,
-    borderColor: "white",
+    borderColor: THEME.colors.blue[400],
   },
   overlayBackground: {
     flex: 1,
   },
   cameraContainer: {
     flex: 1,
-    backgroundColor: THEME.colors.blue[300],
+    backgroundColor: THEME.colors.gray[300],
   },
 })

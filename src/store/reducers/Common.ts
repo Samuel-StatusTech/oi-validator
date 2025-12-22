@@ -1,6 +1,6 @@
 import { EventData } from "@utils/@types/data/event"
 import { Setter } from "../../utils/@types/store"
-import { deleteData, setData } from "./persistorReducer"
+import { THEME } from "src/theme"
 
 const CommonReducer = (set: Setter) => {
   return {
@@ -20,7 +20,7 @@ const CommonReducer = (set: Setter) => {
         }
       }),
     setHeaderColor: (color: "neutral" | "green" | "red") => {
-      let newColor = "#0097FE"
+      let newColor = THEME.colors.gray[700]
       switch (color) {
         case "green":
           newColor = "#22c55e"
@@ -29,10 +29,10 @@ const CommonReducer = (set: Setter) => {
           newColor = "#dc2626"
           break
         case "neutral":
-          newColor = "#0097FE"
+          newColor = THEME.colors.gray[700]
           break
         default:
-          newColor = "#0097FE"
+          newColor = THEME.colors.gray[700]
           break
       }
 

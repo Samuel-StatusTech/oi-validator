@@ -27,19 +27,19 @@ const styles = StyleSheet.create({
   container: {
     rowGap: 12,
     flex: 1,
-    backgroundColor: THEME.colors.blue[300],
+    backgroundColor: THEME.colors.gray[700],
     justifyContent: "center",
     paddingHorizontal: 32,
   },
   title: {
     textAlign: "center",
-    color: THEME.colors.blue[10],
+    color: THEME.colors.blue[400],
     fontSize: 28,
     fontFamily: THEME.fonts.heading,
   },
   subtitle: {
     textAlign: "center",
-    color: THEME.colors.blue[10],
+    color: THEME.colors.blue[500],
     fontSize: THEME.fontSizes.lg,
     fontFamily: THEME.fonts.body,
   },

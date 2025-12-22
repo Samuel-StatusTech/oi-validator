@@ -1,4 +1,3 @@
-import { SyncInfo } from "../api/responses/syncUser"
 import { EventData } from "../data/event"
 import { UserInfo } from "../data/user"
 
@@ -11,7 +10,7 @@ export interface StoreInterface {
   headerColor: string
   User: {
     storeInfo: (userInfo: UserInfo) => void
-    storeSyncInfo: (syncInfo: SyncInfo) => void
+    storeSyncInfo: (syncInfo: any) => void
     cleanInfo: () => void
   }
   Token: {

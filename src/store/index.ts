@@ -1,11 +1,11 @@
 import { create } from "zustand"
 import { persist, createJSONStorage } from "zustand/middleware"
 import { StoreInterface } from "@utils/@types/store"
-import useReducers from "./reducers"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import UserReducer from "./reducers/User"
 import TokenReducer from "./reducers/Token"
 import CommonReducer from "./reducers/Common"
+import { THEME } from "src/theme"
 
 const useStore = create<StoreInterface>()(
   persist(
@@ -15,7 +15,7 @@ const useStore = create<StoreInterface>()(
       lastSync: 0,
       currentEvent: null,
       mustSync: false,
-      headerColor: "#0097FE",
+      headerColor: THEME.colors.gray[700],
       // ...useReducers(set),
 
       User: UserReducer(set),

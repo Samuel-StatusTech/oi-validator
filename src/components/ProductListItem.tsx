@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
   descriptionContainer: {
     paddingBottom: 8,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(198, 207, 220, 1)",
+    borderBottomColor: THEME.colors.gray[400],
     rowGap: 5,
   },
   description: {

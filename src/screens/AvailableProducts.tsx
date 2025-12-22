@@ -15,6 +15,7 @@ function AvailableProductsScreen() {
   const { currentEvent: event, token } = useStore((state) => state)
 
   const [list, setList] = useState<TProductListItem[]>([])
+  const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
 
   const countValidations = (
@@ -50,6 +51,8 @@ function AvailableProductsScreen() {
   }
 
   const fetchData = async () => {
+    setLoading(true)
+
     try {
       if (event) {
         const userProducts = await getUserProducts()
@@ -67,6 +70,8 @@ function AvailableProductsScreen() {
     } catch (error) {
       console.log(error)
     }
+
+    setLoading(false)
   }
 
   const reloadList = useCallback(async () => {
@@ -111,14 +116,15 @@ function AvailableProductsScreen() {
                 style={{
                   width: "100%",
                   textAlign: "center",
-                  color: THEME.colors.gray[300],
+                  color: THEME.colors.blue[500],
                   fontSize: 18,
                   fontWeight: 600,
                   lineHeight: 28,
                 }}
               >
-                Você não possui nenhuma permissão no momento. Sincronize as
-                informações e tente novamente.
+                {loading
+                  ? "Carregando lista..."
+                  : "Você não possui nenhuma permissão no momento. Sincronize as informações e tente novamente."}
               </Text>
             </View>
           )}
@@ -141,6 +147,7 @@ function AvailableProductsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: THEME.colors.gray[700],
   },
   content: {
     flex: 1,
@@ -150,7 +157,7 @@ const styles = StyleSheet.create({
     fontFamily: THEME.fonts.heading,
     textAlign: "center",
     fontSize: THEME.fontSizes.lg,
-    color: THEME.colors.blue[600],
+    color: THEME.colors.blue[500],
     marginHorizontal: 18,
     marginBottom: 32,
   },

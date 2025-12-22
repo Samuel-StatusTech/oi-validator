@@ -10,9 +10,11 @@ import {
   Clipboard,
   Alert,
   TouchableOpacity,
+  Image,
 } from "react-native"
 import { THEME } from "../theme"
 import Logo from "@assets/logo.svg"
+import Logo2 from "@assets/logo_image.svg"
 import { Button } from "@components/Button"
 import { Input } from "@components/Input"
 import { MaterialIcons } from "@expo/vector-icons"
@@ -160,19 +162,21 @@ export function SignIn() {
           const machData = await Api.auth.getMachData({ imei })
           if (machData.ok) {
             setIsLoading(false)
-            navigation.reset({
-              index: 0,
-              routes: [{ name: "appNavigator", path: "selectEvent" }],
-            })
+            setIsAuthenticating(false)
+            setTimeout(() => {
+              navigation.reset({
+                index: 0,
+                routes: [{ name: "appNavigator" }],
+              })
+            }, 100)
           } else {
             setPopup({ show: true, success: false, message: machData.message })
             setAuthError({ ...authError, pass: true, name: true })
 
             await clearData()
+            setIsLoading(false)
+            setIsAuthenticating(false)
           }
-
-          setIsLoading(false)
-          setIsAuthenticating(false)
         } else {
           if (auth.message.match(/(senha)+/gi)) {
             setAuthError({ ...authError, pass: true })
@@ -258,12 +262,12 @@ export function SignIn() {
       />
       <LoadingOverlay visible={isAuthenticating} />
       <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
+        contentContainerStyle={styles.containerWrapper}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.container}>
           <View style={styles.center}>
-            <Logo />
+            <Logo width={"50%"} />
 
             <Controller
               control={control}
@@ -371,6 +375,10 @@ export function SignIn() {
 }
 
 const styles = StyleSheet.create({
+  containerWrapper: {
+    flexGrow: 1,
+    backgroundColor: THEME.colors.gray[700],
+  },
   container: {
     flex: 1,
     paddingHorizontal: 40,

@@ -41,8 +41,8 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   input: {
-    backgroundColor: THEME.colors.blue[50],
-    color: THEME.colors.blue[600],
+    backgroundColor: THEME.colors.blue[600],
+    color: THEME.colors.blue[300],
     fontSize: THEME.fontSizes.xl,
     height: 64,
     marginTop: 24,

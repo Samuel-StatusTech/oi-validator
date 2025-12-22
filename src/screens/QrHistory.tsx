@@ -9,12 +9,14 @@ import { IValidation } from "@utils/@types/sqlite/validation"
 import { getTicketsNames } from "@utils/toolbox/auxFns/getTicketNames"
 import QrHistoryEmpty from "@components/QrHistoryEmpty"
 import Validation from "@services/sqlite/models/Validation"
+import { useFocusEffect } from "@react-navigation/native"
 
 export function QrHistory() {
   const { user } = useStore((state) => state)
   const event = useStore((state) => state.currentEvent)
 
   const [data, setData] = useState<TQrHistoryItem[]>([])
+  const [loading, setLoading] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
 
   const parseList = (list: IValidation[]): TQrHistoryItem[] => {
@@ -33,16 +35,22 @@ export function QrHistory() {
   }
 
   const updateList = async () => {
-    if (user && event) {
-      const list = await Validation.getAllUsersValidations(user.id)
+    setLoading(true)
 
-      const listWithProdsNames = await getTicketsNames(list)
-      const newList = parseList(listWithProdsNames)
-      const orderedData = newList.sort((a, b) => {
-        return a.date < b.date ? 1 : a.date > b.date ? -1 : 0
-      })
-      setData(orderedData)
-    }
+    try {
+      if (user && event) {
+        const list = await Validation.getAllUsersValidations(user.id)
+
+        const listWithProdsNames = await getTicketsNames(list)
+        const newList = parseList(listWithProdsNames)
+        const orderedData = newList.sort((a, b) => {
+          return a.date < b.date ? 1 : a.date > b.date ? -1 : 0
+        })
+        setData(orderedData)
+      }
+    } catch (error) {}
+
+    setLoading(false)
   }
 
   const reloadList = useCallback(async () => {
@@ -51,9 +59,9 @@ export function QrHistory() {
     setRefreshing(false)
   }, [])
 
-  useEffect(() => {
+  useFocusEffect(() => {
     updateList()
-  }, [])
+  })
 
   return (
     <View style={styles.container}>
@@ -67,10 +75,13 @@ export function QrHistory() {
           onRefresh={reloadList}
           data={data}
           renderItem={({ item }) => <QrHistoryItem info={item} />}
-          ListEmptyComponent={() => <QrHistoryEmpty />}
+          ListEmptyComponent={() => <QrHistoryEmpty loading={loading} />}
           overScrollMode="never"
           style={styles.flatList}
-          contentContainerStyle={styles.flatListContent}
+          contentContainerStyle={[
+            styles.flatListContent,
+            data.length === 0 && { flex: 1, justifyContent: "center" },
+          ]}
         />
       </View>
     </View>
@@ -80,6 +91,7 @@ export function QrHistory() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: THEME.colors.gray[700],
   },
   content: {
     flex: 1,
@@ -89,7 +101,7 @@ const styles = StyleSheet.create({
     fontFamily: THEME.fonts.heading,
     textAlign: "center",
     fontSize: THEME.fontSizes.lg,
-    color: THEME.colors.blue[600],
+    color: THEME.colors.blue[500],
     marginHorizontal: 18,
     marginBottom: 32,
   },

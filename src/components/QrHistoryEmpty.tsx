@@ -2,11 +2,13 @@ import React from "react"
 import { View, Text, StyleSheet } from "react-native"
 import { THEME } from "../theme"
 
-function QrHistoryEmpty() {
+function QrHistoryEmpty({ loading }: { loading: boolean }) {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>
-        Nenhum código escaneado até o momento
+        {loading
+          ? "Carregando lista..."
+          : "Nenhum código escaneado até o momento"}
       </Text>
     </View>
   )
@@ -20,8 +22,8 @@ const styles = StyleSheet.create({
   text: {
     textAlign: "center",
     fontSize: 16,
-    color: THEME.colors.gray[700],
+    color: THEME.colors.blue[500],
   },
-});
+})
 
 export default QrHistoryEmpty

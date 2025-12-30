@@ -9,7 +9,6 @@ import { IValidation } from "@utils/@types/sqlite/validation"
 import { getTicketsNames } from "@utils/toolbox/auxFns/getTicketNames"
 import QrHistoryEmpty from "@components/QrHistoryEmpty"
 import Validation from "@services/sqlite/models/Validation"
-import { useFocusEffect } from "@react-navigation/native"
 
 export function QrHistory() {
   const { user } = useStore((state) => state)
@@ -59,9 +58,9 @@ export function QrHistory() {
     setRefreshing(false)
   }, [])
 
-  useFocusEffect(() => {
+  useEffect(() => {
     updateList()
-  })
+  }, [])
 
   return (
     <View style={styles.container}>

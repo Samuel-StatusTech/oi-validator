@@ -1,3 +1,4 @@
+import { SQLiteStatement } from "expo-sqlite"
 import db from "./Database"
 
 export const safeTransactions = async (
@@ -5,24 +6,31 @@ export const safeTransactions = async (
   transactions: any[],
   parser?: (params: any) => any[]
 ) => {
+  let result = false
   if (!transactions.length) return true
+
+  let stmt: SQLiteStatement | null = null
 
   try {
     await db.runAsync("BEGIN TRANSACTION")
 
-    const stmt = await db.prepareAsync(statementQuery)
+    stmt = await db.prepareAsync(statementQuery)
 
     for (const transaction of transactions) {
       await stmt.executeAsync(parser ? parser(transaction) : transaction)
     }
 
-    await stmt.finalizeAsync()
-
     await db.runAsync("COMMIT")
 
-    return true
+    result = true
   } catch (error) {
     await db.runAsync("ROLLBACK")
-    throw error
+    result = false
+  } finally {
+    if (stmt) {
+      await stmt.finalizeAsync()
+    }
   }
+
+  return result
 }

@@ -36,7 +36,7 @@ const insertValidation = async (
     if (result.changes > 0) return result.lastInsertRowId
     else throw new Error("Erro ao registrar validação")
   } catch (error) {
-    throw error
+    console.log("Erro ao registrar validação", error)
   }
 }
 
@@ -114,7 +114,9 @@ const getAll = async (): Promise<IValidation[]> => {
   }
 }
 
-const getAllUsersValidations = async (userId: string): Promise<IValidation[]> => {
+const getAllUsersValidations = async (
+  userId: string
+): Promise<IValidation[]> => {
   try {
     const result = await db.getAllAsync<IValidation>(
       selectAllUsersValidations,
@@ -122,7 +124,7 @@ const getAllUsersValidations = async (userId: string): Promise<IValidation[]> =>
     )
     return result
   } catch (error) {
-    throw error
+    return []
   }
 }
 

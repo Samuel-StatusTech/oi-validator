@@ -1,5 +1,10 @@
 import { TDefaultApiRes } from "../@types/responses"
 import {
+  checkTicketValidation,
+  TApiParams_Validations_CheckTicketValidation,
+  TApiResponse_Validations_CheckTicketValidation,
+} from "./requests/checkTicketValidation"
+import {
   getOnlineValidations,
   TApiParams_Validations_GetOnlineValidations,
   TApiResponse_Validations_GetOnlineValidations,
@@ -18,6 +23,7 @@ import {
 export const ApiValidations: TApiValidations = {
   getValidations: getValidations,
   getOnlineValidations: getOnlineValidations,
+  checkTicketValidation: checkTicketValidation,
   validateTicket: validateTicket,
 }
 
@@ -28,6 +34,9 @@ export type TApiValidations = {
   getOnlineValidations: (
     params: TApiParams_Validations_GetOnlineValidations
   ) => Promise<TDefaultApiRes<TApiResponse_Validations_GetOnlineValidations>>
+  checkTicketValidation: (
+    params: TApiParams_Validations_CheckTicketValidation
+  ) => Promise<TDefaultApiRes<TApiResponse_Validations_CheckTicketValidation>>
   validateTicket: (
     params: TApiParams_Validations_ValidateTicket
   ) => Promise<TDefaultApiRes<TApiResponse_Validations_ValidateTicket>>

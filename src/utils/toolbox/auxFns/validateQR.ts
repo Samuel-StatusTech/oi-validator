@@ -9,6 +9,7 @@ import { getUserProducts } from "./getUserProducts"
 import { IWebstoreTicket } from "@utils/@types/sqlite/webstoreTicket"
 import { IProduct } from "@utils/@types/sqlite/product"
 import { checkLocallyValidation } from "./validateQR/checkLocallyValidation"
+import { formatLocalDateTime } from "./formatDate"
 
 const validateQR = async (
   code: string,
@@ -127,16 +128,26 @@ const validateQR = async (
                 return
               }
 
-              // 1. Sync Validations
-              const validationsSync =
-                await Api.validations.getOnlineValidations({
+              // Check ticket validation status online
+              const validationCheck =
+                await Api.validations.checkTicketValidation({
                   eventId: event.id,
+                  qrCode: validableCode,
                 })
 
-              if (validationsSync.ok) {
-                const onlineValidations = validationsSync.data
-                Validation.insertOrReplaceValidations(onlineValidations)
+              if (validationCheck.ok) {
+                const validated_at = validationCheck.data.date_validated
+                const status = validationCheck.data.status
+                if (status === "validado") {
+                  reject(
+                    `Ticket já validado\nValidação em: ${formatLocalDateTime(
+                      validated_at as any
+                    )}`
+                  )
+                  return
+                }
               }
+
               // 2. Search Validations locally again
               const locallyValidated = await checkLocallyValidation({
                 eventId: event.id,

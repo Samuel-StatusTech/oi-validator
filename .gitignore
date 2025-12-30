@@ -29,7 +29,7 @@ yarn-error.*
 *.pem
 
 # local env files
-.env*.local
+.env*
 
 # typescript
 *.tsbuildinfo
@@ -72,5 +72,7 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+.idea/
 
 # @end expo-cli

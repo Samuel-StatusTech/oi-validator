@@ -21,7 +21,6 @@ const styles = StyleSheet.create({
   badge: {
     width: 130,
     height: 42,
-    backgroundColor: THEME.colors.green[500],
     borderRadius: 21,
     justifyContent: 'center',
     alignItems: 'center',

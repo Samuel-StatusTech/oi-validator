@@ -5,7 +5,7 @@ import { THEME } from '../theme';
 
 export function Routes() {
   const theme = DefaultTheme;
-  theme.colors.background = THEME.colors.white;
+  theme.colors.background = THEME.colors.gray[700];
 
   return (
     <View style={{ flex: 1, backgroundColor: THEME.colors.gray[700] }}>

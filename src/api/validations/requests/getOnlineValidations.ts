@@ -19,18 +19,18 @@ export const getOnlineValidations: TApiValidations["getOnlineValidations"] =
     }
 
     try {
-      const sv = await axios
-        .get(
-          `https://api.oitickets.com.br/api/v1/validations/overview/${eventId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
-        .then(async (res) => res.data as IValidation[])
+      // const sv = await axios
+      //   .get(
+      //     `https://api.oitickets.com.br/api/v1/validations/overview/${eventId}`,
+      //     {
+      //       headers: {
+      //         Authorization: `Bearer ${token}`,
+      //       },
+      //     }
+      //   )
+      //   .then(async (res) => res.data as IValidation[])
 
-      res = { ok: true, data: sv }
+      // res = { ok: true, data: sv }
     } catch (error) {}
 
     return res

@@ -2,7 +2,7 @@ import { TDefaultApiRes } from "src/api/@types/responses"
 import { TApiUsers } from ".."
 import axios from "axios"
 
-const token = process.env.EXPO_ADMIN_TOKEN ?? ""
+const token = process.env.EXPO_PUBLIC_ADMIN_TOKEN ?? ""
 
 export type TApiParams_Users_GetValidatorData = {
   userId: string

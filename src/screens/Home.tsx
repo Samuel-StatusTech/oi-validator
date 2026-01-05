@@ -5,7 +5,7 @@ import { SaveEnergyArea } from "@components/SaveEnergyArea"
 import { Scanner } from "@components/Scanner"
 import { FlashMode } from "expo-camera"
 import { View, StyleSheet } from "react-native"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { THEME } from "../theme"
 import tb from "@utils/toolbox"
 import useStore from "../store"
@@ -35,35 +35,45 @@ export function Home() {
   const [msg, setMsg] = useState("")
 
   let waitTime = 45 * 1000
-  let timer: undefined | NodeJS.Timeout = undefined
+  const timerRef = useRef<undefined | NodeJS.Timeout>()
+
+  const resetTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current)
+    }
+
+    timerRef.current = setTimeout(() => {
+      setMode("saveEnergy")
+    }, waitTime)
+  }, [])
 
   useEffect(() => {
-    if (timer !== undefined) clearTimeout(timer)
     if (mode === "camera") {
-      if (timer === undefined) {
-        timer = setTimeout(() => {
-          setMode("saveEnergy")
-        }, waitTime)
+      resetTimer()
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current)
       }
     }
-  }, [lastScanTime, mode])
+  }, [mode, lastScanTime, resetTimer])
 
   useEffect(() => {
-    if (timer !== undefined) clearTimeout(timer)
     setMode("camera")
     setTimeout(handleOnClose, 200)
   }, [])
 
   const onCodeScanned = (data: string) => {
-    setLastScanTime(new Date().getTime())
+    setLastScanTime(Date.now())
     setQrCode(data)
     validateCode(data)
   }
 
   function handleOnClose() {
     Common.setHeaderColor("neutral")
-    setLastScanTime(new Date().getTime())
-    if (mode !== "camera") setMode("camera")
+    setLastScanTime(Date.now())
+    setMode("camera")
     setFeedback(false)
     setScanned(false)
     setIsValidating(false)
@@ -83,9 +93,8 @@ export function Home() {
   }
 
   function handleReturn() {
-    if (timer !== undefined) clearTimeout(timer)
     setMode("camera")
-    setLastScanTime(new Date().getTime())
+    setLastScanTime(Date.now())
   }
 
   async function validateCode(code: string) {

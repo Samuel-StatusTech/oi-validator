@@ -23,6 +23,8 @@ export const syncValidations = async (data?: {
     const user = store.user
 
     if (token && event && user) {
+      
+      // Not used on first version, due online-only validations
       const onlineValidations = await Api.validations.getOnlineValidations({
         eventId: event?.id as string,
       })

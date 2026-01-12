@@ -1,8 +1,6 @@
 import { TDefaultApiRes } from "src/api/@types/responses"
 import { TApiUsers } from ".."
-import axios from "axios"
-
-const token = process.env.EXPO_PUBLIC_ADMIN_TOKEN ?? ""
+import { api } from "src/api"
 
 export type TApiParams_Users_GetValidatorData = {
   userId: string
@@ -43,12 +41,8 @@ export const getValidatorData: TApiUsers["getValidatorData"] = async ({
   }
 
   try {
-    const req = await axios
-      .get(`https://api.oitickets.com.br/api/v1/validator/getData/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+    const req = await api
+      .get(`https://api.oitickets.com.br/api/v1/validator/getData/${userId}`)
       .then((res) => res.data)
 
     if (req.success && req.validator) {

@@ -1,9 +1,6 @@
 import { TDefaultApiRes } from "src/api/@types/responses"
 import { IValidation } from "@utils/@types/sqlite/validation"
 import { TApiValidations } from ".."
-import axios from "axios"
-
-const token = process.env.EXPO_PUBLIC_ADMIN_TOKEN ?? ""
 
 export type TApiParams_Validations_GetOnlineValidations = {
   eventId: string

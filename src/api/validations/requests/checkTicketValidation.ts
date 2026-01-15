@@ -1,6 +1,6 @@
 import { TDefaultApiRes } from "src/api/@types/responses"
 import { TApiValidations } from ".."
-import axios from "axios"
+import { api } from "src/api"
 
 export type TApiParams_Validations_CheckTicketValidation = {
   eventId: string
@@ -21,7 +21,7 @@ export const checkTicketValidation: TApiValidations["checkTicketValidation"] =
     }
 
     try {
-      const sv = await axios
+      const sv = await api
         .get(
           `https://api.oitickets.com.br/api/v1/${eventId}/ecommerce/ticket/${qrCode}/status`
         )

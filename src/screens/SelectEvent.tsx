@@ -244,9 +244,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   spacer: {
-    flex: 1,
+    height: 24
   },
   flatList: {
+    flex: 1,
     paddingRight: 0,
   },
   flatListContent: {

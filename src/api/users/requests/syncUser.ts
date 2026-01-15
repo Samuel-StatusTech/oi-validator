@@ -138,7 +138,7 @@ export const syncUser: TApiUsers["syncUser"] = async ({
 
     if (eventId && res.ok) {
       const req2 = await api
-        .get(`/ecommerce/product/getList?eventId=${eventId}`)
+        .get(`/${eventId}/ecommerce/product/getList`)
         .catch((err) => err)
 
       if (req2.status === 200) {

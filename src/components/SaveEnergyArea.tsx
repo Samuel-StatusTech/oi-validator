@@ -33,13 +33,13 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: "center",
-    color: THEME.colors.blue[400],
+    color: THEME.colors.gray[50],
     fontSize: 28,
     fontFamily: THEME.fonts.heading,
   },
   subtitle: {
     textAlign: "center",
-    color: THEME.colors.blue[500],
+    color: THEME.colors.gray[200],
     fontSize: THEME.fontSizes.lg,
     fontFamily: THEME.fonts.body,
   },

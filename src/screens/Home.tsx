@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
     width: Dimensions.get("screen").width * 0.8,
     height: Dimensions.get("screen").width * 0.8,
     borderWidth: 2,
-    borderColor: THEME.colors.blue[400],
+    borderColor: THEME.colors.gray[50],
   },
   overlayBackground: {
     flex: 1,

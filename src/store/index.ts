@@ -15,7 +15,7 @@ const useStore = create<StoreInterface>()(
       lastSync: 0,
       currentEvent: null,
       mustSync: false,
-      headerColor: THEME.colors.gray[700],
+      headerColor: THEME.colors.gray[50],
       // ...useReducers(set),
 
       User: UserReducer(set),

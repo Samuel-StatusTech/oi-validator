@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
   },
   label: {
     textAlign: 'center',
-    color: THEME.colors.blue[400],
+    color: THEME.colors.gray[50],
     fontSize: THEME.fontSizes.lg,
     fontFamily: THEME.fonts.heading,
   },
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: THEME.fonts.heading,
     fontSize: 24,
-    color: THEME.colors.blue[300],
+    color: THEME.colors.gray[50],
   },
   button: {
     paddingVertical: 21,

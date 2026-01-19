@@ -124,7 +124,7 @@ export function AppRoutes() {
 
         if (syncValidationsRes.ok) {
           const syncsToUpdate = syncValidationsRes.data?.validationSuccess.map(
-            (v: any) => v.uid
+            (v: any) => v.uid,
           )
 
           if (syncsToUpdate.length > 0) {
@@ -186,30 +186,14 @@ export function AppRoutes() {
       <View style={styles.headerContainer}>
         <View style={styles.headerTextContainer}>
           <Text
-            style={[
-              styles.headerTitle,
-              {
-                color:
-                  headerColor === THEME.colors.gray[700]
-                    ? THEME.colors.blue[400]
-                    : THEME.colors.white,
-              },
-            ]}
+            style={styles.headerTitle}
             numberOfLines={1}
             ellipsizeMode="tail"
           >
             {event?.name}
           </Text>
           <Text
-            style={[
-              styles.headerSubtitle,
-              {
-                color:
-                  headerColor === THEME.colors.gray[700]
-                    ? THEME.colors.blue[500]
-                    : THEME.colors.white,
-              },
-            ]}
+            style={styles.headerSubtitle}
             numberOfLines={1}
             ellipsizeMode="tail"
           >
@@ -263,16 +247,13 @@ export function AppRoutes() {
         useLegacyImplementation={false}
         screenOptions={{
           headerShown: true,
-          drawerLabelStyle: { fontSize: 16, color: THEME.colors.blue[400] },
+          drawerLabelStyle: { fontSize: 16, color: THEME.colors.gray[50] },
           drawerStyle: {
             width: Dimensions.get("screen").width * 0.8,
           },
           headerRight: () => renderHeader(),
           headerTitle: "",
-          headerTintColor:
-            headerColor === THEME.colors.gray[700]
-              ? THEME.colors.blue[400]
-              : THEME.colors.white,
+          headerTintColor: THEME.colors.gray[50],
           headerStyle: {
             backgroundColor: headerColor,
           },
@@ -305,7 +286,7 @@ export function AppRoutes() {
                 <DrawerItemList {...props} />
                 <View>
                   <DrawerItem
-                    labelStyle={{ fontSize: 16, color: THEME.colors.blue[400] }}
+                    labelStyle={{ fontSize: 16, color: THEME.colors.gray[50] }}
                     label={"Sincronizar informações"}
                     icon={() => renderIcon("sync")}
                     onPress={syncing ? () => null : syncInfo}
@@ -323,7 +304,7 @@ export function AppRoutes() {
                 onPress={() => setPopupShow(true)}
               >
                 <SignOutIcon width={32} />
-                <Text style={{ color: THEME.colors.blue[400] }}>
+                <Text style={{ color: THEME.colors.gray[50] }}>
                   Sair do evento
                 </Text>
               </TouchableOpacity>
@@ -384,22 +365,22 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontFamily: THEME.fonts.heading,
     fontSize: THEME.fontSizes.lg,
-    color: THEME.colors.blue[400],
+    color: THEME.colors.gray[50],
   },
   headerSubtitle: {
     fontFamily: THEME.fonts.body,
     fontSize: THEME.fontSizes.md,
-    color: THEME.colors.blue[500],
+    color: THEME.colors.gray[200],
   },
   drawerTitle: {
-    color: THEME.colors.blue[400],
+    color: THEME.colors.gray[50],
     fontFamily: THEME.fonts.heading,
     fontSize: 24,
   },
   drawerSubtitle: {
     fontFamily: THEME.fonts.body,
     fontSize: 16,
-    color: THEME.colors.blue[500],
+    color: THEME.colors.gray[200],
   },
   badge: {
     position: "absolute",

@@ -100,12 +100,12 @@ const styles = StyleSheet.create({
     fontFamily: THEME.fonts.heading,
     textAlign: "center",
     fontSize: THEME.fontSizes.lg,
-    color: THEME.colors.blue[500],
+    color: THEME.colors.gray[50],
     marginHorizontal: 18,
     marginBottom: 32,
   },
   flatList: {
-    paddingRight: 16,
+    minWidth: "100%",
   },
   flatListContent: {
     rowGap: 16,

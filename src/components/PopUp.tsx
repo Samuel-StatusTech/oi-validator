@@ -67,7 +67,7 @@ export function PopUp({
         </Text>
         {isSyncing ? (
           <View style={styles.spinnerContainer}>
-            <ActivityIndicator size="large" color={THEME.colors.blue[400]} />
+            <ActivityIndicator size="large" color={THEME.colors.gray[50]} />
           </View>
         ) : (
           <TouchableOpacity
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily: THEME.fonts.heading,
     fontSize: 28,
-    color: THEME.colors.blue[400],
+    color: THEME.colors.gray[50],
     marginTop: 12,
   },
   description: {
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     fontSize: THEME.fontSizes.lg,
     margin: 16,
     textAlign: "center",
-    color: THEME.colors.blue[500],
+    color: THEME.colors.gray[200],
   },
   spinnerContainer: {
     alignItems: "center",

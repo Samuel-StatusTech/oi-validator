@@ -408,7 +408,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 18,
     fontFamily: THEME.fonts.body,
-    color: THEME.colors.blue[200],
+    color: THEME.colors.gray[200],
   },
   footer: {
     flex: 1,
@@ -426,7 +426,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 18,
     fontFamily: THEME.fonts.body,
-    color: THEME.colors.blue[200],
+    color: THEME.colors.gray[200],
   },
   textInput: {
     flex: 1,

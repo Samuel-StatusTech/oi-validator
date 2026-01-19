@@ -8,7 +8,7 @@ import {
 import { BlurView } from "expo-blur"
 import { THEME } from "src/theme"
 
-const AnimatedBlurView = Animated.createAnimatedComponent(BlurView)
+// const AnimatedBlurView = Animated.createAnimatedComponent(BlurView)
 
 type Props = {
   visible: boolean
@@ -32,14 +32,13 @@ export const LoadingOverlay = ({ visible }: Props) => {
         duration: animationDuration,
         useNativeDriver: false,
       }),
-    ]).start()
+    ]).start(({ finished }) => {
+      if (!visible && finished) {
+        setShowing(false)
+      }
+    })
 
     if (visible) setShowing(true)
-    else {
-      setTimeout(() => {
-        setShowing(false)
-      }, animationDuration + 100)
-    }
   }, [visible])
 
   useEffect(() => {
@@ -47,7 +46,7 @@ export const LoadingOverlay = ({ visible }: Props) => {
 
     const handler = BackHandler.addEventListener(
       "hardwareBackPress",
-      () => true
+      () => true,
     )
     return () => handler.remove()
   }, [visible])
@@ -68,17 +67,19 @@ export const LoadingOverlay = ({ visible }: Props) => {
       pointerEvents="auto"
     >
       <TouchableWithoutFeedback onPress={() => {}}>
-        <AnimatedBlurView
-          style={{
-            position: "absolute",
-            width: "100%",
-            height: "100%",
-          }}
-          tint="dark"
-          intensity={blur}
-          experimentalBlurMethod={"dimezisBlurView"}
-          blurReductionFactor={14}
-        />
+        <Animated.View style={{ opacity: opacity }}>
+          {/* <BlurView
+            style={{
+              position: "absolute",
+              width: "100%",
+              height: "100%",
+            }}
+            tint="dark"
+            intensity={100}
+            experimentalBlurMethod={"dimezisBlurView"}
+            blurReductionFactor={14}
+          /> */}
+        </Animated.View>
       </TouchableWithoutFeedback>
 
       <ActivityIndicator size={40} color={THEME.colors.blue[400]} />

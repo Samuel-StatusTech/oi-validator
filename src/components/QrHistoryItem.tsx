@@ -71,11 +71,11 @@ const styles = StyleSheet.create({
   name: {
     fontFamily: THEME.fonts.heading,
     fontSize: THEME.fontSizes.lg,
-    color: THEME.colors.blue[600],
+    color: THEME.colors.gray[50],
   },
   details: {
     fontFamily: THEME.fonts.body,
     fontSize: THEME.fontSizes.sm,
-    color: THEME.colors.blue[500],
+    color: THEME.colors.gray[200],
   },
 })

@@ -51,12 +51,12 @@ const styles = StyleSheet.create({
   name: {
     fontFamily: THEME.fonts.heading,
     fontSize: THEME.fontSizes.lg,
-    color: THEME.colors.blue[600],
+    color: THEME.colors.gray[50],
   },
   quantity: {
     fontFamily: THEME.fonts.heading,
     fontSize: THEME.fontSizes.lg,
-    color: THEME.colors.blue[300],
+    color: THEME.colors.gray[200],
   },
   descriptionContainer: {
     paddingBottom: 8,
@@ -67,6 +67,6 @@ const styles = StyleSheet.create({
   description: {
     fontFamily: THEME.fonts.body,
     fontSize: THEME.fontSizes.sm,
-    color: THEME.colors.blue[500],
+    color: THEME.colors.gray[300],
   },
 });

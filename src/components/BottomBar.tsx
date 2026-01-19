@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     backgroundColor: THEME.colors.blue[400],
   },
   text: {
-    color: THEME.colors.blue[400],
+    color: THEME.colors.gray[50],
     fontFamily: THEME.fonts.body,
     fontSize: THEME.fontSizes.lg,
     marginLeft: 8,

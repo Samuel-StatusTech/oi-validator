@@ -116,7 +116,7 @@ function AvailableProductsScreen() {
                 style={{
                   width: "100%",
                   textAlign: "center",
-                  color: THEME.colors.blue[500],
+                  color: THEME.colors.gray[200],
                   fontSize: 18,
                   fontWeight: 600,
                   lineHeight: 28,
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     fontFamily: THEME.fonts.heading,
     textAlign: "center",
     fontSize: THEME.fontSizes.lg,
-    color: THEME.colors.blue[500],
+    color: THEME.colors.gray[50],
     marginHorizontal: 18,
     marginBottom: 32,
   },

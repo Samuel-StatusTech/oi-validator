@@ -129,7 +129,7 @@ export function SelectEvent() {
         await storeDbUserInfo(req.data)
 
         const newList = req.data.eventsData.filter((event) =>
-          Boolean(event.status)
+          Boolean(event.status),
         )
 
         setEvents(sortEvents(newList))
@@ -146,9 +146,9 @@ export function SelectEvent() {
       setEvents(
         sortEvents(
           user?.kInfo?.eventsData.filter((event: EventData) =>
-            Boolean(event.status)
-          )
-        )
+            Boolean(event.status),
+          ),
+        ),
       )
 
     const handler = BackHandler.addEventListener("hardwareBackPress", () => {
@@ -234,17 +234,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   greeting: {
-    color: THEME.colors.blue[400],
+    color: THEME.colors.gray[50],
     fontFamily: THEME.fonts.heading,
     fontSize: THEME.fontSizes.xl,
   },
   description: {
-    color: THEME.colors.blue[500],
+    color: THEME.colors.gray[200],
     fontSize: THEME.fontSizes.lg,
     textAlign: "center",
   },
   spacer: {
-    height: 24
+    height: 24,
   },
   flatList: {
     flex: 1,

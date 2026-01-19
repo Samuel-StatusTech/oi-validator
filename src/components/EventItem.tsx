@@ -74,12 +74,12 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   title: {
-    color: THEME.colors.blue[400],
+    color: THEME.colors.gray[50],
     fontSize: THEME.fontSizes.lg,
     fontFamily: THEME.fonts.heading,
   },
   subtitle: {
-    color: THEME.colors.blue[500],
+    color: THEME.colors.gray[200],
     fontSize: THEME.fontSizes.md,
   },
 })

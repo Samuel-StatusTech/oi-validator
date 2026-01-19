@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     backgroundColor: THEME.colors.gray[700],
   },
   validatingText: {
-    color: THEME.colors.blue[500],
+    color: THEME.colors.gray[200],
     fontFamily: THEME.fonts.heading,
     fontSize: 32,
   },
@@ -138,12 +138,12 @@ const styles = StyleSheet.create({
     rowGap: 12,
   },
   title: {
-    color: THEME.colors.blue[600],
+    color: THEME.colors.gray[50],
     fontFamily: THEME.fonts.heading,
     fontSize: 32,
   },
   message: {
-    color: THEME.colors.blue[600],
+    color: THEME.colors.gray[50],
     fontSize: THEME.fontSizes.xl,
     textAlign: "center",
   },
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   progressFill: {
-    backgroundColor: "#375367",
+    backgroundColor: THEME.colors.gray[300],
     height: 7,
   },
 })

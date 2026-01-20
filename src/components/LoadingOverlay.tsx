@@ -8,7 +8,7 @@ import {
 import { BlurView } from "expo-blur"
 import { THEME } from "src/theme"
 
-// const AnimatedBlurView = Animated.createAnimatedComponent(BlurView)
+const AnimatedBlurView = Animated.createAnimatedComponent(BlurView)
 
 type Props = {
   visible: boolean
@@ -68,7 +68,7 @@ export const LoadingOverlay = ({ visible }: Props) => {
     >
       <TouchableWithoutFeedback onPress={() => {}}>
         <Animated.View style={{ opacity: opacity }}>
-          {/* <BlurView
+          <BlurView
             style={{
               position: "absolute",
               width: "100%",
@@ -78,7 +78,7 @@ export const LoadingOverlay = ({ visible }: Props) => {
             intensity={100}
             experimentalBlurMethod={"dimezisBlurView"}
             blurReductionFactor={14}
-          /> */}
+          />
         </Animated.View>
       </TouchableWithoutFeedback>
 

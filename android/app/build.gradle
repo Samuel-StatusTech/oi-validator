@@ -91,8 +91,8 @@ android {
         applicationId 'com.validator'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 15
-        versionName "1.1.5"
+        versionCode 01
+        versionName "1.0.0"
     }
     signingConfigs {
         debug {

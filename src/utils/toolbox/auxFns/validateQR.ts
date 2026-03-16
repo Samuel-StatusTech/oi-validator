@@ -130,28 +130,28 @@ const validateQR = async (
                 // Sync and retry
                 setIsRetrying(true)
                 await onSync(false)
-                if (retries == 0) {
-                  const result = await validateQR(
-                    code,
-                    clientDb,
-                    event,
-                    user,
-                    hasConnection,
-                    token,
-                    onSync,
-                    retries + 1,
-                    setIsRetrying,
-                  )
+                const result =
+                  retries == 0
+                    ? await validateQR(
+                        code,
+                        clientDb,
+                        event,
+                        user,
+                        hasConnection,
+                        token,
+                        onSync,
+                        retries + 1,
+                        setIsRetrying,
+                      )
+                    : null
 
-                  setIsRetrying(false)
+                if (result) {
                   resolve(result)
                 } else {
-                  setIsRetrying(false)
+                  reject(
+                    "Produto não encontrado. Verifique sua lista de produtos e tente novamente",
+                  )
                 }
-
-                reject(
-                  "Produto não encontrado. Verifique sua lista de produtos e tente novamente",
-                )
                 return
               }
 
@@ -249,14 +249,11 @@ const validateQR = async (
                   setIsRetrying,
                 )
 
-                setIsRetrying(false)
-
                 resolve(result)
               } else {
-                setIsRetrying(false)
                 reject("Produto não encontrado - " + retries)
-                return
               }
+              return
             }
           }
         } else {

@@ -134,6 +134,8 @@ export function Home({
               setMsg(error)
             })
 
+          if (isValidating) setIsValidating(false)
+
           setScanned(true)
           setCheckComplete(true)
           setIsValidating(false)

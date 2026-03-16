@@ -75,7 +75,7 @@ export function QrCodeStatusView({
         },
       ]}
     >
-      {isRetrying ? (
+      {isRetrying && isValidating ? (
         <Text style={styles.validatingText}>Aguarde...</Text>
       ) : isValidating ? (
         <Text style={styles.validatingText}>Validando...</Text>

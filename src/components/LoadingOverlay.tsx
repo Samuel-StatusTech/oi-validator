@@ -32,13 +32,14 @@ export const LoadingOverlay = ({ visible }: Props) => {
         duration: animationDuration,
         useNativeDriver: false,
       }),
-    ]).start(({ finished }) => {
-      if (!visible && finished) {
-        setShowing(false)
-      }
-    })
+    ]).start()
 
     if (visible) setShowing(true)
+    else {
+      setTimeout(() => {
+        setShowing(false)
+      }, animationDuration + 100)
+    }
   }, [visible])
 
   useEffect(() => {
@@ -46,7 +47,7 @@ export const LoadingOverlay = ({ visible }: Props) => {
 
     const handler = BackHandler.addEventListener(
       "hardwareBackPress",
-      () => true,
+      () => true
     )
     return () => handler.remove()
   }, [visible])
@@ -67,19 +68,17 @@ export const LoadingOverlay = ({ visible }: Props) => {
       pointerEvents="auto"
     >
       <TouchableWithoutFeedback onPress={() => {}}>
-        <Animated.View style={{ opacity: opacity }}>
-          <BlurView
-            style={{
-              position: "absolute",
-              width: "100%",
-              height: "100%",
-            }}
-            tint="dark"
-            intensity={100}
-            experimentalBlurMethod={"dimezisBlurView"}
-            blurReductionFactor={14}
-          />
-        </Animated.View>
+        <AnimatedBlurView
+          style={{
+            position: "absolute",
+            width: "100%",
+            height: "100%",
+          }}
+          tint="dark"
+          intensity={blur}
+          experimentalBlurMethod={"dimezisBlurView"}
+          blurReductionFactor={14}
+        />
       </TouchableWithoutFeedback>
 
       <ActivityIndicator size={40} color={THEME.colors.blue[400]} />

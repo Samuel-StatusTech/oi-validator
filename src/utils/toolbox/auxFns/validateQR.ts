@@ -17,10 +17,15 @@ const validateQR = async (
   event: EventData,
   user: UserInfo,
   hasConnection: boolean,
-  token: string
+  token: string,
+  onSync: (showFeedback?: boolean) => Promise<void> = () => Promise.resolve(),
+  retries = 0,
+  setIsRetrying: React.Dispatch<React.SetStateAction<boolean>> = () => {},
 ): Promise<{ validated: true; productName: string }> => {
   return new Promise(async (resolve, reject) => {
     try {
+      if (retries == 0) setIsRetrying(false)
+
       if (hasConnection) {
         const upperCode = code.toUpperCase()
 
@@ -28,7 +33,7 @@ const validateQR = async (
           upperCode,
           clientDb ?? user.db,
           event.oid,
-          event.id
+          event.id,
         )
 
         let { isValidable, validableCode } = validableCheckage
@@ -41,7 +46,7 @@ const validateQR = async (
             codeToRecheck,
             clientDb ?? user.db,
             event.oid,
-            event.id
+            event.id,
           )
 
           isValidable = validableCheckage.isValidable
@@ -72,7 +77,7 @@ const validateQR = async (
             const { id: prodId, name: prodName } = await getTicketName(
               upperCode,
               true,
-              userProds
+              userProds,
             )
 
             let isWebticket = false
@@ -116,14 +121,36 @@ const validateQR = async (
               const canValidateThisTicket = userProds.find(
                 (i) =>
                   (i as IProduct).id === ticketProductId ||
-                  (i as IWebstoreTicket).product_id === ticketProductId
+                  (i as IWebstoreTicket).product_id === ticketProductId,
               )
 
               const productName = isWebticket ? webticketName : prodName
 
               if (!canValidateThisTicket) {
+                // Sync and retry
+                setIsRetrying(true)
+                await onSync(false)
+                if (retries == 0) {
+                  const result = await validateQR(
+                    code,
+                    clientDb,
+                    event,
+                    user,
+                    hasConnection,
+                    token,
+                    onSync,
+                    retries + 1,
+                    setIsRetrying,
+                  )
+
+                  setIsRetrying(false)
+                  resolve(result)
+                } else {
+                  setIsRetrying(false)
+                }
+
                 reject(
-                  "Produto não encontrado. Verifique sua lista de produtos e tente novamente"
+                  "Produto não encontrado. Verifique sua lista de produtos e tente novamente",
                 )
                 return
               }
@@ -141,8 +168,8 @@ const validateQR = async (
                 if (status === "validado") {
                   reject(
                     `Ticket já validado\nValidação em: ${formatLocalDateTime(
-                      validated_at as any
-                    )}`
+                      validated_at as any,
+                    )}`,
                   )
                   return
                 }
@@ -184,8 +211,8 @@ const validateQR = async (
                       ticketProductId,
                       upperCode.replace(
                         `${(event?.id ?? "").toUpperCase()}/`,
-                        ""
-                      )
+                        "",
+                      ),
                     )
                     resolve({ validated: true, productName: productName })
                     break
@@ -201,12 +228,35 @@ const validateQR = async (
                 }
               } else {
                 reject(
-                  "Não foi possível validar. Verifique sua conexão e tente novamente"
+                  "Não foi possível validar. Verifique sua conexão e tente novamente",
                 )
               }
             } else {
-              reject("Produto não encontrado")
-              return
+              // Sync and retry
+              if (retries == 0) {
+                setIsRetrying(true)
+                await onSync(false)
+
+                const result = await validateQR(
+                  code,
+                  clientDb,
+                  event,
+                  user,
+                  hasConnection,
+                  token,
+                  onSync,
+                  retries + 1,
+                  setIsRetrying,
+                )
+
+                setIsRetrying(false)
+
+                resolve(result)
+              } else {
+                setIsRetrying(false)
+                reject("Produto não encontrado - " + retries)
+                return
+              }
             }
           }
         } else {
@@ -215,14 +265,11 @@ const validateQR = async (
         }
       } else {
         reject(
-          "Validação disponível apenas online.\nVerifique a conexão e tente novamente"
+          "Validação disponível apenas online.\nVerifique a conexão e tente novamente",
         )
         return
       }
     } catch (error) {
-      console.log("Erro: ")
-      console.log("Erro: ", error)
-      console.log("Erro: ")
       reject("Houve um erro.\nTente novamente mais tarde")
       return
     }
@@ -234,7 +281,7 @@ const registerLclValidation = async (
   userId: string,
   sync: boolean,
   ticketProductId: string,
-  ticketReadableCode: string
+  ticketReadableCode: string,
 ) => {
   await Validation.insertValidation(
     ticketUid,
@@ -243,7 +290,7 @@ const registerLclValidation = async (
     new Date().getTime(),
     new Date().getTime(),
     ticketProductId,
-    ticketReadableCode
+    ticketReadableCode,
   )
 }
 

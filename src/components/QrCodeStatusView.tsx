@@ -20,6 +20,7 @@ type Props = {
   onClose: () => any
   isValidating: boolean
   isChecked: boolean
+  isRetrying: boolean
 }
 
 export function QrCodeStatusView({
@@ -31,6 +32,7 @@ export function QrCodeStatusView({
   message,
   isChecked,
   isValidating,
+  isRetrying
 }: Props) {
   const width = useRef(new Animated.Value(0)).current
 
@@ -73,7 +75,9 @@ export function QrCodeStatusView({
         },
       ]}
     >
-      {isValidating ? (
+      {isRetrying ? (
+        <Text style={styles.validatingText}>Aguarde...</Text>
+      ) : isValidating ? (
         <Text style={styles.validatingText}>Validando...</Text>
       ) : (
         <>

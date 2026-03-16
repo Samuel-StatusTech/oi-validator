@@ -67,11 +67,11 @@ export function AppRoutes() {
 
   const navigation = useNavigation<AppNavigatiorRoutesProps>()
 
-  const syncInfo = async () => {
-    setSyncing(true)
+  const syncInfo = async (showFeedback = true) => {
+    if (showFeedback) setSyncing(true)
 
     try {
-      setSyncPopup({ show: true, success: false })
+      if (showFeedback) setSyncPopup({ show: true, success: false })
 
       const operations = await Operation.getOperationsNoSync()
       const orders = await Order.getOrdersNoSync()
@@ -91,7 +91,7 @@ export function AppRoutes() {
         eventId: event?.id as string,
         lastSync: lastSync ?? 0,
       })
-
+      
       if (sync.ok) {
         const validatorSync = await Api.users.getValidatorData({
           userId: user?.id as string,
@@ -132,15 +132,16 @@ export function AppRoutes() {
           }
         }
 
-        setSyncPopup({ show: true, success: syncValidationsRes.ok })
+        if (showFeedback)
+          setSyncPopup({ show: true, success: syncValidationsRes.ok })
       } else {
-        setSyncPopup({ show: true, success: false })
+        if (showFeedback) setSyncPopup({ show: true, success: false })
       }
     } catch (error) {
-      setSyncPopup({ show: true, success: false })
+      if (showFeedback) setSyncPopup({ show: true, success: false })
     }
 
-    setSyncing(false)
+    if (showFeedback) setSyncing(false)
   }
 
   const getDateStr = (date: number) => {
@@ -314,12 +315,13 @@ export function AppRoutes() {
       >
         <Screen
           name="home"
-          component={Home}
           options={{
             drawerLabel: "Início",
             drawerIcon: () => renderIcon("home"),
           }}
-        />
+        >
+          {() => <Home onSync={syncInfo} />}
+        </Screen>
         <Screen
           name="selectEvent"
           component={SelectEvent}

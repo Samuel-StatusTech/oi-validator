@@ -15,7 +15,9 @@ import Netinfo from "@react-native-community/netinfo"
 
 const isValidatingColor = "rgba(18, 18, 20, .5)"
 
-export function Home() {
+export function Home({
+  onSync,
+}: { onSync: (shoFeedback?: boolean) => Promise<void> }) {
   const store = useStore((state) => state)
   const { user, currentEvent, token, Common } = store
 
@@ -31,6 +33,7 @@ export function Home() {
     productName: "",
   })
   const [isValidating, setIsValidating] = useState(false)
+  const [isRetring, setIsRetrying] = useState(false)
   const [checkComplete, setCheckComplete] = useState(false)
   const [msg, setMsg] = useState("")
 
@@ -113,7 +116,10 @@ export function Home() {
               currentEvent as EventData,
               user,
               connection,
-              token
+              token,
+              onSync,
+              0,
+              setIsRetrying
             )
             .then((validation) => {
               setTicketState(validation)
@@ -238,6 +244,7 @@ export function Home() {
         isChecked={checkComplete}
         message={msg}
         onClose={handleOnClose}
+        isRetrying={isRetring}
       />
     </View>
   )

@@ -30,7 +30,7 @@ export const storeDbUserInfo = async (
           await WebstoreTicket.insertWebstoreTickets(webstore_tickets)
         } else if (role === "update") {
           await Event.updateEvents(events)
-          await Product.updateProducts(products)
+          await Product.insertProducts(products)
           await ProductsList.updateProductsLists(product_lists)
           await Combo.updateCombos(combos)
           await WebstoreTicket.updateWebstoreTickets(webstore_tickets)

@@ -12,12 +12,15 @@ import useStore from "../store"
 import { EventData } from "@utils/@types/data/event"
 import { Dimensions } from "react-native"
 import Netinfo from "@react-native-community/netinfo"
+import { validationsErrorMessages } from "@utils/toolbox/auxFns/validateQR/validationsMessages"
 
 const isValidatingColor = "rgba(18, 18, 20, .5)"
 
 export function Home({
   onSync,
-}: { onSync: (shoFeedback?: boolean) => Promise<void> }) {
+}: {
+  onSync: (shoFeedback?: boolean) => Promise<void>
+}) {
   const store = useStore((state) => state)
   const { user, currentEvent, token, Common } = store
 
@@ -31,6 +34,7 @@ export function Home({
   const [ticketState, setTicketState] = useState({
     validated: false,
     productName: "",
+    showTitle: false,
   })
   const [isValidating, setIsValidating] = useState(false)
   const [isRetring, setIsRetrying] = useState(false)
@@ -119,7 +123,7 @@ export function Home({
               token,
               onSync,
               0,
-              setIsRetrying
+              setIsRetrying,
             )
             .then((validation) => {
               setTicketState(validation)
@@ -129,7 +133,13 @@ export function Home({
               }
             })
             .catch((error) => {
-              setTicketState({ validated: false, productName: "" })
+              setTicketState({
+                validated: false,
+                productName: "",
+                showTitle: !(
+                  error === validationsErrorMessages.notFoundOnEvent
+                ),
+              })
               Common.setHeaderColor("red")
               setMsg(error)
             })
@@ -165,8 +175,8 @@ export function Home({
                     borderColor: isValidating
                       ? isValidatingColor
                       : showFeedback
-                      ? renderBgColor()
-                      : isValidatingColor,
+                        ? renderBgColor()
+                        : isValidatingColor,
                   },
                 ]}
               >
@@ -177,8 +187,8 @@ export function Home({
                       backgroundColor: isValidating
                         ? isValidatingColor
                         : showFeedback
-                        ? renderBgColor()
-                        : isValidatingColor,
+                          ? renderBgColor()
+                          : isValidatingColor,
                     },
                   ]}
                 />
@@ -190,8 +200,8 @@ export function Home({
                       backgroundColor: isValidating
                         ? isValidatingColor
                         : showFeedback
-                        ? renderBgColor()
-                        : isValidatingColor,
+                          ? renderBgColor()
+                          : isValidatingColor,
                     },
                   ]}
                 />
@@ -203,8 +213,8 @@ export function Home({
                     backgroundColor: isValidating
                       ? isValidatingColor
                       : showFeedback
-                      ? renderBgColor()
-                      : isValidatingColor,
+                        ? renderBgColor()
+                        : isValidatingColor,
                   },
                 ]}
               />
@@ -240,6 +250,7 @@ export function Home({
       <QrCodeStatusView
         qrCode={qrCode.replace(`${currentEvent?.id}/`, "")}
         isOpen={showFeedback}
+        showTitle={ticketState.showTitle}
         isSuccess={ticketState.validated}
         productName={ticketState.productName}
         isValidating={isValidating}

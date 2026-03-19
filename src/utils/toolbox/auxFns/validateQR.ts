@@ -10,6 +10,7 @@ import { IWebstoreTicket } from "@utils/@types/sqlite/webstoreTicket"
 import { IProduct } from "@utils/@types/sqlite/product"
 import { checkLocallyValidation } from "./validateQR/checkLocallyValidation"
 import { formatLocalDateTime } from "./formatDate"
+import { validationsErrorMessages } from "./validateQR/validationsMessages"
 
 const validateQR = async (
   code: string,
@@ -21,7 +22,7 @@ const validateQR = async (
   onSync: (showFeedback?: boolean) => Promise<void> = () => Promise.resolve(),
   retries = 0,
   setIsRetrying: React.Dispatch<React.SetStateAction<boolean>> = () => {},
-): Promise<{ validated: true; productName: string }> => {
+): Promise<{ validated: true; productName: string; showTitle: boolean }> => {
   return new Promise(async (resolve, reject) => {
     try {
       if (retries == 0) setIsRetrying(false)
@@ -109,12 +110,12 @@ const validateQR = async (
 
             if (isEventTicket) {
               if (isTicketCanceled) {
-                reject("A compra do ticket foi cancelada")
+                reject(validationsErrorMessages.cancelledPurchase)
                 return
               }
 
               if (!isOrderPayed) {
-                reject("O pagamento do ticket não foi realizado")
+                reject(validationsErrorMessages.notPayed)
                 return
               }
 
@@ -130,28 +131,25 @@ const validateQR = async (
                 // Sync and retry
                 setIsRetrying(true)
                 await onSync(false)
-                const result =
-                  retries == 0
-                    ? await validateQR(
-                        code,
-                        clientDb,
-                        event,
-                        user,
-                        hasConnection,
-                        token,
-                        onSync,
-                        retries + 1,
-                        setIsRetrying,
-                      )
-                    : null
 
-                if (result) {
-                  resolve(result)
-                } else {
-                  reject(
-                    "Produto não encontrado. Verifique sua lista de produtos e tente novamente",
+                if (retries == 0) {
+                  await validateQR(
+                    code,
+                    clientDb,
+                    event,
+                    user,
+                    hasConnection,
+                    token,
+                    onSync,
+                    retries + 1,
+                    setIsRetrying,
                   )
+                    .then((res) => resolve(res))
+                    .catch((err) => reject(err))
+                } else {
+                  reject(validationsErrorMessages.notFound)
                 }
+
                 return
               }
 
@@ -167,9 +165,10 @@ const validateQR = async (
                 const status = validationCheck.data.status
                 if (status === "validado") {
                   reject(
-                    `Ticket já validado\nValidação em: ${formatLocalDateTime(
-                      validated_at as any,
-                    )}`,
+                    validationsErrorMessages.alreadyValidated.replace(
+                      "{date}",
+                      formatLocalDateTime(validated_at as any),
+                    ),
                   )
                   return
                 }
@@ -214,22 +213,24 @@ const validateQR = async (
                         "",
                       ),
                     )
-                    resolve({ validated: true, productName: productName })
+                    resolve({
+                      validated: true,
+                      productName: productName,
+                      showTitle: true,
+                    })
                     break
                   case 2:
-                    reject("Ticket já validado.")
+                    reject(validationsErrorMessages.alreadyValidatedShort)
                     break
                   case 3:
-                    reject("Não foi possível validar. Produto não encontrado")
+                    reject(validationsErrorMessages.unableToValidate)
                     break
                   default:
-                    reject("Ticket cancelado")
+                    reject(validationsErrorMessages.cancelledTicket)
                     break
                 }
               } else {
-                reject(
-                  "Não foi possível validar. Verifique sua conexão e tente novamente",
-                )
+                reject(validationsErrorMessages.verifyConnection)
               }
             } else {
               // Sync and retry
@@ -251,23 +252,21 @@ const validateQR = async (
                   .then((res) => resolve(res))
                   .catch((err) => reject(err))
               } else {
-                reject("Ingresso não encontrado neste evento")
+                reject(validationsErrorMessages.notFoundOnEvent)
               }
               return
             }
           }
         } else {
-          reject("Este ticket não pertence ao evento")
+          reject(validationsErrorMessages.anotherEventProduct)
           return
         }
       } else {
-        reject(
-          "Validação disponível apenas online.\nVerifique a conexão e tente novamente",
-        )
+        reject(validationsErrorMessages.noConnection)
         return
       }
     } catch (error) {
-      reject("Houve um erro.\nTente novamente mais tarde")
+      reject(validationsErrorMessages.theresAnError)
       return
     }
   })

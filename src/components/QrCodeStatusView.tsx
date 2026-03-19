@@ -21,6 +21,7 @@ type Props = {
   isValidating: boolean
   isChecked: boolean
   isRetrying: boolean
+  showTitle: boolean
 }
 
 export function QrCodeStatusView({
@@ -32,7 +33,8 @@ export function QrCodeStatusView({
   message,
   isChecked,
   isValidating,
-  isRetrying
+  isRetrying,
+  showTitle
 }: Props) {
   const width = useRef(new Animated.Value(0)).current
 
@@ -87,9 +89,11 @@ export function QrCodeStatusView({
             ) : (
               <ErrorSVG width={92} height={92} />
             )}
-            <Text style={styles.title}>
-              {isSuccess && isChecked ? "Sucesso" : "Erro!"}
-            </Text>
+            {showTitle && (
+              <Text style={styles.title}>
+                {isSuccess && isChecked ? "Sucesso" : "Erro!"}
+              </Text>
+            )}
             <Text style={styles.message}>
               {isSuccess
                 ? `${qrCode}`

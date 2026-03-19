@@ -237,7 +237,7 @@ const validateQR = async (
                 setIsRetrying(true)
                 await onSync(false)
 
-                const result = await validateQR(
+                await validateQR(
                   code,
                   clientDb,
                   event,
@@ -248,10 +248,10 @@ const validateQR = async (
                   retries + 1,
                   setIsRetrying,
                 )
-
-                resolve(result)
+                  .then((res) => resolve(res))
+                  .catch((err) => reject(err))
               } else {
-                reject("Produto não encontrado - " + retries)
+                reject("Ingresso não encontrado neste evento")
               }
               return
             }

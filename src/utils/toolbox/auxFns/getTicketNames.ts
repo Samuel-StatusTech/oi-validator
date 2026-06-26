@@ -28,24 +28,38 @@ const getTicketName = async (
       }
     }
 
-    const matchItem = userProducts.find((i) => {
-      const isWebstoreTicket = (i as IWebstoreTicket).product_id !== undefined
+    const isUnicaCombo = (i: any) =>
+      i.type === "combo" && i.ticket_type === "unica"
 
-      if (isWebstoreTicket) return (i as IWebstoreTicket).product_id === ticket
-      else {
-        let doesMatch = false
+    const unicaComboMatch =
+      isSearchingBy === "qrCode"
+        ? userProducts.find(
+            (i) =>
+              isUnicaCombo(i) &&
+              ticketProdOid === getProductUidFromQrCode(i as any),
+          )
+        : undefined
 
-        if (isSearchingBy === "qrCode") {
-          const prodId = getProductUidFromQrCode(i as any)
+    const matchItem =
+      unicaComboMatch ??
+      userProducts.find((i) => {
+        const isWebstoreTicket = (i as IWebstoreTicket).product_id !== undefined
 
-          doesMatch = ticketProdOid === prodId
-        } else {
-          doesMatch = (i as IProduct | ICombo).id === ticket
+        if (isWebstoreTicket) return (i as IWebstoreTicket).product_id === ticket
+        else {
+          let doesMatch = false
+
+          if (isSearchingBy === "qrCode") {
+            const prodId = getProductUidFromQrCode(i as any)
+
+            doesMatch = ticketProdOid === prodId
+          } else {
+            doesMatch = (i as IProduct | ICombo).id === ticket
+          }
+
+          return doesMatch
         }
-
-        return doesMatch
-      }
-    })
+      })
 
     if (matchItem) {
       productId =

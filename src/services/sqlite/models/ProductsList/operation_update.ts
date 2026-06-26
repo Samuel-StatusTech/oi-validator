@@ -1,8 +1,12 @@
 import db from "@services/sqlite/Database"
-import { updateProductList as updateProductsListQuery } from "../../queries/productsLists"
+import { updateProductList as updateProductsListQuery, deleteAllProductLists } from "../../queries/productsLists"
 import { IProductsList } from "@utils/@types/sqlite/productsList"
 import { buildUpdateParams } from "@utils/toolbox/dbHelpers"
 import { safeTransactions } from "@services/sqlite/safeTransactions"
+
+export const clearProductsLists = async () => {
+  await db.runAsync(deleteAllProductLists)
+}
 
 export const updateProductsList = async (productsList: IProductsList) => {
   try {

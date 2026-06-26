@@ -34,6 +34,7 @@ export function Home({
   const [ticketState, setTicketState] = useState({
     validated: false,
     productName: "",
+    comboName: undefined as string | undefined,
     showTitle: false,
   })
   const [isValidating, setIsValidating] = useState(false)
@@ -140,6 +141,7 @@ export function Home({
               setTicketState({
                 validated: false,
                 productName: "",
+                comboName: undefined,
                 showTitle: !(
                   error === validationsErrorMessages.notFoundOnEvent
                 ),
@@ -259,6 +261,7 @@ export function Home({
         showTitle={ticketState.showTitle}
         isSuccess={ticketState.validated}
         productName={ticketState.productName}
+        comboName={ticketState.comboName}
         isValidating={isValidating}
         isChecked={checkComplete}
         message={msg}

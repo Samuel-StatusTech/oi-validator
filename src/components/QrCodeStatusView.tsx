@@ -15,6 +15,7 @@ type Props = {
   qrCode: string
   isSuccess: boolean
   productName: string
+  comboName?: string
   isOpen: boolean
   message: string
   onClose: () => any
@@ -28,6 +29,7 @@ export function QrCodeStatusView({
   qrCode,
   isSuccess,
   productName,
+  comboName,
   isOpen,
   onClose,
   message,
@@ -101,6 +103,9 @@ export function QrCodeStatusView({
             </Text>
             {isSuccess && productName && (
               <Text style={styles.message}>{productName}</Text>
+            )}
+            {isSuccess && comboName && (
+              <Text style={styles.message}>{comboName}</Text>
             )}
           </View>
           <TouchableOpacity

@@ -1,5 +1,5 @@
 export const insertCombo = `
-  INSERT INTO combos (
+  INSERT OR REPLACE INTO combos (
     id,
     oid,
     favorite,
@@ -27,6 +27,10 @@ export const insertCombo = `
 
 export const selectAllCombos = `
   SELECT * FROM combos;
+`
+
+export const selectComboById = `
+  SELECT * FROM combos WHERE id = ? LIMIT 1;
 `
 
 export const updateCombo = `

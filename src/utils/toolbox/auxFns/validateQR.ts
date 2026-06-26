@@ -11,6 +11,10 @@ import { IProduct } from "@utils/@types/sqlite/product"
 import { checkLocallyValidation } from "./validateQR/checkLocallyValidation"
 import { formatLocalDateTime } from "./formatDate"
 import { validationsErrorMessages } from "./validateQR/validationsMessages"
+import { getComboForProduct } from "./getComboForProduct"
+
+let lastBackgroundSync = 0
+const SYNC_COOLDOWN_MS = 30000
 
 const validateQR = async (
   code: string,
@@ -22,7 +26,7 @@ const validateQR = async (
   onSync: (showFeedback?: boolean) => Promise<void> = () => Promise.resolve(),
   retries = 0,
   setIsRetrying: React.Dispatch<React.SetStateAction<boolean>> = () => {},
-): Promise<{ validated: true; productName: string; showTitle: boolean }> => {
+): Promise<{ validated: true; productName: string; comboName?: string; showTitle: boolean }> => {
   return new Promise(async (resolve, reject) => {
     try {
       if (retries == 0) setIsRetrying(false)
@@ -81,6 +85,8 @@ const validateQR = async (
               userProds,
             )
 
+            const comboInfo = prodId ? await getComboForProduct(prodId) : null
+
             let isWebticket = false
             let webticketName = ""
             let isTicketCanceled = false
@@ -125,7 +131,16 @@ const validateQR = async (
                   (i as IWebstoreTicket).product_id === ticketProductId,
               )
 
-              const productName = isWebticket ? webticketName : prodName
+              let productName = isWebticket ? webticketName : prodName
+              let comboName: string | undefined
+
+              if (!isWebticket && comboInfo) {
+                if (comboInfo.ticketType === "unica") {
+                  productName = comboInfo.comboName
+                } else if (comboInfo.ticketType === "varias") {
+                  comboName = comboInfo.comboName
+                }
+              }
 
               if (!canValidateThisTicket) {
                 // Sync and retry
@@ -215,9 +230,16 @@ const validateQR = async (
                     )
                     resolve({
                       validated: true,
-                      productName: productName,
+                      productName,
+                      comboName,
                       showTitle: true,
                     })
+
+                    const now = Date.now()
+                    if (now - lastBackgroundSync > SYNC_COOLDOWN_MS) {
+                      lastBackgroundSync = now
+                        onSync(false).catch(() => {})
+                    }
                     break
                   case 2:
                     reject(validationsErrorMessages.alreadyValidatedShort)

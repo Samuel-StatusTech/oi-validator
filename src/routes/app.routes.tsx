@@ -29,6 +29,7 @@ import SyncIcon from "@assets/atualizar.svg"
 import { Onlinetag } from "@components/OnlineTag"
 import { useNetInfo } from "@react-native-community/netinfo"
 import { PopUp } from "@components/PopUp"
+import { SettingsModal } from "@components/SettingsModal"
 import Api from "src/api"
 import Validation from "@services/sqlite/models/Validation"
 import Product from "@services/sqlite/models/Product"
@@ -64,6 +65,7 @@ export function AppRoutes() {
     show: false,
     success: false,
   })
+  const [showSettings, setShowSettings] = useState(false)
 
   const navigation = useNavigation<AppNavigatiorRoutesProps>()
 
@@ -161,7 +163,7 @@ export function AppRoutes() {
     })
   }
 
-  const renderIcon = (type: "home" | "history" | "sync" | "prods") => {
+  const renderIcon = (type: "home" | "history" | "sync" | "prods" | "settings") => {
     let icon = null
 
     switch (type) {
@@ -176,6 +178,9 @@ export function AppRoutes() {
         break
       case "prods":
         icon = <ProdsIcon width={32} />
+        break
+      case "settings":
+        icon = <SyncIcon width={32} />
         break
     }
 
@@ -244,6 +249,10 @@ export function AppRoutes() {
         isSync={true}
         isSyncing={syncing}
       />
+      <SettingsModal
+        visible={showSettings}
+        onClose={() => setShowSettings(false)}
+      />
       <Navigator
         useLegacyImplementation={false}
         screenOptions={{
@@ -294,6 +303,15 @@ export function AppRoutes() {
                   />
                   {mustSync && <View style={styles.badge} />}
                 </View>
+                <DrawerItem
+                  labelStyle={{ fontSize: 16, color: THEME.colors.gray[50] }}
+                  label={"Configurações"}
+                  icon={() => renderIcon("settings")}
+                  onPress={() => {
+                    props.navigation.closeDrawer()
+                    setShowSettings(true)
+                  }}
+                />
               </View>
               <TouchableOpacity
                 style={{

@@ -29,7 +29,7 @@ import SyncIcon from "@assets/atualizar.svg"
 import { Onlinetag } from "@components/OnlineTag"
 import { useNetInfo } from "@react-native-community/netinfo"
 import { PopUp } from "@components/PopUp"
-import { SettingsModal } from "@components/SettingsModal"
+import { Settings } from "@screens/Settings"
 import Api from "src/api"
 import Validation from "@services/sqlite/models/Validation"
 import Product from "@services/sqlite/models/Product"
@@ -38,7 +38,7 @@ import Order from "@services/sqlite/models/Order"
 import { storeDbUserInfo } from "@utils/toolbox/auxFns/storeDbUserInfo"
 import { UserInfo } from "@utils/@types/data/user"
 
-export type Routes = "home" | "selectEvent" | "products" | "qrhistory"
+export type Routes = "home" | "selectEvent" | "products" | "qrhistory" | "settings"
 
 type AppRoutes = {
   [r in Routes]: undefined
@@ -65,7 +65,6 @@ export function AppRoutes() {
     show: false,
     success: false,
   })
-  const [showSettings, setShowSettings] = useState(false)
 
   const navigation = useNavigation<AppNavigatiorRoutesProps>()
 
@@ -249,10 +248,6 @@ export function AppRoutes() {
         isSync={true}
         isSyncing={syncing}
       />
-      <SettingsModal
-        visible={showSettings}
-        onClose={() => setShowSettings(false)}
-      />
       <Navigator
         useLegacyImplementation={false}
         screenOptions={{
@@ -307,10 +302,7 @@ export function AppRoutes() {
                   labelStyle={{ fontSize: 16, color: THEME.colors.gray[50] }}
                   label={"Configurações"}
                   icon={() => renderIcon("settings")}
-                  onPress={() => {
-                    props.navigation.closeDrawer()
-                    setShowSettings(true)
-                  }}
+                  onPress={() => navigation.navigate("settings")}
                 />
               </View>
               <TouchableOpacity
@@ -363,6 +355,15 @@ export function AppRoutes() {
           options={{
             drawerLabel: "Histórico de leitura",
             drawerIcon: () => renderIcon("history"),
+          }}
+        />
+        <Screen
+          name="settings"
+          component={Settings}
+          options={{
+            drawerItemStyle: { display: "none" },
+            drawerLabel: "Configurações",
+            headerTitle: "Configurações",
           }}
         />
       </Navigator>

@@ -22,7 +22,7 @@ export function Home({
   onSync: (shoFeedback?: boolean) => Promise<void>
 }) {
   const store = useStore((state) => state)
-  const { user, currentEvent, token, Common, cameraFacing, feedbackDuration } = store
+  const { user, currentEvent, token, Common, cameraFacing, feedbackDuration, screenLockTimeout } = store
 
   const [mode, setMode] = useState<"camera" | "typing" | "saveEnergy">("camera")
   const [flashMode, setFlashMode] = useState<FlashMode>("off")
@@ -42,7 +42,6 @@ export function Home({
   const [checkComplete, setCheckComplete] = useState(false)
   const [msg, setMsg] = useState("")
 
-  let waitTime = 45 * 1000
   const timerRef = useRef<undefined | NodeJS.Timeout>()
 
   const resetTimer = useCallback(() => {
@@ -52,8 +51,8 @@ export function Home({
 
     timerRef.current = setTimeout(() => {
       setMode("saveEnergy")
-    }, waitTime)
-  }, [])
+    }, screenLockTimeout * 1000)
+  }, [screenLockTimeout])
 
   useEffect(() => {
     if (mode === "camera") {

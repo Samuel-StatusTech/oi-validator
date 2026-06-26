@@ -18,6 +18,7 @@ const useStore = create<StoreInterface>()(
       headerColor: THEME.colors.gray[50],
       cameraFacing: "back" as "front" | "back",
       feedbackDuration: 2.5,
+      screenLockTimeout: 45,
       // ...useReducers(set),
 
       User: UserReducer(set),
@@ -37,6 +38,7 @@ const useStore = create<StoreInterface>()(
           headerColor: state.headerColor,
           cameraFacing: state.cameraFacing,
           feedbackDuration: state.feedbackDuration,
+          screenLockTimeout: state.screenLockTimeout,
         }
       },
     }

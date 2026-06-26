@@ -65,6 +65,8 @@ const CommonReducer = (set: Setter) => {
       set((state) => ({ ...state, cameraFacing: facing })),
     setFeedbackDuration: (value: number) =>
       set((state) => ({ ...state, feedbackDuration: value })),
+    setScreenLockTimeout: (value: number) =>
+      set((state) => ({ ...state, screenLockTimeout: value })),
   }
 }
 

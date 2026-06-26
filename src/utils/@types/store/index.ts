@@ -10,6 +10,7 @@ export interface StoreInterface {
   headerColor: string
   cameraFacing: "front" | "back"
   feedbackDuration: number
+  screenLockTimeout: number
   User: {
     storeInfo: (userInfo: UserInfo) => void
     storeSyncInfo: (syncInfo: any) => void
@@ -27,6 +28,7 @@ export interface StoreInterface {
     setLastSync: (stored?: string | number) => void
     setCameraFacing: (facing: "front" | "back") => void
     setFeedbackDuration: (value: number) => void
+    setScreenLockTimeout: (value: number) => void
   }
 }
 

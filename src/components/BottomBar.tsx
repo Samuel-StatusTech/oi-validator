@@ -1,7 +1,7 @@
 import FlashOffSVG from "@assets/flashlight.svg"
 import FlashOnSVG from "@assets/flashlight10.svg"
 import ToTypeOffSVG from "@assets/toType.svg"
-import ToTypeOnSVG from "@assets/toType10.svg"
+import QrCodeSVG from "@assets/qrcode.svg"
 import SwitchCameraIcon from "@assets/atualizar.svg"
 import React, { useState } from "react"
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native"
@@ -30,38 +30,45 @@ export function BottomBar({
     updateFlash()
   }
 
+  const isTyping = mode === "typing"
+
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.fullButton} onPress={handleTyping}>
         <View
-          style={[styles.buttonInner, mode === "typing" && styles.activeButton]}
+          style={[styles.buttonInner, isTyping && styles.activeButton]}
         >
-          {mode === "typing" ? <ToTypeOnSVG /> : <ToTypeOffSVG />}
-          <Text style={[styles.text, mode === "typing" && styles.activeText]}>
-            Digitar
+          {isTyping ? <QrCodeSVG width={28} height={28} /> : <ToTypeOffSVG />}
+          <Text style={[styles.text, isTyping && styles.activeText]}>
+            {isTyping ? "QR Code" : "Digitar"}
           </Text>
         </View>
       </TouchableOpacity>
 
       <View style={styles.row}>
-        <TouchableOpacity style={styles.halfButton} onPress={handleiFlashlight}>
+        <TouchableOpacity
+          style={styles.halfButton}
+          onPress={handleiFlashlight}
+          disabled={isTyping}
+        >
           <View
             style={[
               styles.buttonInner,
-              flashMode === "on" && styles.activeButton,
+              flashMode === "on" && !isTyping && styles.activeButton,
+              isTyping && styles.disabledButton,
             ]}
           >
-            {flashMode === "on" ? <FlashOnSVG /> : <FlashOffSVG />}
-            <Text style={[styles.text, flashMode === "on" && styles.activeText]}>
+            {flashMode === "on" && !isTyping ? <FlashOnSVG /> : <FlashOffSVG />}
+            <Text style={[styles.text, flashMode === "on" && !isTyping && styles.activeText, isTyping && styles.disabledText]}>
               Lanterna
             </Text>
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.halfButton} onPress={onSwitchCamera}>
-          <View style={styles.buttonInner}>
+        <TouchableOpacity style={styles.halfButton} onPress={onSwitchCamera} disabled={isTyping}>
+          <View style={[styles.buttonInner, isTyping && styles.disabledButton]}>
             <SwitchCameraIcon width={28} />
-            <Text style={styles.text}>{"Trocar\ncâmera"}</Text>
+            <Text style={[styles.text, isTyping && styles.disabledText]}>{"Trocar\ncâmera"}</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -101,6 +108,9 @@ const styles = StyleSheet.create({
   activeButton: {
     backgroundColor: THEME.colors.blue[400],
   },
+  disabledButton: {
+    opacity: 0.35,
+  },
   text: {
     color: THEME.colors.gray[50],
     fontFamily: THEME.fonts.body,
@@ -109,5 +119,8 @@ const styles = StyleSheet.create({
   },
   activeText: {
     color: THEME.colors.gray[100],
+  },
+  disabledText: {
+    color: THEME.colors.gray[400],
   },
 })

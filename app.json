@@ -29,12 +29,13 @@
     },
     "extra": {
       "eas": {
-        "projectId": "f723101d-3143-446b-90d6-53b57662a5ac"
+        "projectId": "2fb526a5-2450-4cd9-bf01-01d30807e721"
       }
     },
     "plugins": [
       "expo-asset",
       "expo-sqlite"
-    ]
+    ],
+    "owner": "statustechfn"
   }
 }

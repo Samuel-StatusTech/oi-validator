@@ -17,6 +17,7 @@ const useStore = create<StoreInterface>()(
       mustSync: false,
       headerColor: THEME.colors.gray[50],
       cameraFacing: "back" as "front" | "back",
+      feedbackDuration: 2.5,
       // ...useReducers(set),
 
       User: UserReducer(set),
@@ -35,6 +36,7 @@ const useStore = create<StoreInterface>()(
           mustSync: state.mustSync,
           headerColor: state.headerColor,
           cameraFacing: state.cameraFacing,
+          feedbackDuration: state.feedbackDuration,
         }
       },
     }

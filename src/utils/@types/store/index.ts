@@ -9,6 +9,7 @@ export interface StoreInterface {
   mustSync: boolean
   headerColor: string
   cameraFacing: "front" | "back"
+  feedbackDuration: number
   User: {
     storeInfo: (userInfo: UserInfo) => void
     storeSyncInfo: (syncInfo: any) => void
@@ -25,6 +26,7 @@ export interface StoreInterface {
     setSyncObligation: (should: boolean) => void
     setLastSync: (stored?: string | number) => void
     setCameraFacing: (facing: "front" | "back") => void
+    setFeedbackDuration: (value: number) => void
   }
 }
 

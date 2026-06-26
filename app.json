@@ -2,7 +2,7 @@
   "expo": {
     "name": "Validador",
     "slug": "Validador",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "orientation": "portrait",
     "icon": "./assets/logo_.png",
     "userInterfaceStyle": "light",

@@ -22,7 +22,7 @@ export function Home({
   onSync: (shoFeedback?: boolean) => Promise<void>
 }) {
   const store = useStore((state) => state)
-  const { user, currentEvent, token, Common } = store
+  const { user, currentEvent, token, Common, cameraFacing } = store
 
   const [mode, setMode] = useState<"camera" | "typing" | "saveEnergy">("camera")
   const [flashMode, setFlashMode] = useState<FlashMode>("off")
@@ -102,6 +102,10 @@ export function Home({
   function handleReturn() {
     setMode("camera")
     setLastScanTime(Date.now())
+  }
+
+  function handleSwitchCamera() {
+    Common.setCameraFacing(cameraFacing === "back" ? "front" : "back")
   }
 
   async function validateCode(code: string) {
@@ -227,6 +231,7 @@ export function Home({
                 flashMode={flashMode}
                 scanned={scanned}
                 onCodeScanned={onCodeScanned}
+                facing={cameraFacing}
               />
             )}
             {mode === "typing" && (
@@ -244,6 +249,7 @@ export function Home({
             updateFlash={() => {
               setFlashMode(flashMode == "off" ? "on" : "off")
             }}
+            onSwitchCamera={handleSwitchCamera}
           />
         </>
       )}

@@ -11,9 +11,10 @@ type Props = {
   flashMode: FlashMode
   scanned: boolean
   onCodeScanned: (data: string) => any
+  facing?: "front" | "back"
 }
 
-export function Scanner({ flashMode, scanned, onCodeScanned }: Props) {
+export function Scanner({ flashMode, scanned, onCodeScanned, facing = "back" }: Props) {
   const [hasPermission, requestPermission] = useCameraPermissions()
   const { width, height } = Dimensions.get("window")
 
@@ -45,6 +46,7 @@ export function Scanner({ flashMode, scanned, onCodeScanned }: Props) {
         enableTorch={flashMode === "on"}
         onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
         style={styles.camera}
+        facing={facing}
       />
     </>
   )

@@ -8,6 +8,7 @@ export interface StoreInterface {
   currentEvent: null | EventData
   mustSync: boolean
   headerColor: string
+  cameraFacing: "front" | "back"
   User: {
     storeInfo: (userInfo: UserInfo) => void
     storeSyncInfo: (syncInfo: any) => void
@@ -23,6 +24,7 @@ export interface StoreInterface {
     setHeaderColor: (color: "neutral" | "green" | "red") => void
     setSyncObligation: (should: boolean) => void
     setLastSync: (stored?: string | number) => void
+    setCameraFacing: (facing: "front" | "back") => void
   }
 }
 

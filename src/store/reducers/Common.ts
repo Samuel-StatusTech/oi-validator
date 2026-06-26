@@ -61,6 +61,8 @@ const CommonReducer = (set: Setter) => {
             : time,
         }
       }),
+    setCameraFacing: (facing: "front" | "back") =>
+      set((state) => ({ ...state, cameraFacing: facing })),
   }
 }
 

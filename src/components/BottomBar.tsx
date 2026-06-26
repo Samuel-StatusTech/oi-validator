@@ -2,6 +2,7 @@ import FlashOffSVG from "@assets/flashlight.svg"
 import FlashOnSVG from "@assets/flashlight10.svg"
 import ToTypeOffSVG from "@assets/toType.svg"
 import ToTypeOnSVG from "@assets/toType10.svg"
+import SwitchCameraIcon from "@assets/atualizar.svg"
 import React, { useState } from "react"
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native"
 import { THEME } from "../theme"
@@ -12,6 +13,7 @@ type Propos = {
   mode: "camera" | "typing" | "saveEnergy"
   handleTyping: () => void
   updateFlash: () => void
+  onSwitchCamera: () => void
 }
 
 export function BottomBar({
@@ -19,6 +21,7 @@ export function BottomBar({
   mode,
   handleTyping,
   updateFlash,
+  onSwitchCamera,
 }: Propos) {
   const [isFlashlight, setFlashlight] = useState(false)
 
@@ -29,7 +32,7 @@ export function BottomBar({
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.button} onPress={handleTyping}>
+      <TouchableOpacity style={styles.fullButton} onPress={handleTyping}>
         <View
           style={[styles.buttonInner, mode === "typing" && styles.activeButton]}
         >
@@ -40,38 +43,55 @@ export function BottomBar({
         </View>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={handleiFlashlight}>
-        <View
-          style={[
-            styles.buttonInner,
-            flashMode === "on" && styles.activeButton,
-          ]}
-        >
-          {flashMode === "on" ? <FlashOnSVG /> : <FlashOffSVG />}
-          <Text style={[styles.text, flashMode === "on" && styles.activeText]}>
-            Lanterna
-          </Text>
-        </View>
-      </TouchableOpacity>
+      <View style={styles.row}>
+        <TouchableOpacity style={styles.halfButton} onPress={handleiFlashlight}>
+          <View
+            style={[
+              styles.buttonInner,
+              flashMode === "on" && styles.activeButton,
+            ]}
+          >
+            {flashMode === "on" ? <FlashOnSVG /> : <FlashOffSVG />}
+            <Text style={[styles.text, flashMode === "on" && styles.activeText]}>
+              Lanterna
+            </Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.halfButton} onPress={onSwitchCamera}>
+          <View style={styles.buttonInner}>
+            <SwitchCameraIcon width={28} />
+            <Text style={styles.text}>{"Trocar\ncâmera"}</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    height: 96,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: "column",
     zIndex: 10,
     backgroundColor: THEME.colors.gray[700],
+    paddingBottom: 8,
   },
-  button: {
+  row: {
+    flexDirection: "row",
+  },
+  fullButton: {
+    width: "100%",
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 12,
+  },
+  halfButton: {
     flex: 1,
+    paddingHorizontal: 8,
+    paddingTop: 4,
   },
   buttonInner: {
-    marginLeft: 16,
-    marginRight: 8,
-    height: 64,
+    height: 56,
     backgroundColor: THEME.colors.gray[600],
     borderRadius: 32,
     flexDirection: "row",

@@ -26,6 +26,7 @@ import ProdsIcon from "@assets/ajuda.svg"
 import HistoryIcon from "@assets/historico.svg"
 import SignOutIcon from "@assets/sair.svg"
 import SyncIcon from "@assets/atualizar.svg"
+import ConfigIcon from "@assets/config.svg"
 import { Onlinetag } from "@components/OnlineTag"
 import { useNetInfo } from "@react-native-community/netinfo"
 import { PopUp } from "@components/PopUp"
@@ -179,7 +180,7 @@ export function AppRoutes() {
         icon = <ProdsIcon width={32} />
         break
       case "settings":
-        icon = <SyncIcon width={32} />
+        icon = <ConfigIcon width={32} />
         break
     }
 

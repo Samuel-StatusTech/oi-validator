@@ -11,6 +11,7 @@ export interface StoreInterface {
   cameraFacing: "front" | "back"
   feedbackDuration: number
   screenLockTimeout: number
+  screenLockEnabled: boolean
   User: {
     storeInfo: (userInfo: UserInfo) => void
     storeSyncInfo: (syncInfo: any) => void
@@ -29,6 +30,7 @@ export interface StoreInterface {
     setCameraFacing: (facing: "front" | "back") => void
     setFeedbackDuration: (value: number) => void
     setScreenLockTimeout: (value: number) => void
+    setScreenLockEnabled: (value: boolean) => void
   }
 }
 

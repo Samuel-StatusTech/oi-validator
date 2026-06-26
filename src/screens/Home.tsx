@@ -22,7 +22,7 @@ export function Home({
   onSync: (shoFeedback?: boolean) => Promise<void>
 }) {
   const store = useStore((state) => state)
-  const { user, currentEvent, token, Common, cameraFacing, feedbackDuration, screenLockTimeout } = store
+  const { user, currentEvent, token, Common, cameraFacing, feedbackDuration, screenLockTimeout, screenLockEnabled } = store
 
   const [mode, setMode] = useState<"camera" | "typing" | "saveEnergy">("camera")
   const [flashMode, setFlashMode] = useState<FlashMode>("off")
@@ -49,10 +49,12 @@ export function Home({
       clearTimeout(timerRef.current)
     }
 
+    if (!screenLockEnabled) return
+
     timerRef.current = setTimeout(() => {
       setMode("saveEnergy")
     }, screenLockTimeout * 1000)
-  }, [screenLockTimeout])
+  }, [screenLockTimeout, screenLockEnabled])
 
   useEffect(() => {
     if (mode === "camera") {

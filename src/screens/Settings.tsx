@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   TouchableOpacity,
@@ -18,13 +19,15 @@ import useStore from "../store"
 const SETTINGS_PASSWORD = "val@1234"
 
 export function Settings() {
-  const { feedbackDuration, screenLockTimeout, Common } = useStore((state) => state)
+  const { feedbackDuration, screenLockTimeout, screenLockEnabled, Common } =
+    useStore((state) => state)
 
   const [isUnlocked, setIsUnlocked] = useState(false)
   const [password, setPassword] = useState("")
   const [passwordError, setPasswordError] = useState(false)
   const [localFeedback, setLocalFeedback] = useState(feedbackDuration)
   const [localLock, setLocalLock] = useState(screenLockTimeout)
+  const [localLockEnabled, setLocalLockEnabled] = useState(screenLockEnabled)
   const [saved, setSaved] = useState(false)
 
   useFocusEffect(
@@ -40,6 +43,7 @@ export function Settings() {
     if (password === SETTINGS_PASSWORD) {
       setLocalFeedback(feedbackDuration)
       setLocalLock(screenLockTimeout)
+      setLocalLockEnabled(screenLockEnabled)
       setIsUnlocked(true)
       setPasswordError(false)
     } else {
@@ -50,6 +54,7 @@ export function Settings() {
   const handleSave = () => {
     Common.setFeedbackDuration(localFeedback)
     Common.setScreenLockTimeout(localLock)
+    Common.setScreenLockEnabled(localLockEnabled)
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
   }
@@ -115,19 +120,39 @@ export function Settings() {
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionLabel}>Tempo de bloqueio de tela</Text>
-            <Text style={styles.valueDisplay}>{formatSeconds(localLock)}</Text>
-            <CustomSlider
-              min={15}
-              max={120}
-              step={5}
-              value={localLock}
-              onChange={setLocalLock}
-            />
-            <View style={styles.rangeLabels}>
-              <Text style={styles.rangeText}>15s</Text>
-              <Text style={styles.rangeText}>2m</Text>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionLabel}>Tempo de bloqueio de tela</Text>
+              <View style={styles.toggleRow}>
+                <Text style={styles.toggleLabel}>Nunca bloquear</Text>
+                <Switch
+                  value={!localLockEnabled}
+                  onValueChange={(v) => setLocalLockEnabled(!v)}
+                  trackColor={{
+                    false: THEME.colors.gray[500],
+                    true: THEME.colors.gray[300],
+                  }}
+                  thumbColor={THEME.colors.gray[50]}
+                />
+              </View>
             </View>
+            {localLockEnabled ? (
+              <>
+                <Text style={styles.valueDisplay}>{formatSeconds(localLock)}</Text>
+                <CustomSlider
+                  min={15}
+                  max={600}
+                  step={15}
+                  value={localLock}
+                  onChange={setLocalLock}
+                />
+                <View style={styles.rangeLabels}>
+                  <Text style={styles.rangeText}>15s</Text>
+                  <Text style={styles.rangeText}>10m</Text>
+                </View>
+              </>
+            ) : (
+              <Text style={styles.neverLockText}>Tela nunca bloqueia</Text>
+            )}
           </View>
 
           <TouchableOpacity
@@ -207,12 +232,25 @@ const styles = StyleSheet.create({
   section: {
     gap: 12,
   },
+  sectionHeader: {
+    gap: 8,
+  },
   sectionLabel: {
     color: THEME.colors.gray[200],
     fontFamily: THEME.fonts.body,
     fontSize: 14,
     textTransform: "uppercase",
     letterSpacing: 1,
+  },
+  toggleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  toggleLabel: {
+    color: THEME.colors.gray[200],
+    fontFamily: THEME.fonts.body,
+    fontSize: 15,
   },
   valueDisplay: {
     color: THEME.colors.gray[50],
@@ -227,6 +265,13 @@ const styles = StyleSheet.create({
   rangeText: {
     color: THEME.colors.gray[400],
     fontSize: 12,
+  },
+  neverLockText: {
+    color: THEME.colors.gray[300],
+    fontFamily: THEME.fonts.body,
+    fontSize: 16,
+    textAlign: "center",
+    paddingVertical: 16,
   },
   saveButton: {
     backgroundColor: THEME.colors.gray[500],

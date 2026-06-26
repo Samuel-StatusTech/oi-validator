@@ -19,6 +19,7 @@ const useStore = create<StoreInterface>()(
       cameraFacing: "back" as "front" | "back",
       feedbackDuration: 2.5,
       screenLockTimeout: 45,
+      screenLockEnabled: true,
       // ...useReducers(set),
 
       User: UserReducer(set),
@@ -39,6 +40,7 @@ const useStore = create<StoreInterface>()(
           cameraFacing: state.cameraFacing,
           feedbackDuration: state.feedbackDuration,
           screenLockTimeout: state.screenLockTimeout,
+          screenLockEnabled: state.screenLockEnabled,
         }
       },
     }

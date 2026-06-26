@@ -67,6 +67,8 @@ const CommonReducer = (set: Setter) => {
       set((state) => ({ ...state, feedbackDuration: value })),
     setScreenLockTimeout: (value: number) =>
       set((state) => ({ ...state, screenLockTimeout: value })),
+    setScreenLockEnabled: (value: boolean) =>
+      set((state) => ({ ...state, screenLockEnabled: value })),
   }
 }
 

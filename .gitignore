@@ -75,4 +75,7 @@ yarn-error.*
 
 .idea/
 
+# Claude Code
+.claude/
+
 # @end expo-cli

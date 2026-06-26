@@ -23,6 +23,7 @@ type Props = {
   isChecked: boolean
   isRetrying: boolean
   showTitle: boolean
+  feedbackDuration: number
 }
 
 export function QrCodeStatusView({
@@ -36,14 +37,15 @@ export function QrCodeStatusView({
   isChecked,
   isValidating,
   isRetrying,
-  showTitle
+  showTitle,
+  feedbackDuration,
 }: Props) {
   const width = useRef(new Animated.Value(0)).current
 
   const animate = () => {
     Animated.timing(width, {
       toValue: Dimensions.get("screen").width * 0.8,
-      duration: 5000,
+      duration: feedbackDuration * 1000,
       useNativeDriver: false,
     }).start(() => {
       handleClose()

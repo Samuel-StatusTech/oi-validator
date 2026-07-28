@@ -16,7 +16,7 @@ import { CustomSlider } from "@components/CustomSlider"
 import { THEME } from "../theme"
 import useStore from "../store"
 
-const SETTINGS_PASSWORD = "val@1234"
+const SETTINGS_PASSWORD = "654321"
 
 export function Settings() {
   const { feedbackDuration, screenLockTimeout, screenLockEnabled, Common } =
